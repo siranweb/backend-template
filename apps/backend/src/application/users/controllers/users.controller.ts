@@ -12,10 +12,6 @@ export class UsersController {
       id: parsed.params.id,
     };
 
-    if (Math.random() > 0.5) {
-      throw new Error('This is error example')
-    }
-
     ctx.body = { user };
   }
 

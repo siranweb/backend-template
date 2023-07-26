@@ -4,7 +4,8 @@ import { ApiLogger } from '@/infra/api/types';
 
 export const loggerMiddleware = (logger: ApiLogger): Koa.Middleware => async (ctx, next) => {
   const startTime = performance.now();
-  logger.request(ctx.method, ctx.originalUrl);
+  const { ip } = ctx.request;
+  logger.request(ctx.method, ctx.originalUrl, { ip });
 
   try {
     await next();
@@ -16,11 +17,11 @@ export const loggerMiddleware = (logger: ApiLogger): Koa.Middleware => async (ct
 
     const endTime = performance.now();
     const ms = +(endTime - startTime).toFixed(1);
-    logger.finished(ctx.method, ctx.originalUrl, ms);
+    logger.finished(ctx.method, ctx.originalUrl, ms, { ip });
   } catch (e: any) {
     const endTime = performance.now();
     const ms = +(endTime - startTime).toFixed(1);
-    logger.failed(ctx.method, ctx.originalUrl, ms, e.message);
-    // throw e;
+    logger.failed(ctx.method, ctx.originalUrl, ms, e.message, { ip });
+    throw e;
   }
 };
