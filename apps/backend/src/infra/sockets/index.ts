@@ -19,7 +19,7 @@ export const getDefaultEventHandlerMetadata = (): EventHandlerMetadata => {
   };
 };
 
-export type SocketMiddleware = (socket: Socket, next: () => SocketMiddleware) => any;
+export type SocketMiddleware = (socket: Socket, next: () => SocketMiddleware) => void;
 
 type Resolver = Record<string, any>;
 
@@ -44,6 +44,12 @@ export class Sockets {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  addMiddleware(middleware: SocketMiddleware) {
+    // TODO
+    // @ts-ignore
+    this.socketsClient.use(middleware);
   }
 
   private registerResolvers() {
