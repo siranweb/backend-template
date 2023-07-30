@@ -1,12 +1,16 @@
-import '@/infra/global';
+import '@/infra/app/global-imports';
 import { usersController } from '@/application/users';
-import { WebServer } from '@/infra/api/web-server';
+import { WebServer } from '@/infra/web-server';
 import { config } from '@/infra/config';
-import { loggerMiddleware } from '@/infra/api/middlewares/logger.middleware';
-import { DefaultApiLogger } from '@/infra/loggers/default-api-logger';
+import { loggerMiddleware } from '@/infra/web-server/middlewares/logger.middleware';
+import { DefaultWebServerLogger } from '@/infra/loggers/default-web-server.logger';
+import { Sockets } from '@/infra/sockets';
 
-const apiLogger = new DefaultApiLogger(config);
+const apiLogger = new DefaultWebServerLogger(config);
 
 const webServer = new WebServer(config, [usersController]);
 webServer.addMiddleware(loggerMiddleware(apiLogger))
 webServer.start();
+
+const sockets = new Sockets(config, []);
+sockets.start();

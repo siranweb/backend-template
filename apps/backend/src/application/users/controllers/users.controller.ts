@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import { Controller, Endpoint } from '@/infra/api/decorators';
+import { Controller, Endpoint } from '@/infra/web-server/decorators';
 import { getUserSchema } from '../schemas/users.schemas';
 
 @Controller('users')
@@ -12,7 +12,9 @@ export class UsersController {
       id: parsed.params.id,
     };
 
-    ctx.body = { user };
+    return {
+      user
+    }
   }
 
   @Endpoint('POST', '/')

@@ -26,6 +26,7 @@
     "kysely": "0.26.1",
     "logform": "^2.5.1",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.7.1",
     "typescript": "^5.1.6",
     "winston": "^3.10.0",
     "winston-daily-rotate-file": "^4.7.1",

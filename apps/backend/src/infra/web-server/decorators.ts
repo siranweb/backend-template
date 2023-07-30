@@ -4,7 +4,7 @@ import {
   endpointMetadataSymbol,
   EndpointMetadata,
   getDefaultEndpointMetadata,
-} from './web-server';
+} from './index';
 import Koa from 'koa';
 
 export const Controller = (prefix: string = ''): any => {

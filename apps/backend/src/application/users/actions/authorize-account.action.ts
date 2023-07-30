@@ -1,4 +1,4 @@
-import { Action } from '@/infra/types/action.type';
+import { Action } from '@/infra/app/types';
 import { AccountsRepository } from '@/application/users/repositories/accounts.repository';
 import { Account } from '@/application/users/entities/account.entity';
 

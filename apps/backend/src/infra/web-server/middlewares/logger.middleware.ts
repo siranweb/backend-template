@@ -1,8 +1,8 @@
 import Koa from 'koa';
 import { performance } from 'perf_hooks';
-import { ApiLogger } from '@/infra/api/types';
+import { WebServerLogger } from '@/infra/web-server/types';
 
-export const loggerMiddleware = (logger: ApiLogger): Koa.Middleware => async (ctx, next) => {
+export const loggerMiddleware = (logger: WebServerLogger): Koa.Middleware => async (ctx, next) => {
   const startTime = performance.now();
   const { ip } = ctx.request;
   logger.request(ctx.method, ctx.originalUrl, { ip });
@@ -12,16 +12,18 @@ export const loggerMiddleware = (logger: ApiLogger): Koa.Middleware => async (ct
 
     // Handle all errors that are weren't thrown (like 404)
    if (ctx.response.status >= 400) {
-     throw new Error(`Status: ${ctx.response.status}. Message: ${ctx.response.message}`);
+     throw new Error(ctx.response.message);
    }
 
     const endTime = performance.now();
     const ms = +(endTime - startTime).toFixed(1);
-    logger.finished(ctx.method, ctx.originalUrl, ms, { ip });
+    const { status } = ctx.response;
+    logger.finished(ctx.method, ctx.originalUrl, ms, { ip, status });
   } catch (e: any) {
     const endTime = performance.now();
     const ms = +(endTime - startTime).toFixed(1);
-    logger.failed(ctx.method, ctx.originalUrl, ms, e.message, { ip });
+    const { status } = ctx.response;
+    logger.failed(ctx.method, ctx.originalUrl, ms, e.message, { ip, status });
     throw e;
   }
 };
