@@ -3,15 +3,12 @@ import {
   eventHandlerMetadataSymbol,
   getDefaultEventHandlerMetadata,
   SocketMiddleware,
-  SocketsResolverMetadata,
   socketsResolverMetadataSymbol,
 } from './index';
 
-export const SocketEventsResolver = (namespace: string): any => {
+export const SocketEventsResolver = (): any => {
   return (target: any) => {
-    const metadata: SocketsResolverMetadata = {
-      namespace,
-    };
+    const metadata = {};
     Reflect.set(target, socketsResolverMetadataSymbol, metadata);
   };
 };

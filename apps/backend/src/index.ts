@@ -1,5 +1,5 @@
 import '@/infra/app/global-imports';
-import { usersController } from '@/application/users';
+import { usersController, usersResolver } from '@/application/users';
 import { WebServer } from '@/infra/web-server';
 import { config } from '@/infra/config';
 import { loggerMiddleware } from '@/infra/web-server/middlewares/logger.middleware';
@@ -12,5 +12,5 @@ const webServer = new WebServer(config, [usersController]);
 webServer.addMiddleware(loggerMiddleware(apiLogger))
 webServer.start();
 
-const sockets = new Sockets(config, []);
+const sockets = new Sockets(config, [usersResolver]);
 sockets.start();

@@ -1,10 +1,8 @@
-import { Namespace, Server, Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Config } from '@/infra/config';
 import { createServer } from 'http';
 
-export interface SocketsResolverMetadata {
-  namespace: string;
-}
+export interface SocketsResolverMetadata {}
 
 export interface EventHandlerMetadata {
   eventName: string;
@@ -21,7 +19,7 @@ export const getDefaultEventHandlerMetadata = (): EventHandlerMetadata => {
   };
 };
 
-export type SocketMiddleware = (socket: Socket, next: SocketMiddleware) => any;
+export type SocketMiddleware = (socket: Socket, next: () => SocketMiddleware) => any;
 
 type Resolver = Record<string, any>;
 
@@ -58,25 +56,35 @@ export class Sockets {
         console.log(`${resolver.name} is not marked as sockets resolver`);
         continue;
       }
-      const { namespace } = resolverMetadata;
-      const eventsNamespace = this.socketsClient.of(namespace);
-      this.registerHandlers(resolver, eventsNamespace);
+      this.registerHandlers(resolver);
     }
   }
 
-  private registerHandlers(resolver: Resolver, eventsNamespace: Namespace) {
+  private registerHandlers(resolver: Resolver) {
     const prototype = Object.getPrototypeOf(resolver);
     const properties = Object.getOwnPropertyNames(prototype);
     for (const property of properties) {
       const handler = resolver[property];
-      const handlerMetadata = Reflect.get(handler, eventHandlerMetadataSymbol) as EventHandlerMetadata;
+      const handlerMetadata = Reflect.get(
+        handler,
+        eventHandlerMetadataSymbol,
+      ) as EventHandlerMetadata;
       const isEventHandler = !!handlerMetadata && typeof handler === 'function';
       if (!isEventHandler) {
         continue;
       }
 
-      const { eventName } = handlerMetadata;
-      eventsNamespace.on(eventName, handler.bind(resolver));
+      const { eventName, middlewares } = handlerMetadata;
+
+      this.socketsClient.on('connection', async (socket: Socket) => {
+        const next = middlewares.reduceRight(
+          (acc, middleware) => () => middleware(socket, acc),
+          handler.bind(resolver),
+        );
+        socket.on(eventName, async () => {
+          await next();
+        });
+      });
     }
   }
 }
