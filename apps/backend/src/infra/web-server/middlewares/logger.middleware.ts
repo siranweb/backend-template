@@ -9,13 +9,13 @@ export const loggerMiddleware = (logger: WebServerLogger): Koa.Middleware => asy
 
   try {
     await next();
+    const endTime = performance.now();
 
     // Handle all errors that are weren't thrown (like 404)
    if (ctx.response.status >= 400) {
      throw new Error(ctx.response.message);
    }
 
-    const endTime = performance.now();
     const ms = +(endTime - startTime).toFixed(1);
     const { status } = ctx.response;
     logger.finished(ctx.method, ctx.originalUrl, ms, { ip, status });

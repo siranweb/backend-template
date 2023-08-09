@@ -84,7 +84,7 @@ export class DefaultWebServerLogger implements WebServerLogger {
       } else if (info.status === RequestStatus.FINISHED) {
         str += ` (${chalk.green(info.status)})`;
       } else if (info.status === RequestStatus.FAILED) {
-        str += ` (${chalk.red(info.status)})`;
+        str += ` (${chalk.red(info.status)})\t`;
       }
       str += `\t${chalk.blue(info.method)} ${info.url}`;
 
