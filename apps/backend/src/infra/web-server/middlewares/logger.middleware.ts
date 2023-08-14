@@ -2,6 +2,8 @@ import Koa from 'koa';
 import { performance } from 'perf_hooks';
 import { WebServerLogger } from '@/infra/web-server/types';
 
+// TODO: rewrite. Remove custom error throwing
+
 export const loggerMiddleware = (logger: WebServerLogger): Koa.Middleware => async (ctx, next) => {
   const startTime = performance.now();
   const { ip } = ctx.request;

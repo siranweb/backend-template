@@ -21,6 +21,7 @@
     "chalk": "4",
     "dayjs": "^1.11.8",
     "dotenv": "^16.3.1",
+    "http-status-codes": "^2.2.0",
     "jose": "^4.14.4",
     "koa": "^2.14.2",
     "kysely": "0.26.1",

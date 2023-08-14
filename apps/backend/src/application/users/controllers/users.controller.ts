@@ -8,9 +8,10 @@ export class UsersController {
 
   @Endpoint('GET', '/:id')
   async getUser(ctx: Koa.Context) {
+    // ctx.params.id = '';
     const parsed = getUserSchema.parse(ctx);
-    ctx.status = 402;
-    throw new UserNotFoundError();
+    // throw new UserNotFoundError();
+    // throw new Error('');
     const user = {
       id: parsed.params.id,
     };
