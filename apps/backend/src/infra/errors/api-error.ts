@@ -1,8 +1,5 @@
 import { ZodIssue } from 'zod';
-import {
-  StatusCodes,
-  ReasonPhrases, getReasonPhrase, getStatusCode,
-} from 'http-status-codes';
+import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 
 export enum ApiErrorType {
   HTTP = 'http',
@@ -44,22 +41,12 @@ export class ApiError extends Error {
     });
   }
 
-  static createAsHttpError(params: { statusCode: number }): ApiError
-  static createAsHttpError(params: { errorName: ReasonPhrases }): ApiError
-  static createAsHttpError(params: { statusCode: number } | { errorName: ReasonPhrases }): ApiError {
-    if ('statusCode' in params) {
-      return new ApiError({
-        type: ApiErrorType.HTTP,
-        statusCode: params.statusCode,
-        errorName: ApiError.convertPhraseToErrorName(getReasonPhrase(params.statusCode)),
-      });
-    } else {
-      return new ApiError({
-        type: ApiErrorType.HTTP,
-        statusCode: getStatusCode(params.errorName),
-        errorName: ApiError.convertPhraseToErrorName(params.errorName),
-      });
-    }
+  static createAsHttpError(params: Pick<ApiErrorParams, 'statusCode'>): ApiError {
+    return new ApiError({
+      type: ApiErrorType.HTTP,
+      statusCode: params.statusCode,
+      errorName: ApiError.convertPhraseToErrorName(getReasonPhrase(params.statusCode)),
+    });
   }
 
   static createAsValidationError(params: { issues: ZodIssue[] }): ApiError {
@@ -69,7 +56,7 @@ export class ApiError extends Error {
       errorName: 'VALIDATION_NOT_PASSED',
       data: {
         issues: params.issues,
-      }
+      },
     });
   }
 
