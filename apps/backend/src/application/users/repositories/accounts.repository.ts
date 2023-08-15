@@ -1,7 +1,8 @@
 import { DB } from '@/infra/database';
 import { Account } from '../entities/account.entity';
+import { IAccountsRepository } from '@/application/users/types';
 
-export class AccountsRepository {
+export class AccountsRepository implements IAccountsRepository {
   constructor(private readonly db: DB) {}
 
   async save(account: Account): Promise<Account> {

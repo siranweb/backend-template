@@ -4,7 +4,7 @@ import { format } from 'winston';
 import chalk from 'chalk';
 import { Config, NodeEnv } from '@/infra/config';
 import dayjs from 'dayjs';
-import { WebServerLogger } from '@/infra/web-server/types';
+import { IWebServerLogger } from '@/infra/web-server/types';
 import { TransformableInfo } from 'logform';
 
 enum RequestStatus {
@@ -24,7 +24,7 @@ interface ApiInfo extends TransformableInfo {
   context?: Context,
 }
 
-export class DefaultWebServerLogger implements WebServerLogger {
+export class WebServerLogger implements IWebServerLogger {
   private readonly logger: winston.Logger;
 
   constructor(config: Pick<Config, 'nodeEnv'>) {

@@ -1,6 +1,6 @@
 type Context = Record<any, any>;
 
-export interface SocketsLogger {
+export interface ISocketsLogger {
   inbound(eventName: string): void;
   inboundFailed(eventName: string): void;
   outbound(eventName: string): void;

@@ -8,8 +8,9 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "start:build": "node --experimental-specifier-resolution=node ./dist/index.js",
-    "start:memory": "tsc --noEmit && tsx ./src/index.ts",
+    "start:memory": "pnpm run type-check && tsx ./src/index.ts",
     "dev": "tsx watch ./src/index.ts",
+    "type-check": "tsc --noEmit",
     "lint": "eslint --ext .ts src",
     "format": "prettier --write src"
   },
