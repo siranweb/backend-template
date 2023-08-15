@@ -1,4 +1,4 @@
-import { Action } from '@/infra/app/types';
+import { IAction } from '@/infra/app/types';
 import { Account } from '@/application/users/entities/account.entity';
 import { UserLoginTakenError } from '@/application/users/errors/user-login-taken.error';
 import { IAccountsRepository } from '@/application/users/types';
@@ -8,7 +8,7 @@ interface Params {
   password: string;
 }
 
-export class RegisterAccountAction implements Action {
+export class RegisterAccountAction implements IAction {
   constructor(private readonly accountsRepository: IAccountsRepository) {}
   async execute(params: Params): Promise<any> {
     const existingAccount = await this.accountsRepository.getAccountByLogin(params.login);

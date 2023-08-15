@@ -1,4 +1,4 @@
-export interface Action {
+export interface IAction {
   execute(...args: any): any;
 }
 
