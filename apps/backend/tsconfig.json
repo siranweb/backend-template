@@ -1,24 +1,22 @@
 {
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
   "include": ["src"],
   "compilerOptions": {
-    "target": "es6",
+    "target": "ES2022",
     "lib": ["ESNext"],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
-    "module": "commonjs",
-    "baseUrl": "./",
+    "module": "ES2022",
+    "moduleResolution": "Node",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
-    "outDir": "dist",
+    "outDir": "dist/",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
     "inlineSourceMap": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
 
     "strict": true,
     "skipLibCheck": true
