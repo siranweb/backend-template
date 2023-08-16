@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  backend:
+    tty: true
+    build: ./apps/backend/
+    container_name: "backend"
+    ports:
+      - "4000:4000"
+      - "4001:4001"

@@ -9,7 +9,7 @@
     "make:build": "tsc && tsc-alias",
     "start:build": "node --experimental-specifier-resolution=node ./dist/index.js",
     "start:memory": "pnpm run code:check:types && tsx ./src/index.ts",
-    "start:dev:memory": "tsx watch ./src/index.ts",
+    "start:dev:memory": "tsx watch ./src/index.ts & tsc --noEmit --watch",
     "code:check:types": "tsc --noEmit",
     "code:check:lint": "eslint --ext .ts src",
     "code:write:format": "prettier --write src"
