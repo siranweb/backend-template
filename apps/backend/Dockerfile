@@ -6,7 +6,6 @@ RUN pwd
 ADD src/ ./src/
 ADD package.json .
 ADD tsconfig.json .
-ADD .env .
 
 RUN npm install -g pnpm
 RUN pnpm i

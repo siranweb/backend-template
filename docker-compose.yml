@@ -4,7 +4,28 @@ services:
   backend:
     tty: true
     build: ./apps/backend/
+    env_file:
+      - ./apps/backend/.env
     container_name: "backend"
     ports:
       - "4000:4000"
       - "4001:4001"
+    networks:
+      - backend-network
+
+  primary-database:
+    tty: true
+    image: 'postgres:15.4'
+    container_name: "primary-database"
+    env_file:
+      - .env
+    ports:
+      - "5000:5432"
+    networks:
+      - backend-network
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
+
+networks:
+  backend-network:
+    driver: bridge

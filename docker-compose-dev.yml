@@ -5,6 +5,8 @@ services:
     tty: true
     build: ./apps/backend/
     container_name: "backend"
+    env_file:
+      - ./apps/backend/.env
     ports:
       - "4000:4000"
       - "4001:4001"

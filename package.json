@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "docker compose -f docker-compose.yml up",
-    "start:dev:compose": "docker compose -f docker-compose-dev.yml up"
+    "start:compose": "docker compose -f docker-compose.yml up --build",
+    "start:dev:compose": "docker compose -f docker-compose-dev.yml up --build"
   },
   "keywords": [],
   "author": "",
