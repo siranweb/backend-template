@@ -9,7 +9,7 @@ All template based on NodeJS as universal tool for JavaScript/TypeScript develop
 For this project [pnpm](https://pnpm.io/) was picked. You can check advantages and why it's better than npm or yarn [here](https://refine.dev/blog/pnpm-vs-npm-and-yarn/#advantages-of-pnpm).
 
 ### Monorepo
-This template was build as [monorepo](https://en.wikipedia.org/wiki/Monorepo). It means that you can control all your applications and their dependencies from one place. However, you can still use every app independently. Also, monorepo was implemented by pnpm [workspaces](https://pnpm.io/workspaces).
+This template was build as [monorepo](https://en.wikipedia.org/wiki/Monorepo). It means that you can control all your applications and their dependencies from one place. However, you can still use every app independently.
 
 ## Backend
 ### Philosophy
