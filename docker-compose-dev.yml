@@ -3,10 +3,10 @@ version: '3'
 services:
   backend:
     tty: true
-    build: ./apps/backend/
+    build: applications/backend/
     container_name: "backend"
     env_file:
-      - ./apps/backend/.env
+      - applications/backend/.env
     ports:
       - "4000:4000"
       - "4001:4001"
