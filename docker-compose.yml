@@ -24,8 +24,10 @@ services:
     networks:
       - backend-network
     volumes:
-      - ./db-data/:/var/lib/postgresql/data/
+      - primary-database:/var/lib/postgresql/data/
+
+volumes:
+  primary-database:
 
 networks:
   backend-network:
-    driver: bridge

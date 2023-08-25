@@ -13,3 +13,22 @@ services:
     volumes:
       - ./apps/backend/src:/app/src
     command: pnpm run start:dev:memory
+
+  primary-database:
+    tty: true
+    image: 'postgres:15.4'
+    container_name: "primary-database"
+    env_file:
+      - .env
+    ports:
+      - "5000:5432"
+    networks:
+      - backend-network
+    volumes:
+      - primary-database:/var/lib/postgresql/data/
+
+volumes:
+  primary-database:
+
+networks:
+  backend-network:
