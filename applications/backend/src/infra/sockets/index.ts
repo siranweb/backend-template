@@ -1,27 +1,8 @@
 import { Server, Socket } from 'socket.io';
-import { Config } from '@/lib/config';
 import { createServer } from 'http';
-
-export interface SocketsResolverMetadata {}
-
-export interface EventHandlerMetadata {
-  eventName: string;
-  middlewares: SocketMiddleware[];
-}
-
-export const socketsResolverMetadataSymbol = Symbol('socketsResolverMetadata');
-export const eventHandlerMetadataSymbol = Symbol('eventHandlerMetadata');
-
-export const getDefaultEventHandlerMetadata = (): EventHandlerMetadata => {
-  return {
-    eventName: '',
-    middlewares: [],
-  };
-};
-
-export type SocketMiddleware = (socket: Socket, next: () => SocketMiddleware) => void;
-
-type Resolver = Record<string, any>;
+import { eventHandlerMetadataSymbol, socketsResolverMetadataSymbol } from './metadata';
+import { EventHandlerMetadata, Resolver, SocketMiddleware, SocketsResolverMetadata } from './types';
+import { Config } from '@/infra/config';
 
 export class Sockets {
   private readonly server;

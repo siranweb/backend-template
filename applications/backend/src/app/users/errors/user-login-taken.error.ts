@@ -1,4 +1,4 @@
-import { AppError } from '@/lib/errors/app-error';
+import { AppError } from '@/infra/errors/app-error';
 
 interface Data {
   login: string;

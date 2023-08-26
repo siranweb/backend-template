@@ -1,7 +1,7 @@
-import { UsersController } from './controllers/users.controller';
-import { AccountsRepository } from './repositories/accounts.repository';
+import { db } from '@/infra/database';
+import { UsersController } from '@/app/users/controllers/users.controller';
+import { AccountsRepository } from '@/app/users/repositories/accounts.repository';
 import { RegisterAccountAction } from '@/app/users/actions/register-account.action';
-import { db } from '@/lib/database';
 import { UsersResolver } from '@/app/users/sockets/users.resolver';
 
 export const accountsRepository = new AccountsRepository(db);

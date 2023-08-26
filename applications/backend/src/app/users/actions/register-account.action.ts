@@ -1,4 +1,4 @@
-import { IAction } from '@/lib/common/types';
+import { IAction } from '@/infra/common/types';
 import { Account } from '@/app/users/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/errors/user-login-taken.error';
 import { IAccountsRepository } from '@/app/users/types';

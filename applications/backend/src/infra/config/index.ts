@@ -12,7 +12,7 @@ export interface Config {
   };
   sockets: {
     port: number;
-  },
+  };
 }
 
 export const config: Config = {

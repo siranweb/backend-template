@@ -1,5 +1,3 @@
-import { BaseEntity } from '@/lib/entities/base-entity';
-
 export enum AccountRole {
   REGULAR = 'regular',
 }
@@ -14,14 +12,15 @@ export interface AccountParams {
   updatedAt?: Date;
 }
 
-export class Account extends BaseEntity {
+export class Account {
+  id: string;
   login: string;
   passwordHash: string;
   salt: string;
   role: AccountRole;
 
   constructor(data: AccountParams) {
-    super(data);
+    this.id = data.id ?? ''; // TODO uuid
     this.login = data.login;
     this.passwordHash = data.passwordHash;
     this.salt = data.salt;

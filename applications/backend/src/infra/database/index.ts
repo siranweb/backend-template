@@ -1,7 +1,7 @@
 import { Kysely, SqliteDialect } from 'kysely';
 import SQLite from 'better-sqlite3';
 import { UsersTable } from './tables/users.table';
-import { AccountsTable } from '@/lib/database/tables/accounts.table';
+import { AccountsTable } from '@/infra/database/tables/accounts.table';
 
 interface Database {
   users: UsersTable;

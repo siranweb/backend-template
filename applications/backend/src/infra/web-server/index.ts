@@ -1,38 +1,16 @@
 import KoaRouter from '@koa/router';
 import Koa from 'koa';
 import * as path from 'path';
-import { Config } from '@/lib/config';
-import { Optional } from '@/lib/common/types';
-
-export interface EndpointMetadata {
-  path: string;
-  method: string;
-  middlewares: Koa.Middleware[];
-}
-
-export interface ControllerMetadata {
-  prefix: string;
-}
-export const controllerMetadataSymbol = Symbol('controllerMetadata');
-export const endpointMetadataSymbol = Symbol('endpointMetadata');
-
-export const getDefaultEndpointMetadata = (): EndpointMetadata => {
-  return {
-    path: '',
-    method: '',
-    middlewares: [],
-  };
-};
-
-type Controller = Record<string, any>;
-type EndpointHandler = (ctx: Koa.Context) => any;
+import { Controller, ControllerMetadata, EndpointHandler, EndpointMetadata } from './types';
+import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
+import { Config } from '@/infra/config';
 
 export class WebServer {
   private readonly client: Koa;
   private readonly config: Pick<Config, 'webServer'>;
   private readonly controllers: Controller[];
 
-  constructor(config: Pick<Config, 'webServer'>, controllers: Controller[]) {
+  constructor(config: Config, controllers: Controller[]) {
     this.client = new Koa();
     this.config = config;
     this.controllers = controllers;
@@ -49,7 +27,7 @@ export class WebServer {
     }
   }
 
-  addMiddleware(middleware: Koa.Middleware<any, any, any>) {
+  addMiddleware(middleware: Koa.Middleware<any, any>) {
     this.client.use(middleware);
   }
 
@@ -58,7 +36,7 @@ export class WebServer {
       const controllerMetadata = Reflect.get(
         controller.constructor,
         controllerMetadataSymbol,
-      ) as Optional<ControllerMetadata>;
+      ) as ControllerMetadata | null;
 
       if (!controllerMetadata) {
         console.log(`${controller.name} is not marked as controller`);
@@ -77,8 +55,11 @@ export class WebServer {
     const properties = Object.getOwnPropertyNames(prototype);
     for (const property of properties) {
       const handler = controller[property];
-      const endpointMetadata = Reflect.get(handler, endpointMetadataSymbol) as Optional<EndpointMetadata>;
-      const isEndpoint = !!endpointMetadata && typeof handler === 'function';
+      const endpointMetadata = Reflect.get(
+        handler,
+        endpointMetadataSymbol,
+      ) as EndpointMetadata | null;
+      const isEndpoint = endpointMetadata && typeof handler === 'function';
       if (!isEndpoint) {
         continue;
       }
@@ -96,7 +77,7 @@ export class WebServer {
       if (result) {
         ctx.body = result;
       }
-    }
+    };
   }
 
   private addRouter(router: KoaRouter) {

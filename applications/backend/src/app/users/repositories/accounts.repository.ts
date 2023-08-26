@@ -1,4 +1,4 @@
-import { DB } from '@/lib/database';
+import { DB } from 'src/infra/database';
 import { Account } from '../entities/account.entity';
 import { IAccountsRepository } from '@/app/users/types';
 

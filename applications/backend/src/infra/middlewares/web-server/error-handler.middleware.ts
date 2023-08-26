@@ -1,6 +1,6 @@
 import Koa from 'koa';
-import { AppError } from '@/lib/errors/app-error';
-import { ApiError } from '@/lib/errors/api-error';
+import { AppError } from '@/infra/errors/app-error';
+import { ApiError } from '@/infra/errors/api-error';
 import { ZodError } from 'zod';
 
 export const errorHandlerMiddleware = (): Koa.Middleware => async (ctx, next) => {

@@ -1,4 +1,4 @@
-import { IAction } from '@/lib/common/types';
+import { IAction } from '@/infra/common/types';
 import { AccountsRepository } from '@/app/users/repositories/accounts.repository';
 import { Account } from '@/app/users/entities/account.entity';
 

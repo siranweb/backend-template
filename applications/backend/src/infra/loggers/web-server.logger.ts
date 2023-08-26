@@ -2,10 +2,10 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import { format } from 'winston';
 import chalk from 'chalk';
-import { Config, NodeEnv } from '@/lib/config';
+import { Config, NodeEnv } from '@/infra/config';
 import dayjs from 'dayjs';
-import { IWebServerLogger } from '@/lib/web-server/types';
 import { TransformableInfo } from 'logform';
+import { IWebServerLogger } from '@/infra/middlewares/web-server/logger.middleware';
 
 enum RequestStatus {
   IN_PROGRESS = 'in progress',
@@ -16,12 +16,12 @@ enum RequestStatus {
 type Context = Record<any, any>;
 
 interface ApiInfo extends TransformableInfo {
-  status: RequestStatus,
-  method: string,
-  url: string,
-  ms?: number,
-  error?: string,
-  context?: Context,
+  status: RequestStatus;
+  method: string;
+  url: string;
+  ms?: number;
+  error?: string;
+  context?: Context;
 }
 
 export class WebServerLogger implements IWebServerLogger {
@@ -97,7 +97,7 @@ export class WebServerLogger implements IWebServerLogger {
       }
 
       return str;
-    }
+    };
     return new winston.transports.Console({
       level: 'http',
       format: format.combine(
