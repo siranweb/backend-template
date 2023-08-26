@@ -12,6 +12,7 @@ services:
       - "4001:4001"
     volumes:
       - ./applications/backend/src:/app/src
+      - ./applications/backend/logs:/app/logs
     command: pnpm run start:dev:memory
 
   primary-database:

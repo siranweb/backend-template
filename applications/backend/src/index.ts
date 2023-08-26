@@ -11,7 +11,7 @@ const apiLogger = new WebServerLogger(config);
 
 const webServer = new WebServer(config, [usersController]);
 webServer.addMiddleware(errorHandlerMiddleware());
-// webServer.addMiddleware(loggerMiddleware(apiLogger))
+webServer.addMiddleware(loggerMiddleware(apiLogger))
 webServer.start();
 
 const sockets = new Sockets(config, [usersResolver]);

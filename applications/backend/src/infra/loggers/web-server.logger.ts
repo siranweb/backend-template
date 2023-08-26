@@ -77,15 +77,23 @@ export class WebServerLogger implements IWebServerLogger {
   }
 
   private makeApiConsoleTransport() {
-    const printClb = (info: ApiInfo) => {
+    const printClb = this.getConsolePrintCallback();
+    return new winston.transports.Console({
+      level: 'http',
+      format: format.combine(
+        format.timestamp({
+          format: () => dayjs().format('HH:mm:ss.SSS'),
+        }),
+        // @ts-ignore
+        format.printf(printClb),
+      ),
+    });
+  }
+
+  private getConsolePrintCallback(): (info: ApiInfo) => string {
+    return (info: ApiInfo) => {
       let str = `[${info.timestamp}]`;
-      if (info.status === RequestStatus.IN_PROGRESS) {
-        str += ` (${chalk.yellow(info.status)})`;
-      } else if (info.status === RequestStatus.FINISHED) {
-        str += ` (${chalk.green(info.status)})`;
-      } else if (info.status === RequestStatus.FAILED) {
-        str += ` (${chalk.red(info.status)})\t`;
-      }
+      str += ` ${this.getColoredRequestStatus(info.status)}`;
       str += `\t${chalk.blue(info.method)} ${info.url}`;
 
       if (info.ms) {
@@ -98,16 +106,19 @@ export class WebServerLogger implements IWebServerLogger {
 
       return str;
     };
-    return new winston.transports.Console({
-      level: 'http',
-      format: format.combine(
-        format.timestamp({
-          format: () => dayjs().format('HH:mm:ss.SSS'),
-        }),
-        // @ts-ignore
-        format.printf(printClb),
-      ),
-    });
+  }
+
+  private getColoredRequestStatus(status: RequestStatus): string {
+    if (status === RequestStatus.IN_PROGRESS) {
+      return chalk.yellow(status);
+    }
+    if (status === RequestStatus.FINISHED) {
+      return chalk.green(status);
+    }
+    if (status === RequestStatus.FAILED) {
+      return chalk.red(status);
+    }
+    return '';
   }
 
   private makeCombinedFileTransport() {
