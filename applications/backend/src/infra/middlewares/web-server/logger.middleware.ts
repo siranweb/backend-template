@@ -6,7 +6,7 @@ type LoggerContext = Record<any, any>;
 export interface IWebServerLogger {
   request(method: string, url: string, context?: LoggerContext): void;
   finished(method: string, url: string, ms: number, context?: LoggerContext): void;
-  failed(method: string, url: string, ms: number, error: string, context?: LoggerContext): void;
+  failed(method: string, url: string, ms: number, error: any, context?: LoggerContext): void;
 }
 
 export const loggerMiddleware =
@@ -16,23 +16,15 @@ export const loggerMiddleware =
     const { ip } = ctx.request;
     logger.request(ctx.method, ctx.originalUrl, { ip });
 
-    try {
-      await next();
-      const endTime = performance.now();
+    await next();
 
-      // Handle all errors that are weren't thrown (like 404)
-      // if (ctx.response.status >= 400) {
-      //   throw new Error(ctx.response.message);
-      // }
+    const endTime = performance.now();
+    const ms = +(endTime - startTime).toFixed(1);
+    const { status } = ctx.response;
 
-      const ms = +(endTime - startTime).toFixed(1);
-      const { status } = ctx.response;
+    if (ctx.state.error) {
+      logger.failed(ctx.method, ctx.originalUrl, ms, ctx.state.error, { ip, status });
+    } else {
       logger.finished(ctx.method, ctx.originalUrl, ms, { ip, status });
-    } catch (e: any) {
-      const endTime = performance.now();
-      const ms = +(endTime - startTime).toFixed(1);
-      const { status } = ctx.response;
-      logger.failed(ctx.method, ctx.originalUrl, ms, e.message, { ip, status });
-      throw e;
     }
   };

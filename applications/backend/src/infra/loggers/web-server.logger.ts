@@ -20,7 +20,7 @@ interface ApiInfo extends TransformableInfo {
   method: string;
   url: string;
   ms?: number;
-  error?: string;
+  error?: any;
   context?: Context;
 }
 
@@ -101,7 +101,7 @@ export class WebServerLogger implements IWebServerLogger {
       }
 
       if (info.error) {
-        str += ` - Error: ${info.error}`;
+        str += ` - ${info.error}`;
       }
 
       return str;

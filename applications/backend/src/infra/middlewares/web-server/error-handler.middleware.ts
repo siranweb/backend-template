@@ -6,13 +6,14 @@ import { ZodError } from 'zod';
 export const errorHandlerMiddleware = (): Koa.Middleware => async (ctx, next) => {
   try {
     await next();
-    if (ctx.response.status >= 400) {
+    if (ctx.response.status >= 400 && ctx.response.status <= 599) {
       throw ApiError.createAsHttpError({
         statusCode: ctx.status,
       });
     }
   } catch (e: any) {
     const apiError = makeApiError(e);
+    ctx.state.error = apiError;
     ctx.status = apiError.statusCode;
     ctx.body = {
       error: {
