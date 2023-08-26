@@ -33,10 +33,7 @@ export class WebServer {
 
   private registerControllers() {
     for (const controller of this.controllers) {
-      const controllerMetadata = Reflect.get(
-        controller.constructor,
-        controllerMetadataSymbol,
-      ) as ControllerMetadata | null;
+      const controllerMetadata = this.getControllerMetadata(controller);
 
       if (!controllerMetadata) {
         console.log(`${controller.name} is not marked as controller`);
@@ -50,24 +47,39 @@ export class WebServer {
     }
   }
 
+  private getControllerMetadata(controller: Controller): ControllerMetadata | null {
+    return Reflect.get(
+      controller.constructor,
+      controllerMetadataSymbol,
+    );
+  }
+
   private registerRoutes(controller: Controller, router: KoaRouter, prefix: string) {
     const prototype = Object.getPrototypeOf(controller);
     const properties = Object.getOwnPropertyNames(prototype);
     for (const property of properties) {
       const handler = controller[property];
-      const endpointMetadata = Reflect.get(
-        handler,
-        endpointMetadataSymbol,
-      ) as EndpointMetadata | null;
-      const isEndpoint = endpointMetadata && typeof handler === 'function';
+      const endpointMetadata = this.getEndpointMetadata(handler);
+      const isEndpoint = this.checkIsEndpoint(endpointMetadata, handler);
       if (!isEndpoint) {
         continue;
       }
 
-      const { path: routerPath, method, middlewares } = endpointMetadata;
+      const { path: routerPath, method, middlewares } = endpointMetadata as EndpointMetadata;
       const routerClb = this.getRouterClb(controller, handler);
       router.register(path.join('/', prefix, routerPath), [method], [...middlewares, routerClb]);
     }
+  }
+
+  private getEndpointMetadata(handler: any): EndpointMetadata | null {
+    return Reflect.get(
+      handler,
+      endpointMetadataSymbol,
+    ) as EndpointMetadata | null;
+  }
+
+  private checkIsEndpoint(endpointMetadata: EndpointMetadata | null, handler: any): boolean {
+    return !!endpointMetadata && typeof handler === 'function';
   }
 
   private getRouterClb(controller: Controller, handler: EndpointHandler) {

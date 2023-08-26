@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-export type SocketMiddleware = (socket: Socket, next: () => SocketMiddleware) => void;
+export type SocketMiddleware = (socket: Socket, message: any, next: () => SocketMiddleware) => void;
 
 export type Resolver = Record<string, any>;
 

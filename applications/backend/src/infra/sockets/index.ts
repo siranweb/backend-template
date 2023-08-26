@@ -35,16 +35,22 @@ export class Sockets {
 
   private registerResolvers() {
     for (const resolver of this.resolvers) {
-      const resolverMetadata = Reflect.get(
-        resolver.constructor,
-        socketsResolverMetadataSymbol,
-      ) as SocketsResolverMetadata;
+      const resolverMetadata = this.getResolverMetadata(resolver);
+
       if (!resolverMetadata) {
         console.log(`${resolver.name} is not marked as sockets resolver`);
         continue;
       }
+
       this.registerHandlers(resolver);
     }
+  }
+
+  private getResolverMetadata(resolver: Resolver): SocketsResolverMetadata | null {
+    return Reflect.get(
+      resolver.constructor,
+      socketsResolverMetadataSymbol,
+    );
   }
 
   private registerHandlers(resolver: Resolver) {
@@ -52,26 +58,40 @@ export class Sockets {
     const properties = Object.getOwnPropertyNames(prototype);
     for (const property of properties) {
       const handler = resolver[property];
-      const handlerMetadata = Reflect.get(
-        handler,
-        eventHandlerMetadataSymbol,
-      ) as EventHandlerMetadata;
-      const isEventHandler = !!handlerMetadata && typeof handler === 'function';
+      const handlerMetadata = this.getHandlerMetadata(handler);
+
+      // Handler must be a function with specified event name
+      const isEventHandler = this.checkIsHandler(handlerMetadata, handler);
       if (!isEventHandler) {
         continue;
       }
 
-      const { eventName, middlewares } = handlerMetadata;
+      const { eventName, middlewares } = handlerMetadata as EventHandlerMetadata;
 
       this.socketsClient.on('connection', async (socket: Socket) => {
-        const next = middlewares.reduceRight(
-          (acc, middleware) => () => middleware(socket, acc),
-          handler.bind(resolver),
-        );
-        socket.on(eventName, async () => {
-          await next();
+        const next = this.buildHandlersChain(middlewares, socket, handler, resolver);
+        socket.on(eventName, async (message: any) => {
+          await next(message);
         });
       });
     }
+  }
+
+  private getHandlerMetadata(handler: any): EventHandlerMetadata | null {
+    return Reflect.get(
+      handler,
+      eventHandlerMetadataSymbol,
+    );
+  }
+
+  private checkIsHandler(handlerMetadata: EventHandlerMetadata | null, handler: any): boolean {
+    return !!handlerMetadata?.eventName && typeof handler === 'function';
+  }
+
+  private buildHandlersChain(middlewares: SocketMiddleware[], socket: Socket, handler: any, resolver: Resolver) {
+    return middlewares.reduceRight(
+      (acc, middleware) => (message: any) => middleware(socket, message, acc),
+      handler.bind(resolver),
+    );
   }
 }
