@@ -2,7 +2,7 @@
 
 Not ready to use. Check out plans and what was done for now below
 
-## Infrastructure
+## Overview
 
 ### Platform (NodeJS)
 
@@ -12,9 +12,9 @@ All template based on NodeJS as universal tool for JavaScript/TypeScript develop
 
 For this project [pnpm](https://pnpm.io/) was picked. You can check advantages and why it's better than npm or yarn [here](https://refine.dev/blog/pnpm-vs-npm-and-yarn/#advantages-of-pnpm).
 
-### Monorepo
+### Repository organization
 
-This template was build as [monorepo](https://en.wikipedia.org/wiki/Monorepo). It means that you can control all your applications and their dependencies from one place. However, you can still use every app independently.
+This template was build as [monorepo](https://en.wikipedia.org/wiki/Monorepo). It means that you can control all your applications and their dependencies from one place. However, you can still use every app independently. There are available ready-to-use backend and frontend applications.
 
 ## Backend
 
@@ -29,7 +29,7 @@ There are a few goals I had in mind during development of this part.
 ### Primary tech stack
 
 - Platform: NodeJS
-- Language: TypeScript with [tsx](https://github.com/esbuild-kit/tsx) (TypeScript Execute)
+- Language: TypeScript with tsc and [tsx](https://github.com/esbuild-kit/tsx) (TypeScript Execute)
 - Web server: [koa](https://koajs.com/)
 - Sockets: [socketIO](https://socket.io/)
 - Database: PostgreSQL with [kysely](https://github.com/kysely-org/kysely) (SQL query builder)
@@ -46,13 +46,13 @@ There are two options to run TS:
 
 A few things you should know:
 
-- TypeScript module system compiles to ES Modules, not legacy CommonJS. It's needed to support all modern libraries (like chalk v5).
-- TypeScript configurated to work with aliases (like `@/application/user/...`). It's already handled by package scripts (see above).
-- TypeScript is also configurated to work with legacy decorators (see known issues)
+- TypeScript module system compiles to ES Modules, not legacy CommonJS. It's needed to support all modern packages (like chalk v5). Packages with CommonJS module system are working too. 
+- TypeScript configurated to work with aliases (like `@/application/user/...`). This behavior already handled by package scripts (see above).
+- TypeScript is also configurated to work with legacy decorators (see known issues).
 
 #### Why not [ts-node](https://github.com/TypeStrong/ts-node)?
 
-There were issues to make it work with aliases and ES Modules. Tsx already handling all this out-of-box. As a nice addition, it's pretty fast.
+There were issues to make it work with aliases and ES Modules. Tsx already handling all this stuff out-of-box, so I chose it. As a nice addition, it's pretty fast.
 
 ### Entities
 
