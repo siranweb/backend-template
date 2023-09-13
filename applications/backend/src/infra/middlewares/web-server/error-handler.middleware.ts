@@ -7,7 +7,7 @@ export const errorHandlerMiddleware = (): Koa.Middleware => async (ctx, next) =>
   try {
     await next();
     if (ctx.response.status >= 400 && ctx.response.status <= 599) {
-      throw ApiError.createAsHttpError({
+      throw ApiError.createFromHttpError({
         statusCode: ctx.status,
       });
     }
@@ -33,7 +33,7 @@ const makeApiError = (error: any): ApiError => {
 
   const isAppError = error instanceof AppError;
   if (isAppError) {
-    return ApiError.createAsAppError({
+    return ApiError.createFromAppError({
       errorName: error.errorName,
       data: error.data,
     });
@@ -41,12 +41,12 @@ const makeApiError = (error: any): ApiError => {
 
   const isValidationError = error instanceof ZodError;
   if (isValidationError) {
-    return ApiError.createAsValidationError({
+    return ApiError.createFromValidationError({
       issues: error.issues,
     });
   }
 
-  return ApiError.createAsUnknownError({
+  return ApiError.createFromUnknownError({
     original: error,
   });
 };

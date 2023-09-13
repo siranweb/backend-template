@@ -1,7 +1,7 @@
 import Koa from 'koa';
-import { Controller, Endpoint } from '@/infra/web-server/decorators';
+import { Controller, Endpoint } from '@/lib/web-server/decorators';
 import { getUserSchema } from '../schemas/users.schemas';
-import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
+// import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
 
 @Controller('users')
 export class UsersController {

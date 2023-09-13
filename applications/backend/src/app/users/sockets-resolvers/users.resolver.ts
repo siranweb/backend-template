@@ -1,6 +1,6 @@
-import { EventHandler, SocketsResolver, SocketsMiddlewares } from '@/infra/sockets/decorators';
+import { EventHandler, SocketsResolver, SocketsMiddlewares } from '@/lib/sockets/decorators';
 import { Socket } from 'socket.io';
-import { SocketMiddleware } from '@/infra/sockets/types';
+import { SocketMiddleware } from '@/lib/sockets/types';
 
 const middlewareExample: SocketMiddleware = async (socket, next) => {
   console.log(1);
@@ -12,6 +12,6 @@ export class UsersResolver {
   @SocketsMiddlewares(middlewareExample)
   @EventHandler('user:updateList')
   async handleUpdateList(socket: Socket) {
-    console.log('event!');
+    console.log('event!', socket);
   }
 }

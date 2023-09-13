@@ -1,9 +1,9 @@
-import { DB } from 'src/infra/database';
+import { AppDatabase } from '@/init/databases/app-database/database';
 import { Account } from '../entities/account.entity';
 import { IAccountsRepository } from '@/app/users/types';
 
 export class AccountsRepository implements IAccountsRepository {
-  constructor(private readonly db: DB) {}
+  constructor(private readonly db: AppDatabase) {}
 
   async save(account: Account): Promise<Account> {
     return await this.db.transaction().execute(async (trx) => {

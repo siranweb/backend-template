@@ -32,7 +32,7 @@ export class ApiError extends Error {
     this.original = params.original;
   }
 
-  static createAsUnknownError(params: Pick<ApiErrorParams, 'original'>): ApiError {
+  static createFromUnknownError(params: Pick<ApiErrorParams, 'original'>): ApiError {
     return new ApiError({
       type: ApiErrorType.UNKNOWN,
       statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -41,7 +41,7 @@ export class ApiError extends Error {
     });
   }
 
-  static createAsHttpError(params: Pick<ApiErrorParams, 'statusCode'>): ApiError {
+  static createFromHttpError(params: Pick<ApiErrorParams, 'statusCode'>): ApiError {
     return new ApiError({
       type: ApiErrorType.HTTP,
       statusCode: params.statusCode,
@@ -49,7 +49,7 @@ export class ApiError extends Error {
     });
   }
 
-  static createAsValidationError(params: { issues: ZodIssue[] }): ApiError {
+  static createFromValidationError(params: { issues: ZodIssue[] }): ApiError {
     return new ApiError({
       type: ApiErrorType.VALIDATION,
       statusCode: StatusCodes.BAD_REQUEST,
@@ -60,7 +60,7 @@ export class ApiError extends Error {
     });
   }
 
-  static createAsAppError(params: Pick<ApiErrorParams, 'errorName' | 'data'>): ApiError {
+  static createFromAppError(params: Pick<ApiErrorParams, 'errorName' | 'data'>): ApiError {
     return new ApiError({
       type: ApiErrorType.APP,
       statusCode: StatusCodes.BAD_REQUEST,

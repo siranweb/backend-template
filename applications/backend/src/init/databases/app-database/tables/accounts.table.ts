@@ -1,4 +1,4 @@
-import { TableBase } from '@/infra/database/tables/base';
+import { TableBase } from '@/init/databases/app-database/tables/base';
 import { AccountRole } from '@/app/users/entities/account.entity';
 
 export interface AccountsTable extends TableBase {

@@ -1,17 +1,14 @@
 import { Server, Socket } from 'socket.io';
-import { createServer } from 'http';
 import { eventHandlerMetadataSymbol, socketsResolverMetadataSymbol } from './metadata';
 import { EventHandlerMetadata, Resolver, SocketMiddleware, SocketsResolverMetadata } from './types';
 import { Config } from '@/infra/config';
 
-export class Sockets {
-  private readonly server;
-  private readonly socketsClient;
+export class SocketsServer {
+  private readonly sockets;
   private readonly config;
   private readonly resolvers;
-  constructor(config: Pick<Config, 'sockets'>, resolvers: Resolver[]) {
-    this.server = createServer();
-    this.socketsClient = new Server(this.server);
+  constructor(sockets: Server, config: Pick<Config, 'sockets'>, resolvers: Resolver[]) {
+    this.sockets = sockets;
     this.config = config;
     this.resolvers = resolvers;
   }
@@ -19,9 +16,8 @@ export class Sockets {
   start() {
     try {
       this.registerResolvers();
-      this.server.listen(this.config.sockets.port, () => {
-        console.log(`Sockets server listening on port ${this.config.sockets.port}`);
-      });
+      this.sockets.listen(this.config.sockets.port);
+      console.log(`Sockets server listening on port ${this.config.sockets.port}`);
     } catch (err) {
       console.error(err);
     }
@@ -30,7 +26,7 @@ export class Sockets {
   addMiddleware(middleware: SocketMiddleware) {
     // TODO
     // @ts-ignore
-    this.socketsClient.use(middleware);
+    this.sockets.use(middleware);
   }
 
   private registerResolvers() {
@@ -68,7 +64,7 @@ export class Sockets {
 
       const { eventName, middlewares } = handlerMetadata as EventHandlerMetadata;
 
-      this.socketsClient.on('connection', async (socket: Socket) => {
+      this.sockets.on('connection', async (socket: Socket) => {
         const next = this.buildHandlersChain(middlewares, socket, handler, resolver);
         socket.on(eventName, async (message: any) => {
           await next(message);
