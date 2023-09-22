@@ -4,8 +4,8 @@ import { format } from 'winston';
 import chalk from 'chalk';
 import { Config, NodeEnv } from '@/infra/config';
 import dayjs from 'dayjs';
-import { TransformableInfo } from 'logform';
-import { IWebServerLogger } from '@/infra/middlewares/web-server/logger.middleware';
+import { IWebServerLogger } from '../types';
+import { COMBINED_LOGS_FILEPATH, API_LOGS_FILEPATH } from '@/infra/loggers/constants';
 
 enum RequestStatus {
   IN_PROGRESS = 'in progress',
@@ -15,7 +15,8 @@ enum RequestStatus {
 
 type Context = Record<any, any>;
 
-interface ApiInfo extends TransformableInfo {
+interface ApiInfo {
+  timestamp: string;
   status: RequestStatus;
   method: string;
   url: string;
@@ -43,6 +44,7 @@ export class WebServerLogger implements IWebServerLogger {
   request(method: string, url: string, context?: Context) {
     this.logger.log({
       level: 'http',
+      timestamp: dayjs().utc(),
       status: RequestStatus.IN_PROGRESS,
       method,
       url,
@@ -51,9 +53,10 @@ export class WebServerLogger implements IWebServerLogger {
     });
   }
 
-  finished(method: string, url: string, ms: number, context?: Context) {
+  finished(method: string, url: string, ms: number, status: number, context?: Context) {
     this.logger.log({
       level: 'http',
+      timestamp: dayjs().utc(),
       status: RequestStatus.FINISHED,
       method,
       url,
@@ -63,9 +66,10 @@ export class WebServerLogger implements IWebServerLogger {
     });
   }
 
-  failed(method: string, url: string, ms: number, error: string, context?: Context) {
+  failed(method: string, url: string, ms: number, status: number, error: string, context?: Context) {
     this.logger.log({
       level: 'http',
+      timestamp: dayjs().utc(),
       status: RequestStatus.FAILED,
       method,
       url,
@@ -124,7 +128,7 @@ export class WebServerLogger implements IWebServerLogger {
   private makeCombinedFileTransport() {
     return new winston.transports.DailyRotateFile({
       level: 'http',
-      filename: 'logs/combined.log',
+      filename: COMBINED_LOGS_FILEPATH,
       frequency: '7d',
     });
   }
@@ -132,7 +136,7 @@ export class WebServerLogger implements IWebServerLogger {
   private makeApiFileTransport() {
     return new winston.transports.DailyRotateFile({
       level: 'http',
-      filename: 'logs/api.log',
+      filename: API_LOGS_FILEPATH,
       frequency: '7d',
     });
   }

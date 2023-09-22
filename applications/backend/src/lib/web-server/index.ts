@@ -9,11 +9,13 @@ export class WebServer {
   private readonly client: Koa;
   private readonly config: Pick<Config, 'webServer'>;
   private readonly controllers: Controller[];
+  private readonly prefix: string;
 
-  constructor(config: Config, controllers: Controller[]) {
+  constructor(config: Config, controllers: Controller[], prefix?: string) {
     this.client = new Koa();
     this.config = config;
     this.controllers = controllers;
+    this.prefix = prefix ?? '';
   }
 
   start() {
@@ -40,9 +42,9 @@ export class WebServer {
         continue;
       }
 
-      const { prefix } = controllerMetadata;
+      const { prefix: controllerPrefix } = controllerMetadata;
       const router = new KoaRouter();
-      this.registerRoutes(controller, router, prefix);
+      this.registerRoutes(controller, router, controllerPrefix);
       this.addRouter(router);
     }
   }
@@ -54,7 +56,7 @@ export class WebServer {
     );
   }
 
-  private registerRoutes(controller: Controller, router: KoaRouter, prefix: string) {
+  private registerRoutes(controller: Controller, router: KoaRouter, controllerPrefix: string) {
     const prototype = Object.getPrototypeOf(controller);
     const properties = Object.getOwnPropertyNames(prototype);
     for (const property of properties) {
@@ -67,7 +69,8 @@ export class WebServer {
 
       const { path: routerPath, method, middlewares } = endpointMetadata as EndpointMetadata;
       const routerClb = this.getRouterClb(controller, handler);
-      router.register(path.join('/', prefix, routerPath), [method], [...middlewares, routerClb]);
+      const pathStr = path.join('/', this.prefix, '/', controllerPrefix, routerPath);
+      router.register(pathStr, [method], [...middlewares, routerClb]);
     }
   }
 

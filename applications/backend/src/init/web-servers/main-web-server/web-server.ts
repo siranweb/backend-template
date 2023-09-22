@@ -1,4 +1,4 @@
-import { WebServerLogger } from '@/infra/loggers/web-server.logger';
+import { WebServerLogger } from '@/infra/loggers/web-server/logger';
 import { config } from '@/infra/config';
 import { WebServer } from '@/lib/web-server';
 import { usersController } from '@/app/users';
@@ -7,6 +7,6 @@ import { errorHandlerMiddleware } from '@/infra/middlewares/web-server/error-han
 
 const apiLogger = new WebServerLogger(config);
 
-export const mainWebServer = new WebServer(config, [usersController]);
+export const mainWebServer = new WebServer(config, [usersController], 'api');
 mainWebServer.addMiddleware(loggerMiddleware(apiLogger));
 mainWebServer.addMiddleware(errorHandlerMiddleware());
