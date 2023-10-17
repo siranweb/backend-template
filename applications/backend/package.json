@@ -23,6 +23,7 @@
     "chalk": "5.3.0",
     "dayjs": "^1.11.8",
     "dotenv": "^16.3.1",
+    "find-my-way": "^7.7.0",
     "http-status-codes": "^2.2.0",
     "jose": "^4.14.4",
     "koa": "^2.14.2",

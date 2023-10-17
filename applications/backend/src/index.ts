@@ -1,6 +1,7 @@
 import '@/infra/common/global-imports';
-import { mainWebServer } from '@/init/web-servers/main-web-server/web-server';
-import { mainSocketsServer } from '@/init/sockets/main-sockets/sockets-server';
+import { webServer } from '@/init/web-servers/main';
+// import { mainSocketsServer } from '@/init/sockets/main-sockets/sockets-server';
 
-mainWebServer.start();
-mainSocketsServer.start();
+webServer.start()
+  .then(result => console.log(`Web server (${result.prefix ?? '/'}) is listening on port ${result.port}`));
+// mainSocketsServer.start();
