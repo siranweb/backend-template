@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-export interface Context<Store extends object> {
+export interface Context<Store extends Record<any, any>> {
   req: IncomingMessage;
   res: ServerResponse;
   store: Store;
 }
-export type RouteHandler<Store extends object> = (context: Context<Store>) => any;
+export type RouteHandler<Store extends Record<any, any>> = (context: Context<Store>) => any;
 
 interface RoutePathInfo {
   route: string | null;
