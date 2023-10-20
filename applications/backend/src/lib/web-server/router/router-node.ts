@@ -26,8 +26,10 @@ export class RouterNode {
   private readonly nodes: Record<string | symbol, RouterNode> = {};
 
   public register(method: string, route: string, handler: RouteHandler<any>): void {
+    method = method.toUpperCase();
+    route = route.endsWith('/') ? route.substring(0, route.length - 1) : route;
     const node = this.makeRouteNodesByRoute(route);
-    if (node.nodes[method]) {
+    if (node.handlers[method]) {
       throw new Error(`Attempt to register route ${route} twice with ${method} method`);
     }
     node.handlers[method] = {
@@ -39,8 +41,8 @@ export class RouterNode {
   public get(method: string, url: string): RoutePathInfo {
     let foundNode: RouterNode | null = null;
     const params = Object.create(null);
-    const { pathname, searchParams } = new URL(url);
-    const pathParts = this.splitToParts(pathname);
+    const { pathname, searchParams } = new URL(url, 'resolve://');
+    const pathParts = this.splitPathToParts(pathname);
 
     let currentNode: RouterNode = this;
     for (const pathPart of pathParts) {
@@ -55,9 +57,9 @@ export class RouterNode {
 
     const route = foundNode?.handlers[method].route;
     if (route) {
-      const routeParts = this.splitToParts(route);
-      for (const routePartIndex in routeParts) {
-        const routePart = routeParts[routePartIndex];
+      const routeStringParts = route.split('/').filter(part => !!part);
+      for (const routePartIndex in routeStringParts) {
+        const routePart = routeStringParts[routePartIndex];
         if (routePart.startsWith(':')) {
           const param = routePart.substring(1);
           params[param] = pathParts[routePartIndex];
@@ -102,10 +104,11 @@ export class RouterNode {
     return parts;
   }
 
-  private splitToParts(pathname: string): string[] {
+  private splitPathToParts(pathname: string): string[] {
     const parts: string[] = [];
     const splitPathname = pathname.split('?')[0].split('/');
     for (const splitPathnamePart of splitPathname) {
+      if (!splitPathnamePart) continue;
       parts.push(splitPathnamePart);
     }
 
