@@ -1,3 +1,3 @@
-export { WebServer } from './web-server';
-export { Endpoint, Controller } from './decorators';
-export * from './types';
+export { WebServer } from './server/web-server';
+export { Endpoint, Controller } from './server/decorators';
+export * from './server/types';
