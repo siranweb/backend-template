@@ -1,5 +1,5 @@
 import '@/infra/common/global-imports';
-import { RouterNode } from '@/lib/web-server/router';
+import { RouterNode } from 'src/lib/web-server/routing';
 import { webServer } from '@/init/web-servers/main';
 // import { mainSocketsServer } from '@/init/sockets/main-sockets/sockets-server';
 

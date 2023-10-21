@@ -43,10 +43,7 @@ export class SocketsServer {
   }
 
   private getResolverMetadata(resolver: Resolver): SocketsResolverMetadata | null {
-    return Reflect.get(
-      resolver.constructor,
-      socketsResolverMetadataSymbol,
-    );
+    return Reflect.get(resolver.constructor, socketsResolverMetadataSymbol);
   }
 
   private registerHandlers(resolver: Resolver) {
@@ -74,17 +71,19 @@ export class SocketsServer {
   }
 
   private getHandlerMetadata(handler: any): EventHandlerMetadata | null {
-    return Reflect.get(
-      handler,
-      eventHandlerMetadataSymbol,
-    );
+    return Reflect.get(handler, eventHandlerMetadataSymbol);
   }
 
   private checkIsHandler(handlerMetadata: EventHandlerMetadata | null, handler: any): boolean {
     return !!handlerMetadata?.eventName && typeof handler === 'function';
   }
 
-  private buildHandlersChain(middlewares: SocketMiddleware[], socket: Socket, handler: any, resolver: Resolver) {
+  private buildHandlersChain(
+    middlewares: SocketMiddleware[],
+    socket: Socket,
+    handler: any,
+    resolver: Resolver,
+  ) {
     return middlewares.reduceRight(
       (acc, middleware) => (message: any) => middleware(socket, message, acc),
       handler.bind(resolver),

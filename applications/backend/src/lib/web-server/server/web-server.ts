@@ -15,9 +15,7 @@ export class WebServer {
   private readonly controllers: IController[];
 
   constructor(controllers: IController[], config: Config) {
-    this.router = Router({
-
-    });
+    this.router = Router({});
     this.config = config;
     this.controllers = controllers;
   }
@@ -34,7 +32,6 @@ export class WebServer {
         server.listen(this.config.port, () => {
           resolve({ port: this.config.port, prefix: this.config.prefix });
         });
-
       } catch (e) {
         reject(e);
       }
@@ -90,7 +87,7 @@ export class WebServer {
       } catch (e) {
         console.log(555);
       }
-    }
+    };
   }
 
   private getControllerMetadata(controller: IController): ControllerMetadata | null {
@@ -98,10 +95,7 @@ export class WebServer {
   }
 
   private getEndpointMetadata(handler: any): EndpointMetadata | null {
-    return Reflect.get(
-      handler,
-      endpointMetadataSymbol,
-    );
+    return Reflect.get(handler, endpointMetadataSymbol);
   }
 
   private checkIsEndpoint(endpointMetadata: EndpointMetadata | null, handler: any): boolean {

@@ -50,10 +50,7 @@ export class WebServer {
   }
 
   private getControllerMetadata(controller: Controller): ControllerMetadata | null {
-    return Reflect.get(
-      controller.constructor,
-      controllerMetadataSymbol,
-    );
+    return Reflect.get(controller.constructor, controllerMetadataSymbol);
   }
 
   private registerRoutes(controller: Controller, router: KoaRouter, controllerPrefix: string) {
@@ -75,10 +72,7 @@ export class WebServer {
   }
 
   private getEndpointMetadata(handler: any): EndpointMetadata | null {
-    return Reflect.get(
-      handler,
-      endpointMetadataSymbol,
-    ) as EndpointMetadata | null;
+    return Reflect.get(handler, endpointMetadataSymbol) as EndpointMetadata | null;
   }
 
   private checkIsEndpoint(endpointMetadata: EndpointMetadata | null, handler: any): boolean {

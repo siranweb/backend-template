@@ -1,4 +1,4 @@
-import { HTTPMethod, HTTPVersion, Handler } from "find-my-way";
+import { HTTPMethod, HTTPVersion, Handler } from 'find-my-way';
 
 export interface EndpointMetadata {
   path: string;

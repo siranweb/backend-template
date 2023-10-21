@@ -4,7 +4,7 @@ import {
   getDefaultEndpointMetadata,
 } from './metadata';
 import { ControllerMetadata, EndpointMetadata } from './types';
-import { HTTPMethod } from "find-my-way";
+import { HTTPMethod } from 'find-my-way';
 
 export const Controller = (): any => {
   return (target: any) => {
