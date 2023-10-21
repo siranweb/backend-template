@@ -1,6 +1,5 @@
-import { RouterNode } from './router-node';
-
 import { IncomingMessage, ServerResponse } from 'node:http';
+import { RouterNode } from './router-node';
 
 export interface Context<Store extends Record<any, any>> {
   req: IncomingMessage;

@@ -1,1 +1,1 @@
-export { RouterNode } from './router-node';
+export { Router } from './router';
