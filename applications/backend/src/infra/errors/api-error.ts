@@ -1,5 +1,4 @@
 import { ZodIssue } from 'zod';
-import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 
 export enum ApiErrorType {
   HTTP = 'http',
@@ -35,7 +34,7 @@ export class ApiError extends Error {
   static createFromUnknownError(params: Pick<ApiErrorParams, 'original'>): ApiError {
     return new ApiError({
       type: ApiErrorType.UNKNOWN,
-      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+      statusCode: 500,
       errorName: 'UNKNOWN',
       original: params.original,
     });
@@ -45,14 +44,14 @@ export class ApiError extends Error {
     return new ApiError({
       type: ApiErrorType.HTTP,
       statusCode: params.statusCode,
-      errorName: ApiError.convertPhraseToErrorName(getReasonPhrase(params.statusCode)),
+      errorName: params.statusCode.toString(),
     });
   }
 
   static createFromValidationError(params: { issues: ZodIssue[] }): ApiError {
     return new ApiError({
       type: ApiErrorType.VALIDATION,
-      statusCode: StatusCodes.BAD_REQUEST,
+      statusCode: 400,
       errorName: 'VALIDATION_NOT_PASSED',
       data: {
         issues: params.issues,
@@ -63,7 +62,7 @@ export class ApiError extends Error {
   static createFromAppError(params: Pick<ApiErrorParams, 'errorName' | 'data'>): ApiError {
     return new ApiError({
       type: ApiErrorType.APP,
-      statusCode: StatusCodes.BAD_REQUEST,
+      statusCode: 400,
       errorName: params.errorName,
       data: params.data,
     });

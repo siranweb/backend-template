@@ -4,7 +4,6 @@ import {
   getDefaultEndpointMetadata,
 } from './metadata';
 import { ControllerMetadata, EndpointMetadata } from './types';
-import { HTTPMethod } from 'find-my-way';
 
 export const Controller = (): any => {
   return (target: any) => {
@@ -26,7 +25,7 @@ export const Controller = (): any => {
 //   };
 // };
 
-export const Endpoint = (method: HTTPMethod, path: string): any => {
+export const Endpoint = (method: string, path: string): any => {
   return (target: any, propertyKey: string) => {
     const handler = target[propertyKey];
     const storedMetadata = Reflect.get(handler, endpointMetadataSymbol) as EndpointMetadata | null;

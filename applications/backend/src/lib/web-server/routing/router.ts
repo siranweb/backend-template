@@ -1,12 +1,12 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 import { RouterNode } from './router-node';
 
-export interface Context<Store extends Record<any, any>> {
+interface Context<Store extends {}> {
   req: IncomingMessage;
   res: ServerResponse;
   store: Store;
 }
-export type RouteHandler<Store extends Record<any, any>> = (context: Context<Store>) => any;
+export type RouteHandler<Store extends {}> = (context: Context<Store>) => any;
 
 interface RoutePathInfo {
   route: string;
@@ -32,8 +32,9 @@ export class Router {
   public register(method: string, route: string, handler: RouteHandler<any>): void {
     method = method.toUpperCase();
     const routeParts = this.splitRouteToParts(route);
+    const formattedRoute = `/${routeParts.join('/')}`;
     const node = this.tree.makeRouteNodesByRouteParts(routeParts);
-    this.assignHandler(node, method, route, handler);
+    this.assignHandler(node, method, formattedRoute, handler);
   }
 
   public resolve(method: string, url: string): RoutePathInfo | null {

@@ -1,5 +1,5 @@
 import '@/infra/common/global-imports';
-import { RouterNode } from 'src/lib/web-server/routing';
+import { Router } from '@/lib/web-server/routing';
 import { webServer } from '@/init/web-servers/main';
 // import { mainSocketsServer } from '@/init/sockets/main-sockets/sockets-server';
 
@@ -7,8 +7,10 @@ import { webServer } from '@/init/web-servers/main';
 //   .then(result => console.log(`Web server (${result.prefix ?? '/'}) is listening on port ${result.port}`));
 // mainSocketsServer.start();
 
-const router = new RouterNode();
+const router = new Router();
 router.register('GET', '/users/:userId', () => {});
+router.register('GET', '/users/', () => {});
+// router.register('GET', '/users/:id', () => {});
 // console.log(JSON.stringify(router, null, 2))
-const info = router.get('GET', '/users/kek?test=123&lol=ww');
-console.log(info);
+const info = router.resolve('GET', '/users');
+console.log(123, info);

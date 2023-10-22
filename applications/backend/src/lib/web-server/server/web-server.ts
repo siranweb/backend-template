@@ -1,21 +1,23 @@
 import http from 'node:http';
 import path from 'path';
-import Router from 'find-my-way';
-import { IController, ControllerMetadata, EndpointMetadata, EndpointHandler } from './types';
+import { IController, ControllerMetadata, EndpointMetadata } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
+import { Router, RouteHandler } from "../routing";
 
 interface Config {
   port: number;
   prefix?: string;
 }
 
+export type Handler = RouteHandler<{}>;
+
 export class WebServer {
-  private readonly router: Router.Instance<Router.HTTPVersion.V1>;
+  private readonly router: Router;
   private readonly config: Config;
   private readonly controllers: IController[];
 
   constructor(controllers: IController[], config: Config) {
-    this.router = Router({});
+    this.router = new Router();
     this.config = config;
     this.controllers = controllers;
   }
@@ -26,7 +28,8 @@ export class WebServer {
         this.initControllers();
 
         const server = http.createServer((req, res) => {
-          this.router.lookup(req, res);
+          // TODO
+          this.router.resolve(req.method ?? '', req.url ?? '');
         });
 
         server.listen(this.config.port, () => {
@@ -48,15 +51,15 @@ export class WebServer {
       }
 
       const handlers = this.getEndpointHandlers(controller);
-      this.registerRoutes(handlers);
+      this.registerRoutes(controller, handlers);
     }
   }
 
-  private getEndpointHandlers(controller: IController): EndpointHandler[] {
+  private getEndpointHandlers(controller: IController): Handler[] {
     const prototype = Object.getPrototypeOf(controller);
     const properties = Object.getOwnPropertyNames(prototype);
 
-    const handlers: EndpointHandler[] = [];
+    const handlers: Handler[] = [];
     for (const property of properties) {
       const handler = controller[property];
       const endpointMetadata = this.getEndpointMetadata(handler);
@@ -69,25 +72,16 @@ export class WebServer {
     return handlers;
   }
 
-  private registerRoutes(handlers: EndpointHandler[]): void {
+  private registerRoutes(controller: IController, handlers: Handler[]): void {
     for (const handler of handlers) {
       const endpointMetadata = this.getEndpointMetadata(handler)!;
+      // TODO rename path -> route
       const { path: routerPath, method } = endpointMetadata;
-      const pathStr = path.join('/', this.config.prefix ?? '', '/', routerPath);
+      const route = path.join('/', this.config.prefix ?? '', '/', routerPath);
 
-      this.router.on(method, pathStr, this.decorateHandler(handler));
+      // TODO pass args to handler
+      this.router.register(method, route, handler.bind(controller));
     }
-  }
-
-  private decorateHandler(handler: EndpointHandler): EndpointHandler {
-    return async (req, res, ...args) => {
-      try {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return await handler(req, res, ...args);
-      } catch (e) {
-        console.log(555);
-      }
-    };
   }
 
   private getControllerMetadata(controller: IController): ControllerMetadata | null {
