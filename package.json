@@ -5,8 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:compose": "docker compose -f docker-compose.yml up --build",
-    "start:dev:compose": "docker compose -f docker-compose-dev.yml up --build"
+    "init": "pnpm i && pnpm i --dir ./applications/backend",
+    "docker:compose": "docker compose -f docker-compose.yml up --build",
+    "docker:compose:dev": "docker compose -f docker-compose-dev.yml up --build"
   },
   "keywords": [],
   "author": "",

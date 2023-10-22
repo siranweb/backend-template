@@ -13,7 +13,7 @@ services:
     volumes:
       - ./applications/backend/src:/app/src
       - ./applications/backend/logs:/app/logs
-    command: pnpm run start:dev:memory
+    command: pnpm run start:dev
 
   primary-database:
     tty: true
