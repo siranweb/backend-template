@@ -8,28 +8,28 @@ interface Context<Store extends {}> {
 }
 export type RouteHandler<Store extends {}> = (context: Context<Store>) => any;
 
-interface RoutePathInfo {
+interface RoutePathInfo<Store extends {}> {
   route: string;
-  handler: RouteHandler<any>;
+  handler: RouteHandler<Store>;
   url: string;
   params: Record<string, string>;
   search: Record<string, any>;
 }
 
-interface HandlerInfo {
+interface HandlerInfo<Store extends {}> {
   route: string;
-  handler: RouteHandler<any>;
+  handler: RouteHandler<Store>;
 }
 
-interface StoredItem {
-  routes: Record<string, HandlerInfo>;
+interface StoredItem<Store extends {}> {
+  routes: Record<string, HandlerInfo<Store>>;
 }
 
-export class Router {
+export class Router<HandlerStore extends {}> {
   private readonly tree: RouterNode = new RouterNode();
-  private readonly stored: Map<RouterNode, StoredItem> = new Map();
+  private readonly stored: Map<RouterNode, StoredItem<HandlerStore>> = new Map();
 
-  public register(method: string, route: string, handler: RouteHandler<any>): void {
+  public register(method: string, route: string, handler: RouteHandler<HandlerStore>): void {
     method = method.toUpperCase();
     const routeParts = this.splitRouteToParts(route);
     const formattedRoute = `/${routeParts.join('/')}`;
@@ -37,7 +37,7 @@ export class Router {
     this.assignHandler(node, method, formattedRoute, handler);
   }
 
-  public resolve(method: string, url: string): RoutePathInfo | null {
+  public resolve(method: string, url: string): RoutePathInfo<HandlerStore> | null {
     const { pathname, searchParams } = new URL(url, 'resolve://');
     const pathParts = this.splitPathToParts(pathname);
 
@@ -67,15 +67,15 @@ export class Router {
     node: RouterNode,
     method: string,
     route: string,
-    handler: RouteHandler<any>,
-  ): HandlerInfo {
+    handler: RouteHandler<HandlerStore>,
+  ): HandlerInfo<HandlerStore> {
     if (!this.stored.has(node)) {
       this.stored.set(node, {
         routes: {},
       });
     }
 
-    const stored = this.stored.get(node) as StoredItem;
+    const stored = this.stored.get(node) as StoredItem<HandlerStore>;
     if (stored.routes[method]) {
       throw new Error(`Attempt to register route ${route} twice with ${method} method`);
     }

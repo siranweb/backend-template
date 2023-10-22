@@ -1,18 +1,23 @@
 import http from 'node:http';
-import path from 'path';
+import path from 'node:path';
 import { IController, ControllerMetadata, EndpointMetadata } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
-import { Router, RouteHandler } from "../routing";
+import { Router, RouteHandler } from '../routing';
 
 interface Config {
   port: number;
   prefix?: string;
 }
 
-export type Handler = RouteHandler<{}>;
+interface Store {
+  params: Record<string, string>;
+  search: Record<string, any>;
+}
+
+export type Handler = RouteHandler<Store>;
 
 export class WebServer {
-  private readonly router: Router;
+  private readonly router: Router<Store>;
   private readonly config: Config;
   private readonly controllers: IController[];
 
@@ -26,17 +31,46 @@ export class WebServer {
     return new Promise((resolve, reject) => {
       try {
         this.initControllers();
-
-        const server = http.createServer((req, res) => {
-          // TODO
-          this.router.resolve(req.method ?? '', req.url ?? '');
-        });
-
+        const server = this.createHttpServer();
         server.listen(this.config.port, () => {
           resolve({ port: this.config.port, prefix: this.config.prefix });
         });
       } catch (e) {
         reject(e);
+      }
+    });
+  }
+
+  private createHttpServer() {
+    return http.createServer(async (req, res) => {
+      // TODO
+      const data = this.router.resolve(req.method!, req.url!);
+      if (!data) {
+        // TODO not found event
+      } else {
+        const { handler, params, search, url, route } = data;
+        const promise = new Promise(async (resolve, reject) => {
+          const context = {
+            req,
+            res,
+            store: {
+              params,
+              search,
+            },
+          };
+          try {
+            await handler(context);
+            resolve(context);
+          } catch (e) {
+            // TODO reject with error and context
+            reject(e);
+          }
+
+          promise
+            .then(() => {}) // TODO emit request finished
+            .catch(() => {}) // TODO emit request failed
+            .finally(() => {}) // TODO emit end of request
+        });
       }
     });
   }
