@@ -1,23 +1,23 @@
-import http from 'node:http';
+import http, { IncomingMessage, ServerResponse } from "node:http";
 import path from 'node:path';
 import { IController, ControllerMetadata, EndpointMetadata } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
-import { Router, RouteHandler } from '../routing';
+import { Router } from '../routing';
 
 interface Config {
   port: number;
   prefix?: string;
 }
 
-interface Store {
-  params: Record<string, string>;
-  search: Record<string, any>;
+interface Context {
+  req: IncomingMessage;
+  res: ServerResponse;
+  store: {};
 }
-
-export type Handler = RouteHandler<Store>;
+export type Handler = (ctx: Context) => any;
 
 export class WebServer {
-  private readonly router: Router<Store>;
+  private readonly router: Router;
   private readonly config: Config;
   private readonly controllers: IController[];
 

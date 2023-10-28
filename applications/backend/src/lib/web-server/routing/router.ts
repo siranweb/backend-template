@@ -1,35 +1,27 @@
-import { IncomingMessage, ServerResponse } from 'node:http';
 import { RouterNode } from './router-node';
 
-interface Context<Store extends {}> {
-  req: IncomingMessage;
-  res: ServerResponse;
-  store: Store;
-}
-export type RouteHandler<Store extends {}> = (context: Context<Store>) => any;
-
-interface RoutePathInfo<Store extends {}> {
+interface RoutePathInfo {
   route: string;
-  handler: RouteHandler<Store>;
+  handler: any;
   url: string;
   params: Record<string, string>;
   search: Record<string, any>;
 }
 
-interface HandlerInfo<Store extends {}> {
+interface HandlerInfo {
   route: string;
-  handler: RouteHandler<Store>;
+  handler: any;
 }
 
-interface StoredItem<Store extends {}> {
-  routes: Record<string, HandlerInfo<Store>>;
+interface StoredItem {
+  routes: Record<string, HandlerInfo>;
 }
 
-export class Router<HandlerStore extends {}> {
+export class Router {
   private readonly tree: RouterNode = new RouterNode();
-  private readonly stored: Map<RouterNode, StoredItem<HandlerStore>> = new Map();
+  private readonly stored: Map<RouterNode, StoredItem> = new Map();
 
-  public register(method: string, route: string, handler: RouteHandler<HandlerStore>): void {
+  public register(method: string, route: string, handler: any): void {
     method = method.toUpperCase();
     const routeParts = this.splitRouteToParts(route);
     const formattedRoute = `/${routeParts.join('/')}`;
@@ -37,7 +29,7 @@ export class Router<HandlerStore extends {}> {
     this.assignHandler(node, method, formattedRoute, handler);
   }
 
-  public resolve(method: string, url: string): RoutePathInfo<HandlerStore> | null {
+  public resolve(method: string, url: string): RoutePathInfo | null {
     const { pathname, searchParams } = new URL(url, 'resolve://');
     const pathParts = this.splitPathToParts(pathname);
 
@@ -67,15 +59,15 @@ export class Router<HandlerStore extends {}> {
     node: RouterNode,
     method: string,
     route: string,
-    handler: RouteHandler<HandlerStore>,
-  ): HandlerInfo<HandlerStore> {
+    handler: any,
+  ): HandlerInfo {
     if (!this.stored.has(node)) {
       this.stored.set(node, {
         routes: {},
       });
     }
 
-    const stored = this.stored.get(node) as StoredItem<HandlerStore>;
+    const stored = this.stored.get(node) as StoredItem;
     if (stored.routes[method]) {
       throw new Error(`Attempt to register route ${route} twice with ${method} method`);
     }
