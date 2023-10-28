@@ -116,13 +116,13 @@ export class WebServer {
   }
 
   private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<string>((resolve, reject) => {
       let body = '';
       req.on('readable', () => body += req.read());
       req.on('end', () => resolve(body));
       req.on('error', (error) => reject(error));
     });
-    const body = (await promise) as string;
+    const body = await promise;
     const isJson = !!req.headers['content-type']?.includes('application/json');
     return isJson ? JSON.parse(body) : body;
   }
