@@ -1,8 +1,9 @@
-import http, { IncomingMessage, ServerResponse } from "node:http";
+import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
-import { IController, ControllerMetadata, EndpointMetadata } from './types';
+import { ControllerMetadata, EndpointMetadata, IController } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
 import { Router } from '../routing';
+import { ApiError, ErrorType } from './api-error';
 
 interface Config {
   port: number;
@@ -12,14 +13,24 @@ interface Config {
 interface Context {
   req: IncomingMessage;
   res: ServerResponse;
-  store: {};
+  params: Record<string, string>;
+  search: Record<string, any>;
+  body: any;
+  meta: {
+    url: string;
+    route: string;
+    requestTimestamp: number;
+  }
 }
 export type Handler = (ctx: Context) => any;
+
+type ErrorHandler = (error: any, req: IncomingMessage, res: ServerResponse) => any | Promise<any>;
 
 export class WebServer {
   private readonly router: Router;
   private readonly config: Config;
   private readonly controllers: IController[];
+  private errorHandler: ErrorHandler | null = null;
 
   constructor(controllers: IController[], config: Config) {
     this.router = new Router();
@@ -41,38 +52,79 @@ export class WebServer {
     });
   }
 
+  public setErrorHandler(clb: ErrorHandler) {
+    this.errorHandler = clb;
+  }
+
   private createHttpServer() {
     return http.createServer(async (req, res) => {
-      // TODO
-      const data = this.router.resolve(req.method!, req.url!);
-      if (!data) {
-        // TODO not found event
-      } else {
-        const { handler, params, search, url, route } = data;
-        const promise = new Promise(async (resolve, reject) => {
-          const context = {
-            req,
-            res,
-            store: {
-              params,
-              search,
-            },
-          };
-          try {
-            await handler(context);
-            resolve(context);
-          } catch (e) {
-            // TODO reject with error and context
-            reject(e);
-          }
-
-          promise
-            .then(() => {}) // TODO emit request finished
-            .catch(() => {}) // TODO emit request failed
-            .finally(() => {}) // TODO emit end of request
-        });
+      const requestTimestamp = Date.now();
+      try {
+        await this.handleRequest(req, res, requestTimestamp);
+      } catch (e: any) {
+        if (this.errorHandler) {
+          this.errorHandler(e, req, res);
+        } else {
+          res.statusCode = 400;
+          res.end('Something went wrong');
+        }
+      } finally {
+        if (!res.writableEnded) {
+          res.end();
+        }
       }
     });
+  }
+
+  private async handleRequest(req: IncomingMessage, res: ServerResponse, requestTimestamp: number): Promise<void> {
+    const routeData = this.router.resolve(req.method!, req.url!);
+    if (!routeData) {
+      throw new ApiError({
+        statusCode: 404,
+        type: ErrorType.HTTP
+      });
+    }
+
+    const { params, search, url, route } = routeData;
+    const handler = routeData.handler as Handler;
+
+    let body;
+    try {
+      body = await this.parseBody(req);
+    } catch (e) {
+      throw new ApiError({
+        statusCode: 500,
+        type: ErrorType.UNKNOWN,
+        original: e,
+      })
+    }
+    
+    const context: Context = {
+      req,
+      res,
+      params,
+      search,
+      body,
+      meta: {
+        url,
+        route,
+        requestTimestamp,
+      }
+    };
+
+    await handler(context);
+  }
+
+  private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
+    const promise = new Promise((resolve, reject) => {
+      let body = '';
+      req.on('readable', () => body += req.read());
+      req.on('end', () => resolve(body));
+      req.on('error', (error) => reject(error));
+    });
+    const body = (await promise) as string;
+    const isJson = !!req.headers['content-type']?.includes('application/json');
+    return isJson ? JSON.parse(body) : body;
   }
 
   private initControllers(): void {
@@ -112,8 +164,6 @@ export class WebServer {
       // TODO rename path -> route
       const { path: routerPath, method } = endpointMetadata;
       const route = path.join('/', this.config.prefix ?? '', '/', routerPath);
-
-      // TODO pass args to handler
       this.router.register(method, route, handler.bind(controller));
     }
   }
