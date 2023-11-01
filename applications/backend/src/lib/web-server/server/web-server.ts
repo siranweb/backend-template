@@ -1,5 +1,6 @@
 import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
+import { EventEmitter } from 'node:events';
 import { ControllerMetadata, EndpointMetadata, IController } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
 import { Router } from '../routing';
@@ -10,7 +11,7 @@ interface Config {
   prefix?: string;
 }
 
-interface Context {
+export interface Context {
   req: IncomingMessage;
   res: ServerResponse;
   params: Record<string, string>;
@@ -20,20 +21,29 @@ interface Context {
     url: string;
     route: string;
     requestTimestamp: number;
+    responseTimestamp?: number;
   }
 }
+
 export type Handler = (ctx: Context) => any;
 
-type ErrorHandler = (error: any, req: IncomingMessage, res: ServerResponse) => any | Promise<any>;
+export type OnErrorHandler = (error: any, req: IncomingMessage, res: ServerResponse) => any | Promise<any>;
+export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
+export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
+
+enum WebServerEvent {
+  ERROR = 'error',
+  REQUEST = 'request',
+  REQUEST_FINISHED = 'request_finished',
+}
 
 export class WebServer {
-  private readonly router: Router;
+  private readonly router: Router = new Router();
+  private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly config: Config;
   private readonly controllers: IController[];
-  private errorHandler: ErrorHandler | null = null;
 
   constructor(controllers: IController[], config: Config) {
-    this.router = new Router();
     this.config = config;
     this.controllers = controllers;
   }
@@ -52,22 +62,24 @@ export class WebServer {
     });
   }
 
-  public setErrorHandler(clb: ErrorHandler) {
-    this.errorHandler = clb;
+  public onError(clb: OnErrorHandler): void {
+    this.eventEmitter.on(WebServerEvent.ERROR, clb);
+  }
+
+  public onRequest(clb: OnRequestHandler): void {
+    this.eventEmitter.on(WebServerEvent.REQUEST, clb);
+  }
+
+  public onRequestFinished(clb: OnRequestFinishedHandler): void {
+    this.eventEmitter.on(WebServerEvent.REQUEST_FINISHED, clb);
   }
 
   private createHttpServer() {
     return http.createServer(async (req, res) => {
-      const requestTimestamp = Date.now();
       try {
-        await this.handleRequest(req, res, requestTimestamp);
+        await this.handleRequest(req, res);
       } catch (e: any) {
-        if (this.errorHandler) {
-          this.errorHandler(e, req, res);
-        } else {
-          res.statusCode = 400;
-          res.end('Something went wrong');
-        }
+        this.handleRequestError(e, req, res);
       } finally {
         if (!res.writableEnded) {
           res.end();
@@ -76,7 +88,18 @@ export class WebServer {
     });
   }
 
-  private async handleRequest(req: IncomingMessage, res: ServerResponse, requestTimestamp: number): Promise<void> {
+  private async handleRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+  ): Promise<void> {
+    const context = this.getBaseContext(req, res);
+
+    this.eventEmitter.emit(WebServerEvent.REQUEST, context);
+    res.on('finish', () => {
+      context.meta.responseTimestamp = Date.now();
+      this.eventEmitter.emit(WebServerEvent.REQUEST_FINISHED, context)
+    });
+
     const routeData = this.router.resolve(req.method!, req.url!);
     if (!routeData) {
       throw new ApiError({
@@ -85,34 +108,60 @@ export class WebServer {
       });
     }
 
-    const { params, search, url, route } = routeData;
+    const { params, search, route } = routeData;
     const handler = routeData.handler as Handler;
 
     let body;
     try {
       body = await this.parseBody(req);
-    } catch (e) {
+    } catch (e: any) {
+      const isJsonError = e?.message?.includes('JSON.parse');
+      if (isJsonError) {
+        throw new ApiError({
+          statusCode: 400,
+          errorName: 'BAD_JSON_BODY',
+          type: ErrorType.HTTP,
+          original: e,
+        })
+      }
+
       throw new ApiError({
         statusCode: 500,
         type: ErrorType.UNKNOWN,
         original: e,
       })
     }
-    
-    const context: Context = {
-      req,
-      res,
-      params,
-      search,
-      body,
-      meta: {
-        url,
-        route,
-        requestTimestamp,
-      }
-    };
+
+    context.params = params;
+    context.search = search;
+    context.body = body;
+    context.meta.route = route;
 
     await handler(context);
+  }
+
+  private getBaseContext(
+    req: IncomingMessage,
+    res: ServerResponse
+  ): Context {
+    return {
+      req, res, params: {}, search: {}, body: undefined,
+      meta: {
+        url: req.url!,
+        route: '',
+        requestTimestamp: Date.now(),
+        responseTimestamp: null,
+      }
+    }
+}
+
+  private handleRequestError(error: any, req: IncomingMessage, res: ServerResponse): void {
+    this.eventEmitter.emit(WebServerEvent.ERROR, error, req, res);
+    const areListenersExists = this.eventEmitter.listeners(WebServerEvent.ERROR).length > 0;
+    if (!areListenersExists) {
+      res.statusCode = 400;
+      res.end('Something went wrong');
+    }
   }
 
   private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
@@ -161,7 +210,6 @@ export class WebServer {
   private registerRoutes(controller: IController, handlers: Handler[]): void {
     for (const handler of handlers) {
       const endpointMetadata = this.getEndpointMetadata(handler)!;
-      // TODO rename path -> route
       const { path: routerPath, method } = endpointMetadata;
       const route = path.join('/', this.config.prefix ?? '', '/', routerPath);
       this.router.register(method, route, handler.bind(controller));

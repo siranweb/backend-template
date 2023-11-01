@@ -3,7 +3,6 @@ import { RouterNode } from './router-node';
 interface RoutePathInfo {
   route: string;
   handler: any;
-  url: string;
   params: Record<string, string>;
   search: Record<string, any>;
 }
@@ -51,7 +50,6 @@ export class Router {
       handler,
       params,
       search,
-      url,
     };
   }
 
