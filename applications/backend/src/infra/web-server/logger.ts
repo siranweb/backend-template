@@ -4,7 +4,7 @@ import { format } from 'winston';
 import chalk from 'chalk';
 import { Config, NodeEnv } from '@/infra/config';
 import dayjs from 'dayjs';
-import { IWebServerLogger } from '../types';
+import { IWebServerLogger } from '../loggers/types';
 import { COMBINED_LOGS_FILEPATH, API_LOGS_FILEPATH } from '@/infra/loggers/constants';
 
 enum RequestStatus {

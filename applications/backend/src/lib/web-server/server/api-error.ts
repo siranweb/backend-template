@@ -1,5 +1,4 @@
 export enum ErrorType {
-  HTTP = 'http',
   APP = 'app',
   VALIDATION = 'validation',
   UNKNOWN = 'unknown',

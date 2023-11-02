@@ -105,7 +105,8 @@ export class WebServer {
     if (!routeData) {
       throw new ApiError({
         statusCode: 404,
-        type: ErrorType.HTTP,
+        errorName: 'ROUTE_NOT_FOUND',
+        type: ErrorType.APP,
       });
     }
 
@@ -121,7 +122,7 @@ export class WebServer {
         throw new ApiError({
           statusCode: 400,
           errorName: 'BAD_JSON_BODY',
-          type: ErrorType.HTTP,
+          type: ErrorType.APP,
           original: e,
         });
       }
