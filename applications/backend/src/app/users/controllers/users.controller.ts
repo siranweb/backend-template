@@ -15,7 +15,6 @@ export class UsersController {
   //
   //   res.end(JSON.stringify({ user }));
   // }
-
   // @Endpoint('GET', '/:id')
   // async getUser(ctx: Koa.Context) {
   //   // ctx.params.id = '';

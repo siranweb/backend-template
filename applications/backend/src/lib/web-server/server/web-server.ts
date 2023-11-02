@@ -22,12 +22,16 @@ export interface Context {
     route: string;
     requestTimestamp: number;
     responseTimestamp?: number;
-  }
+  };
 }
 
 export type Handler = (ctx: Context) => any;
 
-export type OnErrorHandler = (error: any, req: IncomingMessage, res: ServerResponse) => any | Promise<any>;
+export type OnErrorHandler = (
+  error: any,
+  req: IncomingMessage,
+  res: ServerResponse,
+) => any | Promise<any>;
 export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
 export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
 
@@ -88,23 +92,20 @@ export class WebServer {
     });
   }
 
-  private async handleRequest(
-    req: IncomingMessage,
-    res: ServerResponse,
-  ): Promise<void> {
+  private async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const context = this.getBaseContext(req, res);
 
     this.eventEmitter.emit(WebServerEvent.REQUEST, context);
     res.on('finish', () => {
       context.meta.responseTimestamp = Date.now();
-      this.eventEmitter.emit(WebServerEvent.REQUEST_FINISHED, context)
+      this.eventEmitter.emit(WebServerEvent.REQUEST_FINISHED, context);
     });
 
     const routeData = this.router.resolve(req.method!, req.url!);
     if (!routeData) {
       throw new ApiError({
         statusCode: 404,
-        type: ErrorType.HTTP
+        type: ErrorType.HTTP,
       });
     }
 
@@ -122,14 +123,14 @@ export class WebServer {
           errorName: 'BAD_JSON_BODY',
           type: ErrorType.HTTP,
           original: e,
-        })
+        });
       }
 
       throw new ApiError({
         statusCode: 500,
         type: ErrorType.UNKNOWN,
         original: e,
-      })
+      });
     }
 
     context.params = params;
@@ -140,20 +141,21 @@ export class WebServer {
     await handler(context);
   }
 
-  private getBaseContext(
-    req: IncomingMessage,
-    res: ServerResponse
-  ): Context {
+  private getBaseContext(req: IncomingMessage, res: ServerResponse): Context {
     return {
-      req, res, params: {}, search: {}, body: undefined,
+      req,
+      res,
+      params: {},
+      search: {},
+      body: undefined,
       meta: {
         url: req.url!,
         route: '',
         requestTimestamp: Date.now(),
         responseTimestamp: null,
-      }
-    }
-}
+      },
+    };
+  }
 
   private handleRequestError(error: any, req: IncomingMessage, res: ServerResponse): void {
     this.eventEmitter.emit(WebServerEvent.ERROR, error, req, res);
@@ -167,7 +169,7 @@ export class WebServer {
   private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
     const promise = new Promise<string>((resolve, reject) => {
       let body = '';
-      req.on('readable', () => body += req.read());
+      req.on('readable', () => (body += req.read()));
       req.on('end', () => resolve(body));
       req.on('error', (error) => reject(error));
     });
