@@ -48,14 +48,12 @@ export class WebServer {
     this.controllers = controllers;
   }
 
-  public async start(): Promise<{ port: number; prefix?: string }> {
-    return new Promise((resolve, reject) => {
+  public async start(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       try {
         this.initControllers();
         const server = this.createHttpServer();
-        server.listen(this.config.port, () => {
-          resolve({ port: this.config.port, prefix: this.config.prefix });
-        });
+        server.listen(this.config.port, () => resolve());
       } catch (e) {
         reject(e);
       }

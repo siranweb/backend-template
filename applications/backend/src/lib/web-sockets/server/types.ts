@@ -1,12 +1,19 @@
-import { Socket } from 'socket.io';
+import { WebSocket } from 'ws';
 
-export type SocketMiddleware = (socket: Socket, message: any, next: () => SocketMiddleware) => void;
+export type Gateway = Record<string, any>;
 
-export type Resolver = Record<string, any>;
+export interface Context {
+  ws: WebSocket;
+  data: Record<any, any>;
+  meta: {
+    timestamp: number;
+  };
+}
 
-export interface SocketsResolverMetadata {}
+export type WsHandler = (ctx: Context) => any | Promise<any>;
 
-export interface EventHandlerMetadata {
-  eventName: string;
-  middlewares: SocketMiddleware[];
+export interface WsGatewayMetadata {}
+
+export interface WsHandlerMetadata {
+  command: string;
 }

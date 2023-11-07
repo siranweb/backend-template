@@ -10,7 +10,7 @@ export interface Config {
   webServer: {
     port: number;
   };
-  sockets: {
+  webSockets: {
     port: number;
   };
 }
@@ -20,7 +20,7 @@ export const config: Config = {
   webServer: {
     port: Number(process.env.WEB_SERVER_PORT) ?? 0,
   },
-  sockets: {
-    port: Number(process.env.SOCKETIO_PORT) ?? 0,
+  webSockets: {
+    port: Number(process.env.WS_SERVER_PORT) ?? 0,
   },
 };

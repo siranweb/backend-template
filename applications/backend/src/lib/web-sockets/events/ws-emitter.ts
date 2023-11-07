@@ -9,8 +9,8 @@ interface Message {
   };
 }
 
-export class WsEvents {
-  constructor(private readonly roomsStorage: RoomsStorage) {}
+export class WsEmitter {
+  private readonly roomsStorage: RoomsStorage = new RoomsStorage();
 
   public async emit(event: string, data: Record<any, any>, roomName: string | string[]): Promise<void>;
   public async emit(event: string, data: Record<any, any>, ws: WebSocket | WebSocket[]): Promise<void>;

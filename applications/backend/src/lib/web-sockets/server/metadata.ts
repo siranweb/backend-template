@@ -1,11 +1,10 @@
-import { EventHandlerMetadata } from './types';
+import { WsHandlerMetadata } from './types';
 
-export const socketsResolverMetadataSymbol = Symbol('socketsResolverMetadata');
-export const eventHandlerMetadataSymbol = Symbol('eventHandlerMetadata');
+export const wsGatewayMetadataSymbol = Symbol('wsGatewayMetadata');
+export const wsHandlerMetadataSymbol = Symbol('wsHandlerMetadata');
 
-export const getDefaultEventHandlerMetadata = (): EventHandlerMetadata => {
+export const getDefaultWsHandlerMetadata = (): WsHandlerMetadata => {
   return {
-    eventName: '',
-    middlewares: [],
+    command: '',
   };
 };
