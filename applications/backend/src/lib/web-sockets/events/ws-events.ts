@@ -9,7 +9,7 @@ interface Message {
   };
 }
 
-export class WebSockets {
+export class WsEvents {
   constructor(private readonly roomsStorage: RoomsStorage) {}
 
   public async emit(event: string, data: Record<any, any>, roomName: string | string[]): Promise<void>;
