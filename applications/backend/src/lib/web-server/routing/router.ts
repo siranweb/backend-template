@@ -53,12 +53,7 @@ export class Router {
     };
   }
 
-  private assignHandler(
-    node: RouterNode,
-    method: string,
-    route: string,
-    handler: any,
-  ): HandlerInfo {
+  private assignHandler(node: RouterNode, method: string, route: string, handler: any): HandlerInfo {
     if (!this.stored.has(node)) {
       this.stored.set(node, {
         routes: {},

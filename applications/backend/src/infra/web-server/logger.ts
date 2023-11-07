@@ -66,14 +66,7 @@ export class WebServerLogger implements IWebServerLogger {
     });
   }
 
-  failed(
-    method: string,
-    url: string,
-    ms: number,
-    status: number,
-    error: string,
-    context?: Context,
-  ) {
+  failed(method: string, url: string, ms: number, status: number, error: string, context?: Context) {
     this.logger.log({
       level: 'http',
       timestamp: dayjs().utc(),

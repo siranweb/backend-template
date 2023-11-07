@@ -1,8 +1,4 @@
-import {
-  controllerMetadataSymbol,
-  endpointMetadataSymbol,
-  getDefaultEndpointMetadata,
-} from './metadata';
+import { controllerMetadataSymbol, endpointMetadataSymbol, getDefaultEndpointMetadata } from './metadata';
 import { ControllerMetadata, EndpointMetadata } from './types';
 
 export const Controller = (): any => {

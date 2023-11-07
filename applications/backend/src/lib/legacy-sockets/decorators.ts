@@ -1,8 +1,4 @@
-import {
-  eventHandlerMetadataSymbol,
-  getDefaultEventHandlerMetadata,
-  socketsResolverMetadataSymbol,
-} from './metadata';
+import { eventHandlerMetadataSymbol, getDefaultEventHandlerMetadata, socketsResolverMetadataSymbol } from './metadata';
 import { EventHandlerMetadata, SocketMiddleware } from './types';
 
 export const SocketsResolver = (): any => {
@@ -15,9 +11,7 @@ export const SocketsResolver = (): any => {
 export const EventHandler = (eventName: string): any => {
   return (target: any, propertyKey: string) => {
     const handler = target[propertyKey];
-    const metadata =
-      (Reflect.get(handler, eventHandlerMetadataSymbol) as EventHandlerMetadata) ??
-      getDefaultEventHandlerMetadata();
+    const metadata = (Reflect.get(handler, eventHandlerMetadataSymbol) as EventHandlerMetadata) ?? getDefaultEventHandlerMetadata();
 
     metadata.eventName = eventName;
     Reflect.set(handler, eventHandlerMetadataSymbol, metadata);
@@ -27,9 +21,7 @@ export const EventHandler = (eventName: string): any => {
 export const SocketsMiddlewares = (...middlewares: SocketMiddleware[]): any => {
   return (target: any, propertyKey: string) => {
     const handler = target[propertyKey];
-    const metadata =
-      (Reflect.get(handler, eventHandlerMetadataSymbol) as EventHandlerMetadata) ??
-      getDefaultEventHandlerMetadata();
+    const metadata = (Reflect.get(handler, eventHandlerMetadataSymbol) as EventHandlerMetadata) ?? getDefaultEventHandlerMetadata();
 
     metadata.middlewares = middlewares;
     Reflect.set(handler, eventHandlerMetadataSymbol, metadata);

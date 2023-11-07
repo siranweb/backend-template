@@ -78,15 +78,7 @@ export class SocketsServer {
     return !!handlerMetadata?.eventName && typeof handler === 'function';
   }
 
-  private buildHandlersChain(
-    middlewares: SocketMiddleware[],
-    socket: Socket,
-    handler: any,
-    resolver: Resolver,
-  ) {
-    return middlewares.reduceRight(
-      (acc, middleware) => (message: any) => middleware(socket, message, acc),
-      handler.bind(resolver),
-    );
+  private buildHandlersChain(middlewares: SocketMiddleware[], socket: Socket, handler: any, resolver: Resolver) {
+    return middlewares.reduceRight((acc, middleware) => (message: any) => middleware(socket, message, acc), handler.bind(resolver));
   }
 }

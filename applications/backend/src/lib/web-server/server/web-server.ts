@@ -27,11 +27,7 @@ export interface Context {
 
 export type Handler = (ctx: Context) => any;
 
-export type OnErrorHandler = (
-  error: any,
-  req: IncomingMessage,
-  res: ServerResponse,
-) => any | Promise<any>;
+export type OnErrorHandler = (error: any, req: IncomingMessage, res: ServerResponse) => any | Promise<any>;
 export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
 export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
 
