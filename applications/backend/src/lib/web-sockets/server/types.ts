@@ -15,5 +15,5 @@ export type WsHandler = (ctx: Context) => any | Promise<any>;
 export interface WsGatewayMetadata {}
 
 export interface WsHandlerMetadata {
-  command: string;
+  event: string;
 }

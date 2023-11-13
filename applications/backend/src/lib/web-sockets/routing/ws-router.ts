@@ -1,23 +1,23 @@
-interface CommandHandlerData {
-  command: string;
+interface EventHandlerData {
+  event: string;
   handler: any;
 }
 
 export class WsRouter {
-  private readonly commandHandlers: Map<string, CommandHandlerData> = new Map();
+  private readonly eventHandlers: Map<string, EventHandlerData> = new Map();
 
-  public add(command: string, handler: any): void {
-    if (this.commandHandlers.has(command)) {
-      throw new Error(`Command ${command} already registered`);
+  public add(event: string, handler: any): void {
+    if (this.eventHandlers.has(event)) {
+      throw new Error(`Event ${event} already registered`);
     }
 
-    this.commandHandlers.set(command, {
-      command,
+    this.eventHandlers.set(event, {
+      event: event,
       handler,
     });
   }
 
-  public resolve(command: string): CommandHandlerData | null {
-    return this.commandHandlers.get(command);
+  public resolve(event: string): EventHandlerData | null {
+    return this.eventHandlers.get(event);
   }
 }

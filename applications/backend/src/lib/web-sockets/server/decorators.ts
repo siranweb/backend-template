@@ -13,7 +13,7 @@ export const WsHandler = (eventName: string): any => {
     const handler = target[propertyKey];
     const metadata = (Reflect.get(handler, wsHandlerMetadataSymbol) as WsHandlerMetadata) ?? getDefaultWsHandlerMetadata();
 
-    metadata.command = eventName;
+    metadata.event = eventName;
     Reflect.set(handler, wsHandlerMetadataSymbol, metadata);
   };
 };

@@ -45,14 +45,14 @@ export class WsServer {
         const timestamp = Date.now();
         const message = JSON.parse(buffer.toString());
         // TODO error
-        if (!message.command || typeof message.data !== 'object' || message.data === null) return;
-        const commandHandlerData = this.wsRouter.resolve(message.command);
-        if (!commandHandlerData) {
+        if (!message.event || typeof message.data !== 'object' || message.data === null) return;
+        const eventHandlerData = this.wsRouter.resolve(message.event);
+        if (!eventHandlerData) {
           // TODO Error
           return;
         }
 
-        const wsHandler = commandHandlerData.handler as WsHandler;
+        const wsHandler = eventHandlerData.handler as WsHandler;
 
         const context: Context = {
           ws,
@@ -95,9 +95,9 @@ export class WsServer {
       const isHandler = this.checkIsHandler(handlerMetadata, handler);
       if (!isHandler) continue;
 
-      const { command } = handlerMetadata as WsHandlerMetadata;
+      const { event } = handlerMetadata as WsHandlerMetadata;
 
-      this.wsRouter.add(command, handler.bind(gateway));
+      this.wsRouter.add(event, handler.bind(gateway));
     }
   }
 
@@ -106,6 +106,6 @@ export class WsServer {
   }
 
   private checkIsHandler(handlerMetadata: WsHandlerMetadata | null, handler: any): boolean {
-    return !!handlerMetadata?.command && typeof handler === 'function';
+    return !!handlerMetadata?.event && typeof handler === 'function';
   }
 }

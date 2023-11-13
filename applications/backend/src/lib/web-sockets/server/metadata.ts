@@ -5,6 +5,6 @@ export const wsHandlerMetadataSymbol = Symbol('wsHandlerMetadata');
 
 export const getDefaultWsHandlerMetadata = (): WsHandlerMetadata => {
   return {
-    command: '',
+    event: '',
   };
 };
