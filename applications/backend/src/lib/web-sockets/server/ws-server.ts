@@ -1,15 +1,27 @@
-import http from 'node:http';
+import http from "node:http";
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
 import { WsHandlerMetadata, Gateway, Context, WsHandler, WsGatewayMetadata } from './types';
 import { wsHandlerMetadataSymbol, wsGatewayMetadataSymbol } from './metadata';
+import { EventEmitter } from "node:events";
 
 interface Config {
   port: number;
 }
 
+enum WsServerEvent {
+  ERROR = 'error',
+  EVENT = 'event',
+  EVENT_FINISHED = 'event_finished',
+}
+
+export type OnErrorHandler = (error: any, ws: WebSocket) => any | Promise<any>;
+export type OnEventHandler = (ctx: Context) => any | Promise<any>;
+export type OnEventFinishedHandler = (ctx: Context) => any | Promise<any>;
+
 export class WsServer {
   private readonly wss: WebSocketServer;
+  private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly wsRouter: WsRouter = new WsRouter();
   private readonly httpServer: http.Server;
   private readonly config: Config;
@@ -25,7 +37,7 @@ export class WsServer {
   }
 
   public async start(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise( (resolve, reject) => {
       try {
         this.init();
         this.httpServer.listen(this.config.port, () => resolve());
@@ -35,37 +47,61 @@ export class WsServer {
     });
   }
 
+  public onError(clb: OnErrorHandler): void {
+    this.eventEmitter.on(WsServerEvent.ERROR, clb);
+  }
+
+  public onEvent(clb: OnEventHandler): void {
+    this.eventEmitter.on(WsServerEvent.EVENT, clb);
+  }
+
+  public onEventFinished(clb: OnEventFinishedHandler): void {
+    this.eventEmitter.on(WsServerEvent.EVENT_FINISHED, clb);
+  }
+
   private init() {
     this.registerResolvers();
-    this.wss.on('error', () => {
-      // TODO
-    });
     this.wss.on('connection', (ws: WebSocket) => {
-      ws.on('message', (buffer) => {
-        const timestamp = Date.now();
+      ws.on('message', async (buffer) => {
+        const ctx = this.getBaseContext(ws);
+        this.eventEmitter.emit(WsServerEvent.EVENT, ctx);
         const message = JSON.parse(buffer.toString());
-        // TODO error
-        if (!message.event || typeof message.data !== 'object' || message.data === null) return;
+
+        const isCorrectMessage = message.event && typeof message.data === 'object' && message.data !== null
+        if (!isCorrectMessage) {
+          const error = new Error(`Bad message ${message}`);
+          this.eventEmitter.emit(WsServerEvent.ERROR, error, ws);
+          return;
+        }
+        ctx.data = message.data;
+
         const eventHandlerData = this.wsRouter.resolve(message.event);
         if (!eventHandlerData) {
-          // TODO Error
+          const error = new Error(`Unknown event ${message.event}`);
+          this.eventEmitter.emit(WsServerEvent.ERROR, error, ws);
           return;
         }
 
         const wsHandler = eventHandlerData.handler as WsHandler;
-
-        const context: Context = {
-          ws,
-          data: message.data,
-          meta: {
-            timestamp,
-          },
-        };
-
-        // TODO different events
-        wsHandler(context);
+        try {
+          await wsHandler(ctx);
+        } catch (e) {
+          this.eventEmitter.emit(WsServerEvent.ERROR, e, ws);
+        } finally {
+          this.eventEmitter.emit(WsServerEvent.EVENT_FINISHED, ctx);
+        }
       });
     });
+  }
+
+  private getBaseContext(ws: WebSocket): Context {
+    return {
+      ws,
+      data: undefined,
+      meta: {
+        timestamp: Date.now(),
+      }
+    }
   }
 
   private registerResolvers() {
