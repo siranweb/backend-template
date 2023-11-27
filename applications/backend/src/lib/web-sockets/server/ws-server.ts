@@ -1,9 +1,10 @@
-import http from "node:http";
+import http from 'node:http';
+import { EventEmitter } from 'node:events';
+import { Initializer } from '@/lib/initializer';
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
-import { WsHandlerMetadata, Gateway, Context, WsHandler, WsGatewayMetadata } from './types';
-import { wsHandlerMetadataSymbol, wsGatewayMetadataSymbol } from './metadata';
-import { EventEmitter } from "node:events";
+import { WsHandlerMetadata, Gateway, Context, WsHandler } from './types';
+import { wsHandlerMetadataSymbol } from './definition';
 
 interface Config {
   port: number;
@@ -22,6 +23,7 @@ export type OnEventFinishedHandler = (ctx: Context) => any | Promise<any>;
 export class WsServer {
   private readonly wss: WebSocketServer;
   private readonly eventEmitter: EventEmitter = new EventEmitter();
+  private readonly initializer: Initializer<Gateway, WsHandler> = new Initializer();
   private readonly wsRouter: WsRouter = new WsRouter();
   private readonly httpServer: http.Server;
   private readonly config: Config;
@@ -37,9 +39,10 @@ export class WsServer {
   }
 
   public async start(): Promise<void> {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
-        this.init();
+        this.initializer.init(this.gateways, this.registerClb.bind(this));
+        this.handleConnection();
         this.httpServer.listen(this.config.port, () => resolve());
       } catch (e) {
         reject(e);
@@ -59,15 +62,14 @@ export class WsServer {
     this.eventEmitter.on(WsServerEvent.EVENT_FINISHED, clb);
   }
 
-  private init() {
-    this.registerResolvers();
+  private handleConnection() {
     this.wss.on('connection', (ws: WebSocket) => {
       ws.on('message', async (buffer) => {
         const ctx = this.getBaseContext(ws);
         this.eventEmitter.emit(WsServerEvent.EVENT, ctx);
         const message = JSON.parse(buffer.toString());
 
-        const isCorrectMessage = message.event && typeof message.data === 'object' && message.data !== null
+        const isCorrectMessage = message.event && typeof message.data === 'object' && message.data !== null;
         if (!isCorrectMessage) {
           const error = new Error(`Bad message ${message}`);
           this.eventEmitter.emit(WsServerEvent.ERROR, error, ws);
@@ -100,39 +102,18 @@ export class WsServer {
       data: undefined,
       meta: {
         timestamp: Date.now(),
-      }
-    }
+      },
+    };
   }
 
-  private registerResolvers() {
-    for (const gateway of this.gateways) {
-      const gatewayMetadata = this.getGatewayMetadata(gateway);
-
-      if (!gatewayMetadata) {
-        console.log(`${gateway.name} is not marked as websocket gateway`);
-        continue;
-      }
-
-      this.registerHandlers(gateway);
-    }
-  }
-
-  private getGatewayMetadata(gateway: Gateway): WsGatewayMetadata | null {
-    return Reflect.get(gateway.constructor, wsGatewayMetadataSymbol);
-  }
-
-  private registerHandlers(gateway: Gateway) {
-    const prototype = Object.getPrototypeOf(gateway);
-    const properties = Object.getOwnPropertyNames(prototype);
-    for (const property of properties) {
-      const handler = gateway[property];
+  // Initializer
+  private registerClb(gateway: Gateway, handlers: WsHandler[]) {
+    for (const handler of handlers) {
       const handlerMetadata = this.getHandlerMetadata(handler);
-
       const isHandler = this.checkIsHandler(handlerMetadata, handler);
       if (!isHandler) continue;
 
       const { event } = handlerMetadata as WsHandlerMetadata;
-
       this.wsRouter.add(event, handler.bind(gateway));
     }
   }

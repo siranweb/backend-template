@@ -1,8 +1,9 @@
+import { Initializer } from '@/lib/initializer';
 import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
 import { EventEmitter } from 'node:events';
-import { ControllerMetadata, EndpointMetadata, IController } from './types';
-import { controllerMetadataSymbol, endpointMetadataSymbol } from './metadata';
+import { EndpointMetadata, IController } from './types';
+import { endpointMetadataSymbol } from './definition';
 import { Router } from '../routing';
 import { ApiError, ErrorType } from './api-error';
 
@@ -40,6 +41,7 @@ enum WebServerEvent {
 export class WebServer {
   private readonly router: Router = new Router();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
+  private readonly initializer: Initializer<IController, Handler> = new Initializer();
   private readonly config: Config;
   private readonly controllers: IController[];
 
@@ -51,7 +53,7 @@ export class WebServer {
   public async start(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        this.initControllers();
+        this.initializer.init(this.controllers, this.registerClb.bind(this));
         const server = this.createHttpServer();
         server.listen(this.config.port, () => resolve());
       } catch (e) {
@@ -173,55 +175,18 @@ export class WebServer {
     return isJson ? JSON.parse(body) : body;
   }
 
-  private initControllers(): void {
-    for (const controller of this.controllers) {
-      const controllerMetadata = this.getControllerMetadata(controller);
-
-      if (!controllerMetadata) {
-        console.log(`${controller.name} is not marked as controller`);
-        continue;
-      }
-
-      const handlers = this.getEndpointHandlers(controller);
-      this.registerRoutes(controller, handlers);
-    }
-  }
-
-  private getEndpointHandlers(controller: IController): Handler[] {
-    const prototype = Object.getPrototypeOf(controller);
-    const properties = Object.getOwnPropertyNames(prototype);
-
-    const handlers: Handler[] = [];
-    for (const property of properties) {
-      const handler = controller[property];
-      const endpointMetadata = this.getEndpointMetadata(handler);
-      const isEndpoint = this.checkIsEndpoint(endpointMetadata, handler);
-      if (isEndpoint) {
-        handlers.push(handler);
-      }
-    }
-
-    return handlers;
-  }
-
-  private registerRoutes(controller: IController, handlers: Handler[]): void {
+  // Initializer
+  private registerClb(controller: IController, handlers: Handler[]): void {
     for (const handler of handlers) {
-      const endpointMetadata = this.getEndpointMetadata(handler)!;
+      const endpointMetadata = this.getEndpointMetadata(handler);
+      if (!endpointMetadata) continue;
       const { path: routerPath, method } = endpointMetadata;
       const route = path.join('/', this.config.prefix ?? '', '/', routerPath);
       this.router.register(method, route, handler.bind(controller));
     }
   }
 
-  private getControllerMetadata(controller: IController): ControllerMetadata | null {
-    return Reflect.get(controller.constructor, controllerMetadataSymbol);
-  }
-
   private getEndpointMetadata(handler: any): EndpointMetadata | null {
     return Reflect.get(handler, endpointMetadataSymbol);
-  }
-
-  private checkIsEndpoint(endpointMetadata: EndpointMetadata | null, handler: any): boolean {
-    return !!endpointMetadata && typeof handler === 'function';
   }
 }

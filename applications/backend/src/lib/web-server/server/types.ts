@@ -3,9 +3,7 @@ export interface EndpointMetadata {
   method: string;
 }
 
-export interface ControllerMetadata {
-  // prefix: string;
-}
+export interface ControllerMetadata {}
 
 export interface IController {
   [key: string]: any;

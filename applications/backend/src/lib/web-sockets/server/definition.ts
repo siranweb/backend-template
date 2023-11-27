@@ -1,8 +1,18 @@
-import { wsHandlerMetadataSymbol, getDefaultWsHandlerMetadata, wsGatewayMetadataSymbol } from './metadata';
+import { markInitializable } from '@/lib/initializer';
 import { WsHandlerMetadata } from './types';
+
+export const wsGatewayMetadataSymbol = Symbol('wsGatewayMetadata');
+export const wsHandlerMetadataSymbol = Symbol('wsHandlerMetadata');
+
+export const getDefaultWsHandlerMetadata = (): WsHandlerMetadata => {
+  return {
+    event: '',
+  };
+};
 
 export const WsGateway = (): any => {
   return (target: any) => {
+    markInitializable(target);
     const metadata = {};
     Reflect.set(target, wsGatewayMetadataSymbol, metadata);
   };
