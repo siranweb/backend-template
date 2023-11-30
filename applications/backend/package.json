@@ -37,7 +37,6 @@
     "pnpm": "^8.9.2",
     "prettier": "^3.0.0",
     "tsc-alias": "^1.8.7",
-    "typescript": "^5.1.6",
-    "watch": "^1.0.2"
+    "typescript": "^5.1.6"
   }
 }
