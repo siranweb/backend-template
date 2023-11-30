@@ -6,10 +6,10 @@ export class Initializer<InitializableItem extends Record<string, any>, Handler 
     registerClb: (toInitializeItem: InitializableItem, handlers: Handler[]) => void,
   ): void {
     for (const item of initializableItems) {
-      const metadata = this.checkIsInitializable(item);
+      const metadata = this.checkIsInitializable(item.constructor);
 
       if (!metadata) {
-        console.log(`${item} is not marked for initialization`);
+        console.log(`${item.constructor.name} is not marked for initialization`);
         continue;
       }
 
@@ -34,7 +34,7 @@ export class Initializer<InitializableItem extends Record<string, any>, Handler 
     return handlers;
   }
 
-  private checkIsInitializable(initializableItem: InitializableItem): boolean {
+  private checkIsInitializable(initializableItem: any): boolean {
     return Reflect.get(initializableItem, initializableSymbol);
   }
 

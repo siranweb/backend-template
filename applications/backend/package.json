@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node --loader=./loader.js ./dist/index.js",
-    "start:dev": "node_modules/.bin/watch --interval=1 'clear && node_modules/.bin/pnpm run build && node_modules/.bin/pnpm run start' ./src",
+    "start:dev": "nodemon --watch ./src -e 'ts' --exec 'clear && node_modules/.bin/pnpm run build && node_modules/.bin/pnpm run start'",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext .ts src",
     "format": "prettier --write src"
@@ -16,10 +16,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "8.5.0",
+    "@types/pg": "^8.10.9",
     "dotenv": "^16.3.1",
     "jose": "^4.14.4",
     "kysely": "0.26.1",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "ws": "^8.14.2",
     "zod": "3.22.0"

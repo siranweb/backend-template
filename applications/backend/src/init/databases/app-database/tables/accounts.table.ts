@@ -1,5 +1,8 @@
-import { TableBase } from '@/init/databases/app-database/tables/base';
-import { AccountRole } from '@/app/users/entities/account.entity';
+import { TableBase } from './base';
+
+enum AccountRole {
+  REGULAR = 'regular',
+}
 
 export interface AccountsTable extends TableBase {
   login: string;

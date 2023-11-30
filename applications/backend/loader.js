@@ -10,7 +10,6 @@ let postfixes = extensions.map(e => `.${e}`).concat(indexFiles.map(p => `/${p}`)
 function findPostfix(specifier, context) {
   const fileEndings = specifier.endsWith('/') ? indexFiles : postfixes;
   for (const fileEnding of fileEndings) {
-    console.log(specifier + fileEnding);
     const isFound = existsSync(specifier.startsWith('/') ? specifier + fileEnding : join(dirname(fileURLToPath(context.parentURL)), specifier + fileEnding));
     if (isFound) return fileEnding;
   }
@@ -23,7 +22,6 @@ function findJsPostfix(specifier, isNpmLib) {
 let prefixes = ['/', './', '../']
 export function resolve(specifier, context, nextResolve) {
   const isNpmLib = !prefixes.some(p => specifier.startsWith(p));
-  console.log(prefixes.some(p => specifier.startsWith(p)));
   let postfix = prefixes.some(p => specifier.startsWith(p))
     && !extname(basename(specifier))
     && findPostfix(specifier, context)
