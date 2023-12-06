@@ -9,8 +9,12 @@
     "start": "node --loader=./loader.js ./dist/index.js",
     "start:dev": "nodemon --watch ./src -e 'ts' --exec 'clear && node_modules/.bin/pnpm run build && node_modules/.bin/pnpm run start'",
     "build": "tsc && tsc-alias",
-    "lint": "eslint --ext .ts src",
-    "format": "prettier --write src"
+    "lint": "eslint --ext .ts src scripts",
+    "format": "prettier --write src scripts",
+    "migrations:create": "tsx scripts/migrations/create.ts",
+    "migrations:sync": "tsx scripts/migrations/sync.ts",
+    "migrations:up": "tsx scripts/migrations/up.ts",
+    "migrations:down": "tsx scripts/migrations/down.ts"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +41,7 @@
     "pnpm": "^8.9.2",
     "prettier": "^3.0.0",
     "tsc-alias": "^1.8.7",
+    "tsx": "^4.6.2",
     "typescript": "^5.1.6"
   }
 }

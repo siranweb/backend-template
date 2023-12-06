@@ -12,8 +12,6 @@ services:
       - "4001:4001"
     networks:
       - backend-network
-    volumes:
-      - ./applications/backend/logs:/app/logs
 
   primary-database:
     tty: true
