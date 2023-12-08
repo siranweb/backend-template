@@ -12,9 +12,21 @@ interface Message {
 export class WsEmitter {
   private readonly roomsStorage: RoomsStorage = new RoomsStorage();
 
-  public async emit(event: string, data: Record<any, any>, roomName: string | string[]): Promise<void>;
-  public async emit(event: string, data: Record<any, any>, ws: WebSocket | WebSocket[]): Promise<void>;
-  public async emit(event: string, data: Record<any, any>, roomNameOrWs: string | string[] | WebSocket | WebSocket[]): Promise<void> {
+  public async emit(
+    event: string,
+    data: Record<any, any>,
+    roomName: string | string[],
+  ): Promise<void>;
+  public async emit(
+    event: string,
+    data: Record<any, any>,
+    ws: WebSocket | WebSocket[],
+  ): Promise<void>;
+  public async emit(
+    event: string,
+    data: Record<any, any>,
+    roomNameOrWs: string | string[] | WebSocket | WebSocket[],
+  ): Promise<void> {
     const messageObj: Message = {
       event,
       data,

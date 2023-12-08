@@ -1,15 +1,10 @@
-export enum AccountRole {
-  REGULAR = 'regular',
-}
+import { uuidv7 } from 'uuidv7';
 
 export interface AccountParams {
   id?: string;
   login: string;
   passwordHash: string;
-  role?: AccountRole;
   salt: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export class Account {
@@ -17,17 +12,11 @@ export class Account {
   login: string;
   passwordHash: string;
   salt: string;
-  role: AccountRole;
 
   constructor(data: AccountParams) {
-    this.id = data.id ?? ''; // TODO uuid
+    this.id = data.id ?? uuidv7();
     this.login = data.login;
     this.passwordHash = data.passwordHash;
     this.salt = data.salt;
-    this.role = data.role ?? AccountRole.REGULAR;
-  }
-
-  comparePasswords(toCompare: string): boolean {
-    return true;
   }
 }

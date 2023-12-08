@@ -1,12 +1,10 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import pg from 'pg';
 import { config } from '@/infra/config';
-import { UsersTable } from './tables/users.table';
-import { AccountsTable } from './tables/accounts.table';
+import { AccountTable } from './tables/account.table';
 
 interface Database {
-  users: UsersTable;
-  accounts: AccountsTable;
+  account: AccountTable;
 }
 
 const dialect = new PostgresDialect({

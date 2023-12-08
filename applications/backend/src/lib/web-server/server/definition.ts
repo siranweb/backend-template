@@ -11,7 +11,7 @@ const getDefaultEndpointMetadata = (): EndpointMetadata => {
   };
 };
 
-export const Controller = (): any => {
+export const Controller = (prefix?: string): any => {
   return (target: any) => {
     markInitializable(target);
     const metadata: ControllerMetadata = {};

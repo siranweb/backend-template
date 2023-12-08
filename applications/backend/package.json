@@ -20,17 +20,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/pg": "^8.10.9",
     "dotenv": "^16.3.1",
     "jose": "^4.14.4",
     "kysely": "0.26.1",
-    "nodemon": "^3.0.1",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
+    "uuidv7": "^0.6.3",
     "ws": "^8.14.2",
     "zod": "3.22.0"
   },
   "devDependencies": {
+    "nodemon": "^3.0.1",
+    "@types/pg": "^8.10.9",
     "@types/better-sqlite3": "^7.6.4",
     "@types/node": "^20.3.2",
     "@types/ws": "^8.5.8",

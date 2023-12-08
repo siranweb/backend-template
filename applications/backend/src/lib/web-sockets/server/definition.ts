@@ -21,7 +21,9 @@ export const WsGateway = (): any => {
 export const WsHandler = (eventName: string): any => {
   return (target: any, propertyKey: string) => {
     const handler = target[propertyKey];
-    const metadata = (Reflect.get(handler, wsHandlerMetadataSymbol) as WsHandlerMetadata) ?? getDefaultWsHandlerMetadata();
+    const metadata =
+      (Reflect.get(handler, wsHandlerMetadataSymbol) as WsHandlerMetadata) ??
+      getDefaultWsHandlerMetadata();
 
     metadata.event = eventName;
     Reflect.set(handler, wsHandlerMetadataSymbol, metadata);

@@ -4,7 +4,10 @@ import { Kysely, Migrator, FileMigrationProvider, MigrationResultSet } from 'kys
 
 type MigrationMode = 'sync' | 'up' | 'down';
 
-function getMigrateFuncByMode(migrator: Migrator, mode: MigrationMode): () => Promise<MigrationResultSet> {
+function getMigrateFuncByMode(
+  migrator: Migrator,
+  mode: MigrationMode,
+): () => Promise<MigrationResultSet> {
   if (mode === 'sync') return migrator.migrateToLatest.bind(migrator);
   if (mode === 'up') return migrator.migrateUp.bind(migrator);
   if (mode === 'down') return migrator.migrateDown.bind(migrator);

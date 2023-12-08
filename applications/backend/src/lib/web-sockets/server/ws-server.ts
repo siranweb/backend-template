@@ -69,7 +69,8 @@ export class WsServer {
         this.eventEmitter.emit(WsServerEvent.EVENT, ctx);
         const message = JSON.parse(buffer.toString());
 
-        const isCorrectMessage = message.event && typeof message.data === 'object' && message.data !== null;
+        const isCorrectMessage =
+          message.event && typeof message.data === 'object' && message.data !== null;
         if (!isCorrectMessage) {
           const error = new Error(`Bad message ${message}`);
           this.eventEmitter.emit(WsServerEvent.ERROR, error, ws);

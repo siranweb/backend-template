@@ -13,6 +13,17 @@ export interface Config {
   webSockets: {
     port: number;
   };
+  jwt: {
+    secret: string;
+    issuer: string;
+    audience: string;
+    accessToken: {
+      expirationTime: string;
+    };
+    refreshToken: {
+      expirationTime: string;
+    };
+  };
   database: {
     primary: {
       user: string;
@@ -31,6 +42,17 @@ export const config: Config = {
   },
   webSockets: {
     port: +Number(process.env.WS_SERVER_PORT),
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    issuer: 'issuer',
+    audience: 'audience',
+    accessToken: {
+      expirationTime: '2h',
+    },
+    refreshToken: {
+      expirationTime: '30d',
+    },
   },
   database: {
     primary: {

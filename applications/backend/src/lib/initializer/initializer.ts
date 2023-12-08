@@ -1,6 +1,9 @@
 import { initializableSymbol } from './initializable';
 
-export class Initializer<InitializableItem extends Record<string, any>, Handler extends (...args: any[]) => any> {
+export class Initializer<
+  InitializableItem extends Record<string, any>,
+  Handler extends (...args: any[]) => any,
+> {
   public init(
     initializableItems: InitializableItem[],
     registerClb: (toInitializeItem: InitializableItem, handlers: Handler[]) => void,
