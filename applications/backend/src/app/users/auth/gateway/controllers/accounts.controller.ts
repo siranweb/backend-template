@@ -1,5 +1,5 @@
 import { Context, Controller, Endpoint } from '@/lib/web-server';
-import { createAccountSchema } from '../schemas/auth.schemas';
+import { createAccountSchema } from '../schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { Config, NodeEnv } from '@/infra/config';
 
@@ -19,7 +19,7 @@ export class AccountsController {
     });
 
     let cookie = `accessToken=${result.accessToken};refreshToken=${result.refreshToken}; HttpOnly; SameSite=Strict`;
-    if (this.config.nodeEnv === NodeEnv.DEVELOPMENT) {
+    if (this.config.nodeEnv === NodeEnv.PRODUCTION) {
       cookie += '; Secure'
     }
 
