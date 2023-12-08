@@ -1,6 +1,7 @@
 import readline from 'node:readline';
 import process from 'node:process';
 
+// TODO move CLI to lib
 export function askQuestion(query: string): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
