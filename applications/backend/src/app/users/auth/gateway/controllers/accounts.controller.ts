@@ -18,12 +18,34 @@ export class AccountsController {
       password: body.password,
     });
 
-    let cookie = `accessToken=${result.accessToken};refreshToken=${result.refreshToken}; HttpOnly; SameSite=Strict`;
+    const cookie = this.buildCookie(result.accessToken, result.refreshToken);
+    ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.end();
+  }
+
+  @Endpoint('POST', '/tokens')
+  async refreshTokens(ctx: Context) {
+    // TODO
+    ctx.res.end();
+  }
+
+  @Endpoint('POST', '/session')
+  async login(ctx: Context) {
+    // TODO
+    ctx.res.end();
+  }
+
+  @Endpoint('DELETE', '/session')
+  async logout(ctx: Context) {
+    // TODO
+    ctx.res.end();
+  }
+
+  private buildCookie(accessToken: string, refreshToken: string): string {
+    let cookie = `accessToken=${accessToken};refreshToken=${refreshToken}; HttpOnly; SameSite=Strict`;
     if (this.config.nodeEnv === NodeEnv.PRODUCTION) {
       cookie += '; Secure'
     }
-
-    ctx.res.setHeader('Set-Cookie', cookie);
-    ctx.res.end();
+    return cookie;
   }
 }
