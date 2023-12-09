@@ -1,8 +1,8 @@
 import { AppDatabase } from '@/init/databases/app-database/database';
-import { Account } from '../entities/account.entity';
-import { IAccountsRepository } from '@/app/users/auth/types';
+import { Account } from '../../auth/entities/account.entity';
+import { IUsersRepository } from '@/app/users/shared/types';
 
-export class AccountsRepository implements IAccountsRepository {
+export class UsersRepository implements IUsersRepository {
   constructor(private readonly db: AppDatabase) {}
 
   async save(account: Account): Promise<Account> {

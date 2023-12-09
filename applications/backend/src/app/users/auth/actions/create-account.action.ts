@@ -1,7 +1,7 @@
 import { IAction } from '@/infra/common/types';
 import { Account } from '@/app/users/auth/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
-import { IAccountsRepository } from '@/app/users/auth/types';
+import { IUsersRepository } from '@/app/users/shared/types';
 import { IJWTService } from '@/app/users/tokens/types';
 import { Config } from '@/infra/config';
 import { ICryptography } from '@/app/cryptography/types';
@@ -19,7 +19,7 @@ interface Result {
 
 export class CreateAccountAction implements IAction {
   constructor(
-    private readonly accountsRepository: IAccountsRepository,
+    private readonly accountsRepository: IUsersRepository,
     private readonly jwtService: IJWTService,
     private readonly cryptography: ICryptography,
     private readonly config: Config,
