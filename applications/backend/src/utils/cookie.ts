@@ -1,7 +1,7 @@
 export function parseCookie(cookie: string): Record<string, any> {
   const cookiePairs = cookie.split(';');
   const obj: Record<string, any> = {};
-  cookiePairs.forEach(pair => {
+  cookiePairs.forEach((pair) => {
     const [name, value] = pair.split('=');
     if (!name) return;
     const mustBeTrue = value === '';

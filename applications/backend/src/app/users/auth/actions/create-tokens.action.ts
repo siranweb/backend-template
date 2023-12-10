@@ -23,7 +23,7 @@ export class CreateTokensAction implements IAction {
       audience: this.config.jwt.audience,
     });
     const { accountId } = payload;
-    
+
     const existingAccount = await this.accountsRepository.getAccountById(accountId);
     if (!existingAccount) throw new UserNotFoundError();
 
