@@ -26,4 +26,14 @@ export class UsersRepository implements IUsersRepository {
 
     return result ? new Account(result) : null;
   }
+
+  async getAccountById(id: string): Promise<Account | null> {
+    const result = await this.db
+      .selectFrom('account')
+      .where('id', '=', id)
+      .selectAll()
+      .executeTakeFirst();
+
+    return result ? new Account(result) : null;
+  }
 }

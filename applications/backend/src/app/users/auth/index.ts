@@ -5,6 +5,7 @@ import { cryptography } from '@/app/cryptography';
 import { AccountsController } from '@/app/users/auth/gateway/controllers/accounts.controller';
 import { UsersRepository } from '@/app/users/shared/repositories/users.repository';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
+import { CreateTokensAction } from '@/app/users/auth/actions/create-tokens.action';
 
 export const accountsRepository = new UsersRepository(appDatabase);
 export const createAccountAction = new CreateAccountAction(
@@ -13,4 +14,9 @@ export const createAccountAction = new CreateAccountAction(
   cryptography,
   config,
 );
-export const accountsController = new AccountsController(config, createAccountAction);
+export const createTokensAction = new CreateTokensAction(accountsRepository, jwtService, config);
+export const accountsController = new AccountsController(
+  config,
+  createAccountAction,
+  createTokensAction,
+);
