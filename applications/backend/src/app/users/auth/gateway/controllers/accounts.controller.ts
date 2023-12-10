@@ -1,5 +1,5 @@
 import { Context, Controller, Endpoint } from '@/lib/web-server';
-import { createAccountSchema } from '../schemas/accounts.schemas';
+import { createAccountSchema, loginAccountSchema } from '../schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { Config, NodeEnv } from '@/infra/config';
 import { buildCookie, parseCookie } from '@/utils/cookie';
@@ -56,6 +56,7 @@ export class AccountsController {
 
   @Endpoint('POST', '/session')
   async login(ctx: Context) {
+    const { body } = loginAccountSchema.parse(ctx);
     // TODO
     ctx.res.end();
   }

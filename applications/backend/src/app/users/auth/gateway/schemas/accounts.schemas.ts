@@ -8,3 +8,5 @@ export const createAccountSchema = z.object({
     })
     .required(),
 });
+
+export const loginAccountSchema = createAccountSchema;
