@@ -1,5 +1,5 @@
 import { AppDatabase } from '@/init/databases/app-database/database';
-import { Account } from '../../auth/entities/account.entity';
+import { Account } from '../auth/entities/account.entity';
 import { IUsersRepository } from '@/app/users/shared/types';
 
 export class UsersRepository implements IUsersRepository {

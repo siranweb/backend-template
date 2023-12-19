@@ -3,7 +3,7 @@ import { appDatabase } from '@/init/databases/app-database/database';
 import { jwtService } from '@/app/users/tokens';
 import { cryptography } from '@/app/cryptography';
 import { AccountsController } from '@/app/users/auth/gateway/controllers/accounts.controller';
-import { UsersRepository } from '@/app/users/shared/repositories/users.repository';
+import { UsersRepository } from '@/app/users/shared/users.repository';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/create-tokens-by-refresh-token.action';
 import { LoginAction } from '@/app/users/auth/actions/login.action';
