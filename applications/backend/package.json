@@ -6,9 +6,8 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "node --loader=./loader.js ./dist/index.js",
-    "start:dev": "nodemon --watch ./src -e 'ts' --exec 'clear && node_modules/.bin/pnpm run build && node_modules/.bin/pnpm run start'",
-    "build": "tsc && tsc-alias",
+    "start": "tsx src/index.ts",
+    "start:dev": "tsx watch src/index.ts",
     "lint": "eslint --ext .ts src scripts",
     "format": "prettier --write src scripts",
     "migrations:create": "tsx scripts/migrations/create.ts",
@@ -30,7 +29,6 @@
     "zod": "3.22.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
     "@types/pg": "^8.10.9",
     "@types/better-sqlite3": "^7.6.4",
     "@types/node": "^20.3.2",
@@ -41,8 +39,6 @@
     "eslint-config-prettier": "^8.8.0",
     "pnpm": "^8.9.2",
     "prettier": "^3.0.0",
-    "tsc-alias": "^1.8.7",
-    "tsx": "^4.6.2",
-    "typescript": "^5.1.6"
+    "tsx": "^4.6.2"
   }
 }

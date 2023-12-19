@@ -5,7 +5,7 @@ import { IUsersRepository } from '@/app/users/shared/types';
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly db: AppDatabase) {}
 
-  async save(account: Account): Promise<Account> {
+  async saveAccount(account: Account): Promise<Account> {
     return await this.db.transaction().execute(async (trx): Promise<Account> => {
       const result = await trx
         .insertInto('account')
@@ -35,5 +35,23 @@ export class UsersRepository implements IUsersRepository {
       .executeTakeFirst();
 
     return result ? new Account(result) : null;
+  }
+
+  async storeInvalidRefreshToken(token: string): Promise<string> {
+    const result = await this.db
+      .insertInto('invalidRefreshToken')
+      .values({ token })
+      .returning('token')
+      .executeTakeFirst();
+    return result.token;
+  }
+
+  async isRefreshTokenUsed(token: string): Promise<boolean> {
+    const result = await this.db
+      .selectFrom('invalidRefreshToken')
+      .where('token', '=', token)
+      .select('token')
+      .executeTakeFirst();
+    return !!result;
   }
 }

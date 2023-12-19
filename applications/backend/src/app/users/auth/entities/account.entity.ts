@@ -19,4 +19,8 @@ export class Account {
     this.passwordHash = data.passwordHash;
     this.salt = data.salt;
   }
+
+  public comparePasswordHash(hash: string): boolean {
+    return hash === this.passwordHash;
+  }
 }

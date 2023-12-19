@@ -1,18 +1,21 @@
-import { Context, Controller, Endpoint } from '@/lib/web-server';
+import { ApiError, Context, Controller, Endpoint, ErrorType } from '@/lib/web-server';
 import { createAccountSchema, loginAccountSchema } from '../schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { Config, NodeEnv } from '@/infra/config';
 import { buildCookie, parseCookie } from '@/utils/cookie';
-import { CreateTokensAction } from '@/app/users/auth/actions/create-tokens.action';
-
-// TODO add refresh token to db
+import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/create-tokens-by-refresh-token.action';
+import { LoginAction } from '@/app/users/auth/actions/login.action';
+import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
+import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
 
 @Controller('accounts')
 export class AccountsController {
   constructor(
     private readonly config: Config,
     private readonly createAccountAction: CreateAccountAction,
-    private readonly createTokensAction: CreateTokensAction,
+    private readonly createTokensAction: CreateTokensByRefreshTokenAction,
+    private readonly loginAction: LoginAction,
+    private readonly invalidateRefreshToken: InvalidateRefreshToken,
   ) {}
 
   @Endpoint('POST', '/')
@@ -23,15 +26,7 @@ export class AccountsController {
       password: body.password,
     });
 
-    const cookieObj = {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-      HttpOnly: true,
-      SameSite: 'strict',
-      Secure: this.config.nodeEnv === NodeEnv.PRODUCTION,
-    };
-
-    const cookie = buildCookie(cookieObj);
+    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
     ctx.res.setHeader('Set-Cookie', cookie);
     ctx.res.end();
   }
@@ -39,17 +34,24 @@ export class AccountsController {
   @Endpoint('POST', '/tokens')
   async refreshTokens(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie);
-    const result = await this.createTokensAction.execute(cookieObj.refreshToken);
+    let result;
+    try {
+      result = await this.createTokensAction.execute(cookieObj.refreshToken);
+    } catch (e) {
+      if (e instanceof TokenInvalidError) {
+        throw new ApiError({
+          statusCode: 403,
+          type: ErrorType.APP,
+          original: e,
+        });
+      } else {
+        throw e;
+      }
+    }
 
-    const newCookieObj = {
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
-      HttpOnly: true,
-      SameSite: 'strict',
-      Secure: this.config.nodeEnv === NodeEnv.PRODUCTION,
-    };
+    await this.invalidateRefreshToken.execute(cookieObj.refreshToken);
 
-    const cookie = buildCookie(newCookieObj);
+    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
     ctx.res.setHeader('Set-Cookie', cookie);
     ctx.res.end();
   }
@@ -57,13 +59,34 @@ export class AccountsController {
   @Endpoint('POST', '/session')
   async login(ctx: Context) {
     const { body } = loginAccountSchema.parse(ctx);
-    // TODO
+    const result = await this.loginAction.execute(body.login, body.password);
+
+    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
+    ctx.res.setHeader('Set-Cookie', cookie);
     ctx.res.end();
   }
 
   @Endpoint('DELETE', '/session')
   async logout(ctx: Context) {
-    // TODO
+    const cookieObj = parseCookie(ctx.req.headers.cookie);
+    if (typeof cookieObj.refreshToken === 'string' && cookieObj.refreshToken) {
+      await this.invalidateRefreshToken.execute(cookieObj.refreshToken);
+    }
+
+    const cookie = this.getAuthCookie('', '');
+    ctx.res.setHeader('Set-Cookie', cookie);
     ctx.res.end();
+  }
+
+  private getAuthCookie(accessToken: string, refreshToken: string): string {
+    const newCookieObj = {
+      accessToken,
+      refreshToken,
+      HttpOnly: true,
+      SameSite: 'strict',
+      Secure: this.config.nodeEnv === NodeEnv.PRODUCTION,
+    };
+
+    return buildCookie(newCookieObj);
   }
 }

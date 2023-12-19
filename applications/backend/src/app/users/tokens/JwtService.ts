@@ -1,4 +1,4 @@
-import jose from 'jose';
+import * as jose from 'jose';
 import { TextEncoder } from 'node:util';
 import { IJWTService, CreateTokenParams, IsValidParams, DecryptResult } from './types';
 

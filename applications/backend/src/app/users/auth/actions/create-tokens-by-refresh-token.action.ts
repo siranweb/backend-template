@@ -3,19 +3,23 @@ import { IUsersRepository } from '@/app/users/shared/types';
 import { IJWTService } from '@/app/users/tokens/types';
 import { Config } from '@/infra/config';
 import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';
+import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
 
 interface Result {
   accessToken: string;
   refreshToken: string;
 }
 
-export class CreateTokensAction implements IAction {
+export class CreateTokensByRefreshTokenAction implements IAction {
   constructor(
-    private readonly accountsRepository: IUsersRepository,
+    private readonly usersRepository: IUsersRepository,
     private readonly jwtService: IJWTService,
     private readonly config: Config,
   ) {}
   async execute(oldRefreshToken: string): Promise<Result> {
+    const isUsed = await this.usersRepository.isRefreshTokenUsed(oldRefreshToken);
+    if (isUsed) throw new TokenInvalidError();
+
     const { payload } = await this.jwtService.decrypt({
       token: oldRefreshToken,
       secret: this.config.jwt.secret,
@@ -24,7 +28,7 @@ export class CreateTokensAction implements IAction {
     });
     const { accountId } = payload;
 
-    const existingAccount = await this.accountsRepository.getAccountById(accountId);
+    const existingAccount = await this.usersRepository.getAccountById(accountId);
     if (!existingAccount) throw new UserNotFoundError();
 
     const accessToken = await this.jwtService.createToken({
