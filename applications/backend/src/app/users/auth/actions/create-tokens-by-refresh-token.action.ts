@@ -1,5 +1,5 @@
 import { IAction } from '@/infra/common/types';
-import { IUsersRepository } from '@/app/users/shared/types';
+import { IUsersRepository } from '@/app/users/shared';
 import { IJWTService } from '@/app/users/tokens/types';
 import { Config } from '@/infra/config';
 import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';

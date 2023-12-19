@@ -1,6 +1,6 @@
 import { AppDatabase } from '@/init/databases/app-database/database';
 import { Account } from '../auth/entities/account.entity';
-import { IUsersRepository } from '@/app/users/shared/types';
+import { IUsersRepository } from '@/app/users/shared';
 
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly db: AppDatabase) {}

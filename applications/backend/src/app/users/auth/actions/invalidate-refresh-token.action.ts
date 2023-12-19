@@ -1,5 +1,5 @@
 import { IAction } from '@/infra/common/types';
-import { IUsersRepository } from '@/app/users/shared/types';
+import { IUsersRepository } from '@/app/users/shared';
 
 export class InvalidateRefreshToken implements IAction {
   constructor(private readonly usersRepository: IUsersRepository) {}

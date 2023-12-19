@@ -1,7 +1,7 @@
 import { IAction } from '@/infra/common/types';
 import { Account } from '@/app/users/auth/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
-import { IUsersRepository } from '@/app/users/shared/types';
+import { IUsersRepository } from '@/app/users/shared';
 import { IJWTService } from '@/app/users/tokens/types';
 import { Config } from '@/infra/config';
 import { ICryptography } from '@/app/cryptography/types';
