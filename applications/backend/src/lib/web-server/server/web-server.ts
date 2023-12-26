@@ -167,6 +167,7 @@ export class WebServer {
     }
   }
 
+  // TODO separate to different class
   private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
     const promise = new Promise<string>((resolve, reject) => {
       let body = '';

@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 import { TextEncoder } from 'node:util';
-import { IJWTService, CreateTokenParams, IsValidParams, DecryptResult } from './types';
+import { CreateTokenParams, DecryptResult, IJWTService, IsValidParams } from './types';
 
 export class JwtService implements IJWTService {
   async createToken(params: CreateTokenParams): Promise<string> {

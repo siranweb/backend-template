@@ -1,10 +1,10 @@
 import { IAction } from '@/infra/common/types';
 import { Account } from '@/app/users/auth/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
-import { IUsersRepository } from '@/app/users/shared';
+import { IUsersRepository } from '@/app/users/shared/types';
 import { IJWTService } from '@/app/users/tokens/types';
 import { Config } from '@/infra/config';
-import { ICryptography } from '@/app/cryptography/types';
+import { ICryptographyService } from '@/app/cryptography/types';
 
 interface Params {
   login: string;
@@ -21,7 +21,7 @@ export class CreateAccountAction implements IAction {
   constructor(
     private readonly usersRepository: IUsersRepository,
     private readonly jwtService: IJWTService,
-    private readonly cryptography: ICryptography,
+    private readonly cryptographyService: ICryptographyService,
     private readonly config: Config,
   ) {}
   async execute(params: Params): Promise<Result> {
@@ -30,8 +30,8 @@ export class CreateAccountAction implements IAction {
       throw new UserLoginTakenError({ login: params.login });
     }
 
-    const salt = this.cryptography.random(20);
-    const passwordHash = await this.cryptography.hash(params.password, salt, 1000);
+    const salt = this.cryptographyService.random(20);
+    const passwordHash = await this.cryptographyService.hash(params.password, salt, 1000);
 
     const account = new Account({
       login: params.login,
