@@ -1,5 +1,5 @@
 import { ApiError, Context, Controller, Endpoint, ErrorType } from '@/lib/web-server';
-import { createAccountSchema, loginAccountSchema } from '../schemas/accounts.schemas';
+import { createAccountSchema, loginAccountSchema } from './schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { Config, NodeEnv } from '@/infra/config';
 import { buildCookie, parseCookie } from '@/utils/cookie';

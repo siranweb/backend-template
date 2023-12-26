@@ -2,7 +2,7 @@ import { Initializer } from '@/lib/initializer';
 import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
 import { EventEmitter } from 'node:events';
-import { EndpointMetadata, IController } from './types';
+import { Context, EndpointMetadata, IController } from './types';
 import { endpointMetadataSymbol } from './definition';
 import { Router } from '../routing';
 import { ApiError, ErrorType } from './api-error';
@@ -10,20 +10,6 @@ import { ApiError, ErrorType } from './api-error';
 interface Config {
   port: number;
   prefix?: string;
-}
-
-export interface Context {
-  req: IncomingMessage;
-  res: ServerResponse;
-  params: Record<string, string>;
-  search: Record<string, any>;
-  body: any;
-  meta: {
-    url: string;
-    route: string;
-    requestTimestamp: number;
-    responseTimestamp?: number;
-  };
 }
 
 export type Handler = (ctx: Context) => any;
