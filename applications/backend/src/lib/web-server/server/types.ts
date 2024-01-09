@@ -3,9 +3,12 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 export interface EndpointMetadata {
   path: string;
   method: string;
+  chain: ChainFunc[];
 }
 
-export interface ControllerMetadata {}
+export interface ControllerMetadata {
+  prefix: string;
+}
 
 export interface IController {
   [key: string]: any;
@@ -24,3 +27,6 @@ export interface Context {
     responseTimestamp?: number;
   };
 }
+
+export type Handler = (ctx: Context) => any;
+export type ChainFunc = (ctx: Context, next: Handler) => void | Promise<void>;

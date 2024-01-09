@@ -1,5 +1,7 @@
 import { initializableSymbol } from './initializable';
 
+// TODO get rid of reflect-metadata and use static instead
+
 export class Initializer<
   InitializableItem extends Record<string, any>,
   Handler extends (...args: any[]) => any,

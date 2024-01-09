@@ -2,9 +2,9 @@ import { IAction } from '@/infra/common/types';
 import { Account } from '@/app/users/auth/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
 import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from '@/app/users/tokens/types';
+import { IJWTService } from '@/lib/jwt';
 import { Config } from '@/infra/config';
-import { ICryptographyService } from '@/app/cryptography/types';
+import { ICryptographyService } from '@/lib/cryptography';
 
 interface Params {
   login: string;

@@ -17,7 +17,7 @@ export class WsRouter {
     });
   }
 
-  public resolve(event: string): EventHandlerData | null {
+  public resolve(event: string): EventHandlerData | undefined {
     return this.eventHandlers.get(event);
   }
 }

@@ -41,10 +41,10 @@ export const config: Config = {
     port: +Number(process.env.WEB_SERVER_PORT),
   },
   webSockets: {
-    port: +Number(process.env.WS_SERVER_PORT),
+    port: Number(process.env.WS_SERVER_PORT),
   },
   jwt: {
-    secret: process.env.JWT_SECRET,
+    secret: process.env.JWT_SECRET ?? '',
     issuer: 'issuer',
     audience: 'audience',
     accessToken: {
@@ -56,11 +56,11 @@ export const config: Config = {
   },
   database: {
     primary: {
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-      db: process.env.POSTGRES_DB,
-      host: process.env.POSTGRES_HOST,
-      port: +process.env.POSTGRES_PORT,
+      user: process.env.POSTGRES_USER ?? '',
+      password: process.env.POSTGRES_PASSWORD ?? '',
+      db: process.env.POSTGRES_DB ?? '',
+      host: process.env.POSTGRES_HOST ?? '',
+      port: Number(process.env.POSTGRES_PORT),
     },
   },
 };

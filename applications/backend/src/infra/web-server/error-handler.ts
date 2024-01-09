@@ -2,6 +2,7 @@ import { AppError } from '@/infra/errors/app-error';
 import { ApiError, ErrorType, OnErrorHandler } from '@/lib/web-server';
 import { ZodError } from 'zod';
 
+// TODO rewrite with class
 export const errorHandler = (): OnErrorHandler => async (error, req, res) => {
   const apiError = makeApiError(error);
   res.statusCode = apiError.statusCode;

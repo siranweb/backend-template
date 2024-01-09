@@ -2,31 +2,17 @@ import { Initializer } from '@/lib/initializer';
 import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
 import { EventEmitter } from 'node:events';
-import { Context, EndpointMetadata, IController } from './types';
-import { endpointMetadataSymbol } from './definition';
+import {
+  ChainFunc,
+  Context,
+  ControllerMetadata,
+  EndpointMetadata,
+  Handler,
+  IController,
+} from './types';
+import { controllerMetadataSymbol, endpointMetadataSymbol } from './definition';
 import { Router } from '../routing';
 import { ApiError, ErrorType } from './api-error';
-
-interface Config {
-  port: number;
-  prefix?: string;
-}
-
-export type Handler = (ctx: Context) => any;
-
-export type OnErrorHandler = (
-  error: any,
-  req: IncomingMessage,
-  res: ServerResponse,
-) => any | Promise<any>;
-export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
-export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
-
-enum WebServerEvent {
-  ERROR = 'error',
-  REQUEST = 'request',
-  REQUEST_FINISHED = 'request_finished',
-}
 
 export class WebServer {
   private readonly router: Router = new Router();
@@ -139,7 +125,7 @@ export class WebServer {
         url: req.url!,
         route: '',
         requestTimestamp: Date.now(),
-        responseTimestamp: null,
+        responseTimestamp: undefined,
       },
     };
   }
@@ -168,16 +154,60 @@ export class WebServer {
 
   // Initializer
   private registerClb(controller: IController, handlers: Handler[]): void {
-    for (const handler of handlers) {
+    const controllerMetadata = this.getControllerMetadata(controller);
+    if (!controllerMetadata) return;
+    for (const _handler of handlers) {
+      const handler = _handler.bind(controller);
       const endpointMetadata = this.getEndpointMetadata(handler);
       if (!endpointMetadata) continue;
       const { path: routerPath, method } = endpointMetadata;
-      const route = path.join('/', this.config.prefix ?? '', '/', routerPath);
-      this.router.register(method, route, handler.bind(controller));
+
+      const route = path.join(
+        '/',
+        this.config.prefix ?? '',
+        controllerMetadata.prefix ?? '',
+        '/',
+        routerPath,
+      );
+
+      const handlerFromChain = this.buildHandlerFromChain(handler, endpointMetadata.chain);
+      this.router.register(method, route, handlerFromChain);
     }
   }
 
-  private getEndpointMetadata(handler: any): EndpointMetadata | null {
+  private buildHandlerFromChain(handler: Handler, chain: ChainFunc[]): Handler {
+    if (chain.length === 0) return handler;
+    let lastFunc = handler;
+    for (const chainFunc of chain.reverse()) {
+      lastFunc = (ctx: Context) => chainFunc(ctx, lastFunc);
+    }
+    return lastFunc;
+  }
+
+  private getEndpointMetadata(handler: Handler): EndpointMetadata | null {
     return Reflect.get(handler, endpointMetadataSymbol);
   }
+
+  private getControllerMetadata(controller: IController): ControllerMetadata | null {
+    return Reflect.get(controller, controllerMetadataSymbol);
+  }
+}
+
+interface Config {
+  port: number;
+  prefix?: string;
+}
+
+export type OnErrorHandler = (
+  error: any,
+  req: IncomingMessage,
+  res: ServerResponse,
+) => any | Promise<any>;
+export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
+export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
+
+enum WebServerEvent {
+  ERROR = 'error',
+  REQUEST = 'request',
+  REQUEST_FINISHED = 'request_finished',
 }

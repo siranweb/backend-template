@@ -35,14 +35,12 @@ export class RoomsStorage {
   public addSocketToRoom(ws: WebSocket, name: string): void {
     let socket = this.sockets.get(ws);
     if (!socket) {
-      this.storeSocket(ws);
-      socket = this.sockets.get(ws);
+      socket = this.storeSocket(ws);
     }
 
     let room = this.rooms.get(name);
     if (!room) {
-      this.storeRoom(name);
-      room = this.rooms.get(name);
+      room = this.storeRoom(name);
     }
 
     const isAlreadyAdded = socket.rooms.has(room.name);
@@ -80,17 +78,24 @@ export class RoomsStorage {
     room.sockets = new Map();
   }
 
-  private storeSocket(ws: WebSocket): void {
-    this.sockets.set(ws, {
+  private storeSocket(ws: WebSocket): Socket {
+    const socket = {
       ws,
       rooms: new Map(),
-    });
+    };
+    this.sockets.set(ws, socket);
+    return socket;
   }
 
-  private storeRoom(name: string): void {
+  private storeRoom(name: string): Room {
+    const room = {
+      name,
+      sockets: new Map(),
+    };
     this.rooms.set(name, {
       name,
       sockets: new Map(),
     });
+    return room;
   }
 }

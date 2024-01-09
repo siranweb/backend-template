@@ -7,6 +7,7 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
+import { authChainHandlerFunc } from '@/init/di/infra.di';
 
 @Controller('accounts')
 export class AccountsController {
@@ -33,7 +34,7 @@ export class AccountsController {
 
   @Endpoint('POST', '/tokens')
   async refreshTokens(ctx: Context) {
-    const cookieObj = parseCookie(ctx.req.headers.cookie);
+    const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;
     try {
       result = await this.createTokensAction.execute(cookieObj.refreshToken);
@@ -68,13 +69,20 @@ export class AccountsController {
 
   @Endpoint('DELETE', '/session')
   async logout(ctx: Context) {
-    const cookieObj = parseCookie(ctx.req.headers.cookie);
+    const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     if (typeof cookieObj.refreshToken === 'string' && cookieObj.refreshToken) {
       await this.invalidateRefreshToken.execute(cookieObj.refreshToken);
     }
 
     const cookie = this.getAuthCookie('', '');
     ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.end();
+  }
+
+  @Endpoint('POST', '/example', {
+    chain: [authChainHandlerFunc],
+  })
+  async authProtectedMethodExample(ctx: Context) {
     ctx.res.end();
   }
 

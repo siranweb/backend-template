@@ -15,7 +15,6 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": false,
     "inlineSourceMap": true,
-    "strictNullChecks": false,
 
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events';
 import { Initializer } from '@/lib/initializer';
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
-import { WsHandlerMetadata, Gateway, Context, WsHandler } from './types';
+import { Context, Gateway, WsHandler, WsHandlerMetadata } from './types';
 import { wsHandlerMetadataSymbol } from './definition';
 
 interface Config {
@@ -100,7 +100,7 @@ export class WsServer {
   private getBaseContext(ws: WebSocket): Context {
     return {
       ws,
-      data: undefined,
+      data: {},
       meta: {
         timestamp: Date.now(),
       },

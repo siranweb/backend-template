@@ -1,1 +1,0 @@
-export { CORHandler } from './handler';
