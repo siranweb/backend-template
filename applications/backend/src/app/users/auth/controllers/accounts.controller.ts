@@ -7,7 +7,7 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
-import { authChainHandlerFunc } from '@/di/infra.di';
+import { webServerAuth } from '@/di/infra.di';
 
 @Controller('accounts')
 export class AccountsController {
@@ -80,7 +80,7 @@ export class AccountsController {
   }
 
   @Endpoint('POST', '/example', {
-    chain: [authChainHandlerFunc],
+    chain: [webServerAuth],
   })
   async authProtectedMethodExample(ctx: Context) {
     ctx.res.end();

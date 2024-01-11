@@ -1,9 +1,9 @@
-import http from 'node:http';
+import http, { IncomingMessage } from 'node:http';
 import { EventEmitter } from 'node:events';
 import { Initializer } from '@/lib/initializer';
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
-import { Context, Gateway, WsHandler, WsHandlerMetadata } from './types';
+import { Context, Gateway, Handler, WsHandlerMetadata } from './types';
 import { wsHandlerMetadataSymbol } from './definition';
 
 interface Config {
@@ -23,7 +23,7 @@ export type OnEventFinishedHandler = (ctx: Context) => any | Promise<any>;
 export class WsServer {
   private readonly wss: WebSocketServer;
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private readonly initializer: Initializer<Gateway, WsHandler> = new Initializer();
+  private readonly initializer: Initializer<Gateway, Handler> = new Initializer();
   private readonly wsRouter: WsRouter = new WsRouter();
   private readonly httpServer: http.Server;
   private readonly config: Config;
@@ -63,9 +63,9 @@ export class WsServer {
   }
 
   private handleConnection() {
-    this.wss.on('connection', (ws: WebSocket) => {
+    this.wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
       ws.on('message', async (buffer) => {
-        const ctx = this.getBaseContext(ws);
+        const ctx = this.getBaseContext(ws, req);
         this.eventEmitter.emit(WsServerEvent.EVENT, ctx);
         const message = JSON.parse(buffer.toString());
 
@@ -85,7 +85,7 @@ export class WsServer {
           return;
         }
 
-        const wsHandler = eventHandlerData.handler as WsHandler;
+        const wsHandler = eventHandlerData.handler as Handler;
         try {
           await wsHandler(ctx);
         } catch (e) {
@@ -97,9 +97,10 @@ export class WsServer {
     });
   }
 
-  private getBaseContext(ws: WebSocket): Context {
+  private getBaseContext(ws: WebSocket, req: IncomingMessage): Context {
     return {
       ws,
+      req,
       data: {},
       meta: {
         timestamp: Date.now(),
@@ -108,7 +109,7 @@ export class WsServer {
   }
 
   // Initializer
-  private registerClb(gateway: Gateway, handlers: WsHandler[]) {
+  private registerClb(gateway: Gateway, handlers: Handler[]) {
     for (const handler of handlers) {
       const handlerMetadata = this.getHandlerMetadata(handler);
       const isHandler = this.checkIsHandler(handlerMetadata, handler);
