@@ -1,6 +1,6 @@
 import { IAction } from '@/infra/common/types';
 import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from '@/lib/jwt';
+import { IJWTService } from 'src/app/users/auth/jwt';
 import { Config } from '@/infra/config';
 import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';

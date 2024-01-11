@@ -22,7 +22,7 @@ const db = new Kysely<any>({
   }),
 });
 
-const migrationsDirPath = path.join(srcDir, 'init/databases/app-database/migrations');
+const migrationsDirPath = path.join(srcDir, 'infra/databases/app-database/migrations');
 
 migrate(db, migrationsDirPath, 'down').catch((error) => {
   console.error(error);

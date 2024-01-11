@@ -1,10 +1,10 @@
 import { IAction } from '@/infra/common/types';
 import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from '@/lib/jwt';
+import { IJWTService } from 'src/app/users/auth/jwt';
 import { Config } from '@/infra/config';
 import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';
 import { UserWrongPasswordError } from '@/app/users/auth/errors/user-wrong-password.error';
-import { ICryptographyService } from '@/lib/cryptography';
+import { ICryptographyService } from 'src/lib/cryptography';
 
 interface Result {
   accessToken: string;

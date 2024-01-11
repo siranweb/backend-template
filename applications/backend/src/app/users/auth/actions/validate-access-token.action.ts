@@ -1,5 +1,5 @@
 import { IAction } from '@/infra/common/types';
-import { IJWTService } from '@/lib/jwt';
+import { IJWTService } from 'src/app/users/auth/jwt';
 import { Config } from '@/infra/config';
 
 export class ValidateAccessTokenAction implements IAction {

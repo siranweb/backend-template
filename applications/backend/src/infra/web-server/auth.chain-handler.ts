@@ -16,7 +16,6 @@ export class AuthChainHandler {
     }
 
     // TODO check is correct
-    // TODO use JWT service directly
     const isTokenValid = await this.validateAccessTokenAction.execute(cookieObj.accessToken);
     if (!isTokenValid) {
       throw new ApiError({

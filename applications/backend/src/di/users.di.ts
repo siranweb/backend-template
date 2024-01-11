@@ -1,7 +1,7 @@
 import { config } from '@/infra/config';
 import { appDatabase } from '@/init/databases/app-database/database';
-import { JwtService } from '@/lib/jwt';
-import { CryptographyService } from '@/lib/cryptography';
+import { JwtService } from '@/app/users/auth/jwt';
+import { CryptographyService } from 'src/lib/cryptography';
 import { AccountsController } from '@/app/users/auth/controllers/accounts.controller';
 import { UsersRepository } from '@/app/users/shared/users.repository';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';

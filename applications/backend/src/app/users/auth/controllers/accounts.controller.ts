@@ -7,7 +7,7 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
-import { authChainHandlerFunc } from '@/init/di/infra.di';
+import { authChainHandlerFunc } from '@/di/infra.di';
 
 @Controller('accounts')
 export class AccountsController {

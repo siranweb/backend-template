@@ -1,4 +1,4 @@
-import { JwtService } from '@/lib/jwt';
+import { JwtService } from '@/app/users/auth/jwt';
 import { AuthChainHandler } from '@/infra/web-server/auth.chain-handler';
 import { config } from '@/infra/config';
 import { ValidateAccessTokenAction } from '@/app/users/auth/actions/validate-access-token.action';
