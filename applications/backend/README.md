@@ -26,7 +26,7 @@ Backend application. Some info:
   - CLI migrations support 
 
 ## Getting started
-1. Recommended to use `pnpm` and `Docker`
+1. Node.js:20.1 is needed. Recommended to use `pnpm` and `Docker`
 2. Provide `.env` in root dir (like `.env.example`)
 3. [If new project] Update info in `package.json`
 4. [If new project] Update config in `@/infra/config/index.ts`
