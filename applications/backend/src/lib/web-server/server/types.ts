@@ -10,7 +10,7 @@ export interface ControllerMetadata {
   prefix: string;
 }
 
-export interface IController {
+export interface Controller {
   [key: string]: any;
 }
 

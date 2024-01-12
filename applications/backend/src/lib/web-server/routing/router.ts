@@ -28,6 +28,19 @@ export class Router {
     this.assignHandler(node, method, formattedRoute, handler);
   }
 
+  public getMethods(url: string): string[] {
+    const { pathname, searchParams } = new URL(url, 'resolve://');
+    const pathParts = this.splitPathToParts(pathname);
+
+    const foundNode = this.tree.findNodeByPathParts(pathParts);
+    if (!foundNode) return [];
+
+    const storedItem = this.stored.get(foundNode);
+    if (!storedItem) return [];
+
+    return Object.keys(storedItem.routes);
+  }
+
   public resolve(method: string, url: string): RoutePathInfo | null {
     const { pathname, searchParams } = new URL(url, 'resolve://');
     const pathParts = this.splitPathToParts(pathname);

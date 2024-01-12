@@ -5,10 +5,10 @@ import { EventEmitter } from 'node:events';
 import {
   ChainFunc,
   Context,
+  Controller,
   ControllerMetadata,
   EndpointMetadata,
   Handler,
-  IController,
 } from './types';
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './definition';
 import { Router } from '../routing';
@@ -19,11 +19,11 @@ export class WebServer {
   private readonly router: Router = new Router();
   private readonly bodyParser: BodyParser = new BodyParser();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private readonly initializer: Initializer<IController, Handler> = new Initializer();
+  private readonly initializer: Initializer<Controller, Handler> = new Initializer();
   private readonly config: Config;
-  private readonly controllers: IController[];
+  private readonly controllers: Controller[];
 
-  constructor(controllers: IController[], config: Config) {
+  constructor(controllers: Controller[], config: Config) {
     this.config = config;
     this.controllers = controllers;
   }
@@ -55,7 +55,11 @@ export class WebServer {
   private createHttpServer() {
     return http.createServer(async (req, res) => {
       try {
-        await this.handleRequest(req, res);
+        if (req.method === 'OPTIONS') {
+          await this.handlePreFlight(req, res);
+        } else {
+          await this.handleRequest(req, res);
+        }
       } catch (e: any) {
         this.handleRequestError(e, req, res);
       } finally {
@@ -116,6 +120,20 @@ export class WebServer {
     await handler(context);
   }
 
+  private async handlePreFlight(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    const context = this.getBaseContext(req, res);
+
+    this.eventEmitter.emit(WebServerEvent.REQUEST, context);
+    res.on('finish', () => {
+      context.meta.responseTimestamp = Date.now();
+      this.eventEmitter.emit(WebServerEvent.REQUEST_FINISHED, context);
+    });
+
+    const methods = this.router.getMethods(req.url!);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', methods.join(', '));
+  }
+
   private getBaseContext(req: IncomingMessage, res: ServerResponse): Context {
     return {
       req,
@@ -153,7 +171,7 @@ export class WebServer {
   }
 
   // Initializer
-  private registerClb(controller: IController, handlers: Handler[]): void {
+  private registerClb(controller: Controller, handlers: Handler[]): void {
     const controllerMetadata = this.getControllerMetadata(controller);
     if (!controllerMetadata) return;
     for (const _handler of handlers) {
@@ -188,7 +206,7 @@ export class WebServer {
     return Reflect.get(handler, endpointMetadataSymbol);
   }
 
-  private getControllerMetadata(controller: IController): ControllerMetadata | null {
+  private getControllerMetadata(controller: Controller): ControllerMetadata | null {
     return Reflect.get(controller, controllerMetadataSymbol);
   }
 }
