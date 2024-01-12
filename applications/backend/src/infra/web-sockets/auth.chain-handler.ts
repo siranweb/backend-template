@@ -12,7 +12,6 @@ export class AuthChainHandler {
       return;
     }
 
-    // TODO check is correct
     const isTokenValid = await this.validateAccessTokenAction.execute(cookieObj.accessToken);
     if (!isTokenValid) {
       return;

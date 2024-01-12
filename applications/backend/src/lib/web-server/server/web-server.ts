@@ -13,9 +13,11 @@ import {
 import { controllerMetadataSymbol, endpointMetadataSymbol } from './definition';
 import { Router } from '../routing';
 import { ApiError, ErrorType } from './api-error';
+import { BodyParser } from '@/lib/web-server/server/body-parser';
 
 export class WebServer {
   private readonly router: Router = new Router();
+  private readonly bodyParser: BodyParser = new BodyParser();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly initializer: Initializer<IController, Handler> = new Initializer();
   private readonly config: Config;
@@ -139,17 +141,15 @@ export class WebServer {
     }
   }
 
-  // TODO separate to different class
   private async parseBody(req: IncomingMessage): Promise<string | Record<string, any>> {
-    const promise = new Promise<string>((resolve, reject) => {
-      let body = '';
-      req.on('readable', () => (body += req.read()));
-      req.on('end', () => resolve(body));
-      req.on('error', (error) => reject(error));
-    });
-    const body = await promise;
+    const body = await this.bodyParser.getStringBody(req);
+
     const isJson = !!req.headers['content-type']?.includes('application/json');
-    return isJson ? JSON.parse(body) : body;
+    if (isJson) {
+      return this.bodyParser.parseJSON(body);
+    }
+
+    return body;
   }
 
   // Initializer
