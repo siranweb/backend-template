@@ -7,7 +7,6 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
-import { webServerAuth } from '@/di/infra.di';
 
 @Controller('accounts')
 export class AccountsController {
@@ -76,13 +75,6 @@ export class AccountsController {
 
     const cookie = this.getAuthCookie('', '');
     ctx.res.setHeader('Set-Cookie', cookie);
-    ctx.res.end();
-  }
-
-  @Endpoint('POST', '/example', {
-    chain: [webServerAuth],
-  })
-  async authProtectedMethodExample(ctx: Context) {
     ctx.res.end();
   }
 
