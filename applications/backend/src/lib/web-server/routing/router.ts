@@ -29,7 +29,7 @@ export class Router {
   }
 
   public getMethods(url: string): string[] {
-    const { pathname, searchParams } = new URL(url, 'resolve://');
+    const { pathname } = new URL(url, 'resolve://');
     const pathParts = this.splitPathToParts(pathname);
 
     const foundNode = this.tree.findNodeByPathParts(pathParts);

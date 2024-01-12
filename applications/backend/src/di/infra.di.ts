@@ -12,11 +12,11 @@ const validateAccessTokenAction = new ValidateAccessTokenAction(jwtService, conf
 const webServer = {
   authChainHandler: new WebServerAuthChainHandler(validateAccessTokenAction),
   errorHandler: new WebServerErrorHandler(),
-}
+};
 
 const webSockets = {
   authChainHandler: new WebSocketsAuthChainHandler(validateAccessTokenAction),
-}
+};
 
 export const webServerAuth = webServer.authChainHandler.handle.bind(webServer.authChainHandler);
 export const webServerErrorHandler = webServer.errorHandler.handle.bind(webServer.errorHandler);

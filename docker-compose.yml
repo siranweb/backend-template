@@ -4,6 +4,8 @@ services:
   backend:
     tty: true
     build: applications/backend/
+    depends_on:
+      - primary-database
     env_file:
       - applications/backend/.env
     container_name: "backend"

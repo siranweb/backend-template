@@ -18,12 +18,11 @@ export const WsHandler = (eventName: string, params: WsHandlerParams = {}): any 
     const metadata: WsHandlerMetadata = {
       event: eventName,
       chain: params.chain ?? [],
-    }
+    };
 
     Reflect.set(handler, wsHandlerMetadataSymbol, metadata);
   };
 };
-
 
 interface WsHandlerParams {
   chain?: ChainFunc[];

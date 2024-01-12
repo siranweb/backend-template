@@ -14,4 +14,4 @@ ADD . .
 EXPOSE 4000
 EXPOSE 4001
 
-CMD pnpm run build && pnpm run start
+CMD pnpm run start
