@@ -3,7 +3,7 @@ import { EventEmitter } from 'node:events';
 import { Initializer } from '@/lib/initializer';
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
-import { Context, Gateway, Handler, WsHandlerMetadata } from './types';
+import { ChainFunc, Context, Gateway, Handler, WsHandlerMetadata } from './types';
 import { wsHandlerMetadataSymbol } from './definition';
 
 interface Config {
@@ -110,21 +110,27 @@ export class WsServer {
 
   // Initializer
   private registerClb(gateway: Gateway, handlers: Handler[]) {
-    for (const handler of handlers) {
+    for (const _handler of handlers) {
+      const handler = _handler.bind(gateway);
       const handlerMetadata = this.getHandlerMetadata(handler);
-      const isHandler = this.checkIsHandler(handlerMetadata, handler);
-      if (!isHandler) continue;
+      if (!handlerMetadata) continue;
 
       const { event } = handlerMetadata as WsHandlerMetadata;
-      this.wsRouter.add(event, handler.bind(gateway));
+      const handlerFromChain = this.buildHandlerFromChain(handler, handlerMetadata.chain);
+      this.wsRouter.add(event, handlerFromChain);
     }
+  }
+
+  private buildHandlerFromChain(handler: Handler, chain: ChainFunc[]): Handler {
+    if (chain.length === 0) return handler;
+    let lastFunc = handler;
+    for (const chainFunc of chain.reverse()) {
+      lastFunc = (ctx: Context) => chainFunc(ctx, lastFunc);
+    }
+    return lastFunc;
   }
 
   private getHandlerMetadata(handler: any): WsHandlerMetadata | null {
     return Reflect.get(handler, wsHandlerMetadataSymbol);
-  }
-
-  private checkIsHandler(handlerMetadata: WsHandlerMetadata | null, handler: any): boolean {
-    return !!handlerMetadata?.event && typeof handler === 'function';
   }
 }

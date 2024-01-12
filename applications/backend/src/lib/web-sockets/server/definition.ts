@@ -1,14 +1,8 @@
 import { markInitializable } from '@/lib/initializer';
-import { WsHandlerMetadata } from './types';
+import { ChainFunc, WsHandlerMetadata } from './types';
 
 export const wsGatewayMetadataSymbol = Symbol('wsGatewayMetadata');
 export const wsHandlerMetadataSymbol = Symbol('wsHandlerMetadata');
-
-export const getDefaultWsHandlerMetadata = (): WsHandlerMetadata => {
-  return {
-    event: '',
-  };
-};
 
 export const WsGateway = (): any => {
   return (target: any) => {
@@ -18,14 +12,19 @@ export const WsGateway = (): any => {
   };
 };
 
-export const WsHandler = (eventName: string): any => {
+export const WsHandler = (eventName: string, params: WsHandlerParams = {}): any => {
   return (target: any, propertyKey: string) => {
     const handler = target[propertyKey];
-    const metadata =
-      (Reflect.get(handler, wsHandlerMetadataSymbol) as WsHandlerMetadata) ??
-      getDefaultWsHandlerMetadata();
+    const metadata: WsHandlerMetadata = {
+      event: eventName,
+      chain: params.chain ?? [],
+    }
 
-    metadata.event = eventName;
     Reflect.set(handler, wsHandlerMetadataSymbol, metadata);
   };
 };
+
+
+interface WsHandlerParams {
+  chain?: ChainFunc[];
+}
