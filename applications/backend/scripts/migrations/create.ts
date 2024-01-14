@@ -10,7 +10,7 @@ const srcDir = path.join(__dirname, '../../src');
 
 const migrationName = await askQuestion('Enter migration name: ');
 
-const migrationsDirPath = path.join(srcDir, 'infra/databases/app-database/migrations');
+const migrationsDirPath = path.join(srcDir, 'databases/app-database/migrations');
 const templatePath = path.join(srcDir, 'lib/kysely-migrations/template.ts');
 const newMigrationFileName = migrationName
   ? `${Date.now()}-${migrationName}.ts`

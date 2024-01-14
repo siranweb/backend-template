@@ -3,7 +3,7 @@ import { Account } from '@/app/users/auth/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
 import { IUsersRepository } from '@/app/users/shared/types';
 import { IJWTService } from 'src/app/users/auth/jwt';
-import { Config } from '@/infra/config';
+import { Config } from '@/config';
 import { ICryptographyService } from 'src/lib/cryptography';
 
 interface Params {

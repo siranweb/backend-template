@@ -1,7 +1,7 @@
 import { ApiError, Context, Controller, Endpoint, ErrorType } from '@/lib/web-server';
 import { createAccountSchema, loginAccountSchema } from './schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
-import { Config, NodeEnv } from '@/infra/config';
+import { Config, NodeEnv } from '@/config';
 import { buildCookie, parseCookie } from '@/utils/cookie';
 import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/create-tokens-by-refresh-token.action';
 import { LoginAction } from '@/app/users/auth/actions/login.action';

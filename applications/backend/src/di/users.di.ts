@@ -1,5 +1,5 @@
-import { config } from '@/infra/config';
-import { appDatabase } from '@/init/databases/app-database/database';
+import { config } from '@/config';
+import { appDatabase } from '@/databases/app-database/database';
 import { JwtService } from '@/app/users/auth/jwt';
 import { CryptographyService } from 'src/lib/cryptography';
 import { AccountsController } from '@/app/users/auth/controllers/accounts.controller';

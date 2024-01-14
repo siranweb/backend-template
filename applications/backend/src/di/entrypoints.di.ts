@@ -1,8 +1,8 @@
-import { config } from '@/infra/config';
+import { config } from '@/config';
 import { JwtService } from '@/app/users/auth/jwt';
-import { AuthChainHandler as WebServerAuthChainHandler } from '@/infra/web-server/auth.chain-handler';
-import { AuthChainHandler as WebSocketsAuthChainHandler } from '@/infra/web-sockets/auth.chain-handler';
-import { ErrorHandler as WebServerErrorHandler } from '@/infra/web-server/error-handler';
+import { AuthChainHandler as WebServerAuthChainHandler } from '@/entrypoints/web-servers/shared/auth.chain-handler';
+import { AuthChainHandler as WebSocketsAuthChainHandler } from '@/entrypoints/web-sockets/shared/auth.chain-handler';
+import { ErrorHandler as WebServerErrorHandler } from '@/entrypoints/web-servers/shared/error-handler';
 import { ValidateAccessTokenAction } from '@/app/users/auth/actions/validate-access-token.action';
 
 const jwtService = new JwtService();

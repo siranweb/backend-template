@@ -4,7 +4,7 @@ import url from 'node:url';
 import pg from 'pg';
 import process from 'node:process';
 import { Kysely, PostgresDialect } from 'kysely';
-import { config } from '@/infra/config';
+import { config } from '@/config';
 import { migrate } from '@/lib/kysely-migrations';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -22,7 +22,7 @@ const db = new Kysely<any>({
   }),
 });
 
-const migrationsDirPath = path.join(srcDir, 'infra/databases/app-database/migrations');
+const migrationsDirPath = path.join(srcDir, 'databases/app-database/migrations');
 
 migrate(db, migrationsDirPath, 'up').catch((error) => {
   console.error(error);

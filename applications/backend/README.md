@@ -33,15 +33,17 @@ Backend application. Some info:
 
 ## Project structure
 ```
-/scripts        # Custom scripts to run from CLI
+/scripts          # Custom scripts to run from CLI
 
 /src
-    /app        # App components. Domain logic & interfaces
-    /di         # Dependency injection (instances of classes so app can work)
-    /infra      # Things to handle infrastucture and entrypoints/gateways
-    /init       # Initialize entrypoints/gateways (databases, web servers, etc.)
-    /lib        # No-domain logic
-    /utils      # Helpful functions
+    /app          # App components. Domain logic & interfaces (controllers, websockets)
+    /config       # Project configuration
+    /entrypoints  # Web servers, websocket servers, etc.
+    /databases    # DB connections
+    /di           # Dependency injection
+    /infra        # Infrastructure code
+    /lib          # No-domain logic
+    /utils        # Helpful functions
 ```
 ### Components in `/app`
 Components are split with namespaces (like `users.auth` or `users.shared`). Content of each namespace is up to developer.
