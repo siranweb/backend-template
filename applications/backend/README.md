@@ -1,7 +1,15 @@
 # Backend
 
-## Table of content
-todo
+## Table of contents
+1. [Overview](#overview)
+2. [Getting started](#getting-started)
+3. [Project structure](#project-structure)
+4. [Web server and controllers](#web-server-and-controllers)
+5. [Web sockets and ws gateways](#web-sockets-and-ws-gateways)
+6. [Custom entrypoints](#custom-entrypoints)
+7. [Databases](#databases)
+8. [Error handling](#error-handling)
+9. [Auth](#auth)
 
 ## Overview
 Backend application. Features:
@@ -63,11 +71,34 @@ To specify controller you should use `@Controller` decorator and `@Endpoint` dec
 You can add `chain` array for each `@Endpoint`. Think about it as a chain of functions. You can implement `CoR` or middlewares (not recommended) here. For other stuff like loggers and error handlers you can use `web server hooks`.
 
 Web server has some hooks to perform actions:
-- `onError`. Triggered on request error. Default error handler is available at `@/entrypoints/web-servers/shared/error-handler.ts`. Catches all errors from app, see more in Error handling section (TODO link),
+- `onError`. Triggered on request error. Default error handler is available at `@/entrypoints/web-servers/shared/error-handler.ts`. Catches all errors from app, see more in [Error handling](#error-handling) section.
 - `onRequest`. Triggered when new request received
 - `onRequestFinished`. Triggered when request is finished (when `req` emits `finish` event). Triggered if error thrown as well
 
 Pre-flight requests (for CORS) are handled out-of-box.
+
+### Example
+
+```typescript
+@Controller('accounts')
+class AccountsController {
+  
+  @Endpoint('POST', '/')
+  async createAccount(ctx: Context) {
+    // ...
+    ctx.res.end();
+  }
+}
+
+const accountsController = new AccountsController();
+const webServer = new WebServer([accountsController], {
+  port: 3000,
+  prefix: '/api',
+});
+
+webServer.onError(webServerErrorHandler);
+webServer.start();
+```
 
 ## Web sockets and ws gateways
 Works similar to web servers. Based on `ws` package, available at `@/lib/web-sockets`. Based on rooms, like it's done in `SocketIO`.
@@ -81,10 +112,46 @@ To specify gateway you should use `@WsGateway` decorator and `@WsHandler` decora
 You can add `chain` array for each `@WsGateway` as well.
 
 Web sockets has similar hooks to perform actions:
-- `onError`. Triggered on request error. No default error handler provided. Catches all errors from app, see more in Error handling section (TODO link),
+- `onError`. Triggered on request error. No default error handler provided. Catches all errors from app, see more in [Error handling](#error-handling) section.
 - `onEvent`. Triggered when new event request received
 - `onEventFinished`. Triggered when event request is finished (when handler function is finished). Triggered if error thrown as well
 
-## Error handling
-## Auth
+### Example
+```typescript
+@WsGateway()
+class AccountsWsGateway {
+
+  @WsHandler('user:message')
+  async processMessage(ctx: Context) {
+    // ...
+  }
+}
+
+const accountWsGateway = new AccountsWsGateway();
+const wsServer = new WsServer([accountWsGateway], {
+  port: 3001,
+});
+wsServer.start();
+```
+
+## Custom entrypoints
+You can implement your own entrypoint in such style. Just take look at `@/lib/initializer` and how it used.
+
 ## Databases
+`Kysely` is a great query builder with strong types. You can use it with many SQL databases.
+
+To access data you should write your own `repository`. Important thing - there is no ORM, so you should map data with entities by yourself. For example, in `@/app/users/shared` repository getting data from DB and mapping entities on place.
+
+There is also provided CLI in `/scripts` directory to make and run migrations.
+
+## Error handling
+Be careful with error handling. It's important to keep clean responses from your API. They are all handled out-of-box by default web server error handler, but can be handled literally by everything. There are some error types:
+- `AppError`. Custom error of your application. Created by creating new error class extended from `AppError` class. Used ONLY on `app` layer.
+- `ValidationError`. Error from `zod` validator. Used ONLY on `entrypoints`.
+- `ApiError` (web server specific). Custom API error to specify error codes like 401 or 403. Used ONLY on `entrypoints`.
+- `UnknownError`. Unhandled error type without automatic convert. Used ONLY by error handlers.
+
+## Auth
+JWT out-of-box auth provided. See `@/app/users/auth`.
+
+Access and refresh tokens are stored in cookies. You can set settings for JWT in `.env` and `@/config`.
