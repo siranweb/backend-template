@@ -5,7 +5,7 @@ export function parseCookie(cookie: string): Record<string, any> {
     const [name, value] = pair.split('=');
     if (!name) return;
     const mustBeTrue = value === '';
-    obj[name] = mustBeTrue ? true : value;
+    obj[name.trim()] = mustBeTrue ? true : value;
   });
   return obj;
 }

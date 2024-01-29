@@ -172,11 +172,11 @@ export class WebServer {
 
   // Initializer
   private registerClb(controller: Controller, handlers: Handler[]): void {
-    const controllerMetadata = this.getControllerMetadata(controller);
+    const controllerMetadata = this.getControllerMetadata(controller.constructor);
     if (!controllerMetadata) return;
     for (const _handler of handlers) {
       const handler = _handler.bind(controller);
-      const endpointMetadata = this.getEndpointMetadata(handler);
+      const endpointMetadata = this.getEndpointMetadata(_handler);
       if (!endpointMetadata) continue;
       const { path: routerPath, method } = endpointMetadata;
 
@@ -202,11 +202,11 @@ export class WebServer {
     return lastFunc;
   }
 
-  private getEndpointMetadata(handler: Handler): EndpointMetadata | null {
+  private getEndpointMetadata(handler: Handler): EndpointMetadata | undefined {
     return Reflect.get(handler, endpointMetadataSymbol);
   }
 
-  private getControllerMetadata(controller: Controller): ControllerMetadata | null {
+  private getControllerMetadata(controller: Controller): ControllerMetadata | undefined {
     return Reflect.get(controller, controllerMetadataSymbol);
   }
 }

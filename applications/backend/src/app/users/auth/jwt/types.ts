@@ -1,27 +1,19 @@
 export interface IJWTService {
   createToken(params: CreateTokenParams): Promise<string>;
-  isValid(params: IsValidParams): Promise<boolean>;
-  decrypt(params: DecryptParams): Promise<DecryptResult>;
+  verify(params: VerifyParams): Promise<VerifyResult>;
 }
 
 export interface CreateTokenParams {
   payload: Record<string, any>;
   secret: string;
   expirationTime: string; // 2h, 10m, etc.
-  issuer: string;
-  audience: string;
 }
 
-export interface IsValidParams {
+export interface VerifyParams {
   token: string;
   secret: string;
-  issuer: string;
-  audience: string;
 }
 
-export interface DecryptParams extends IsValidParams {}
-
-export interface DecryptResult {
+export interface VerifyResult {
   payload: Record<string, any>;
-  header: Record<string, any>;
 }

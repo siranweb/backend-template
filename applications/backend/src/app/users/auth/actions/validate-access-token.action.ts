@@ -8,11 +8,14 @@ export class ValidateAccessTokenAction implements IAction {
     private readonly config: Config,
   ) {}
   async execute(accessToken: string): Promise<boolean> {
-    return this.jwtService.isValid({
-      token: accessToken,
-      secret: this.config.jwt.secret,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
-    });
+    try {
+      await this.jwtService.verify({
+        token: accessToken,
+        secret: this.config.jwt.secret,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

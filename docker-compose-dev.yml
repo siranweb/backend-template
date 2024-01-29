@@ -12,6 +12,8 @@ services:
     ports:
       - "4000:4000"
       - "4001:4001"
+    networks:
+      - backend-network
     volumes:
       - ./applications/backend/src:/app/src
     command: pnpm run start:dev
@@ -23,7 +25,7 @@ services:
     env_file:
       - .env
     ports:
-      - "5000:5432"
+      - "5432:5432"
     networks:
       - backend-network
     volumes:

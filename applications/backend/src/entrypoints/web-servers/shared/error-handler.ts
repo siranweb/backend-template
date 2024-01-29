@@ -6,14 +6,18 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 export class ErrorHandler {
   public async handle(error: any, req: IncomingMessage, res: ServerResponse): Promise<void> {
     const apiError = this.makeApiError(error);
+    console.error(apiError);
     res.statusCode = apiError.statusCode;
-    res.end({
-      error: {
-        type: apiError.type,
-        name: apiError.errorName,
-        data: apiError.data,
-      },
-    });
+    res.setHeader('Content-Type', 'application/json');
+    res.end(
+      JSON.stringify({
+        error: {
+          type: apiError.type,
+          name: apiError.errorName,
+          data: apiError.data,
+        },
+      }),
+    );
   }
 
   private makeApiError(error: any): ApiError {

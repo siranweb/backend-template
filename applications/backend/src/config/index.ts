@@ -15,8 +15,6 @@ export interface Config {
   };
   jwt: {
     secret: string;
-    issuer: string;
-    audience: string;
     accessToken: {
       expirationTime: string;
     };
@@ -45,8 +43,6 @@ export const config: Config = {
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? '',
-    issuer: 'issuer',
-    audience: 'audience',
     accessToken: {
       expirationTime: '2h',
     },

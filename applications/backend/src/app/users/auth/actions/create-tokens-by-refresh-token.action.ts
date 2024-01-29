@@ -20,13 +20,13 @@ export class CreateTokensByRefreshTokenAction implements IAction {
     const isUsed = await this.usersRepository.isRefreshTokenUsed(oldRefreshToken);
     if (isUsed) throw new TokenInvalidError();
 
-    const { payload } = await this.jwtService.decrypt({
+    const { payload } = await this.jwtService.verify({
       token: oldRefreshToken,
       secret: this.config.jwt.secret,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
     });
-    const { accountId } = payload;
+
+    const { id: accountId } = payload;
+    if (typeof accountId !== 'string') throw new UserNotFoundError();
 
     const existingAccount = await this.usersRepository.getAccountById(accountId);
     if (!existingAccount) throw new UserNotFoundError();
@@ -37,8 +37,6 @@ export class CreateTokensByRefreshTokenAction implements IAction {
       },
       secret: this.config.jwt.secret,
       expirationTime: this.config.jwt.accessToken.expirationTime,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
     });
 
     const refreshToken = await this.jwtService.createToken({
@@ -47,8 +45,6 @@ export class CreateTokensByRefreshTokenAction implements IAction {
       },
       secret: this.config.jwt.secret,
       expirationTime: this.config.jwt.refreshToken.expirationTime,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
     });
 
     return {

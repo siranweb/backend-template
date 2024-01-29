@@ -13,7 +13,7 @@ export class AccountsController {
   constructor(
     private readonly config: Config,
     private readonly createAccountAction: CreateAccountAction,
-    private readonly createTokensAction: CreateTokensByRefreshTokenAction,
+    private readonly createTokensByRefreshTokenAction: CreateTokensByRefreshTokenAction,
     private readonly loginAction: LoginAction,
     private readonly invalidateRefreshToken: InvalidateRefreshToken,
   ) {}
@@ -26,8 +26,10 @@ export class AccountsController {
       password: body.password,
     });
 
-    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
-    ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.setHeader('Set-Cookie', [
+      this.getAccessTokenCookie(result.accessToken),
+      this.getRefreshTokenCookie(result.refreshToken),
+    ]);
     ctx.res.end();
   }
 
@@ -36,7 +38,7 @@ export class AccountsController {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;
     try {
-      result = await this.createTokensAction.execute(cookieObj.refreshToken);
+      result = await this.createTokensByRefreshTokenAction.execute(cookieObj.refreshToken);
     } catch (e) {
       if (e instanceof TokenInvalidError) {
         throw new ApiError({
@@ -51,8 +53,10 @@ export class AccountsController {
 
     await this.invalidateRefreshToken.execute(cookieObj.refreshToken);
 
-    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
-    ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.setHeader('Set-Cookie', [
+      this.getAccessTokenCookie(result.accessToken),
+      this.getRefreshTokenCookie(result.refreshToken),
+    ]);
     ctx.res.end();
   }
 
@@ -61,8 +65,10 @@ export class AccountsController {
     const { body } = loginAccountSchema.parse(ctx);
     const result = await this.loginAction.execute(body.login, body.password);
 
-    const cookie = this.getAuthCookie(result.accessToken, result.refreshToken);
-    ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.setHeader('Set-Cookie', [
+      this.getAccessTokenCookie(result.accessToken),
+      this.getRefreshTokenCookie(result.refreshToken),
+    ]);
     ctx.res.end();
   }
 
@@ -73,14 +79,26 @@ export class AccountsController {
       await this.invalidateRefreshToken.execute(cookieObj.refreshToken);
     }
 
-    const cookie = this.getAuthCookie('', '');
-    ctx.res.setHeader('Set-Cookie', cookie);
+    ctx.res.setHeader('Set-Cookie', [
+      this.getAccessTokenCookie(''),
+      this.getRefreshTokenCookie(''),
+    ]);
     ctx.res.end();
   }
 
-  private getAuthCookie(accessToken: string, refreshToken: string): string {
+  private getAccessTokenCookie(accessToken: string): string {
     const newCookieObj = {
       accessToken,
+      HttpOnly: true,
+      SameSite: 'strict',
+      Secure: this.config.nodeEnv === NodeEnv.PRODUCTION,
+    };
+
+    return buildCookie(newCookieObj);
+  }
+
+  private getRefreshTokenCookie(refreshToken: string): string {
+    const newCookieObj = {
       refreshToken,
       HttpOnly: true,
       SameSite: 'strict',

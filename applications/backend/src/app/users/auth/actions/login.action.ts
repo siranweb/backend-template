@@ -34,8 +34,6 @@ export class LoginAction implements IAction {
       },
       secret: this.config.jwt.secret,
       expirationTime: this.config.jwt.accessToken.expirationTime,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
     });
 
     const refreshToken = await this.jwtService.createToken({
@@ -44,8 +42,6 @@ export class LoginAction implements IAction {
       },
       secret: this.config.jwt.secret,
       expirationTime: this.config.jwt.refreshToken.expirationTime,
-      issuer: this.config.jwt.issuer,
-      audience: this.config.jwt.audience,
     });
 
     return {
