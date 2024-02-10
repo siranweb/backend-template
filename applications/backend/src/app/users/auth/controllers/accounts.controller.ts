@@ -7,6 +7,7 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
+import { webServerAuth } from '@/di/entrypoints.di';
 
 @Controller('accounts')
 export class AccountsController {
@@ -33,7 +34,9 @@ export class AccountsController {
     ctx.res.end();
   }
 
-  @Endpoint('POST', '/tokens')
+  @Endpoint('POST', '/tokens', {
+    chain: [webServerAuth],
+  })
   async refreshTokens(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;

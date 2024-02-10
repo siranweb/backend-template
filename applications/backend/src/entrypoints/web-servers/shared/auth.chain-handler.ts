@@ -23,6 +23,6 @@ export class AuthChainHandler {
       });
     }
 
-    next(ctx);
+    await next(ctx);
   }
 }

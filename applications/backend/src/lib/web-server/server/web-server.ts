@@ -197,7 +197,8 @@ export class WebServer {
     if (chain.length === 0) return handler;
     let lastFunc = handler;
     for (const chainFunc of chain.reverse()) {
-      lastFunc = (ctx: Context) => chainFunc(ctx, lastFunc);
+      const prev = lastFunc;
+      lastFunc = (ctx: Context) => chainFunc(ctx, prev);
     }
     return lastFunc;
   }
