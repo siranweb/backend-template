@@ -1,16 +1,7 @@
-import { Initializer } from '@/lib/initializer';
 import http, { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
 import { EventEmitter } from 'node:events';
-import {
-  ChainFunc,
-  Context,
-  Controller,
-  ControllerMetadata,
-  EndpointMetadata,
-  Handler,
-} from './types';
-import { controllerMetadataSymbol, endpointMetadataSymbol } from './definition';
+import { ChainFunc, Context, Handler } from './types';
 import { Router } from '../routing';
 import { ApiError, ErrorType } from './api-error';
 import { BodyParser } from '@/lib/web-server/server/body-parser';
@@ -19,25 +10,32 @@ export class WebServer {
   private readonly router: Router = new Router();
   private readonly bodyParser: BodyParser = new BodyParser();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private readonly initializer: Initializer<Controller, Handler> = new Initializer();
   private readonly config: Config;
-  private readonly controllers: Controller[];
 
-  constructor(controllers: Controller[], config: Config) {
+  constructor(config: Config) {
     this.config = config;
-    this.controllers = controllers;
   }
 
   public async start(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        this.initializer.init(this.controllers, this.registerClb.bind(this));
         const server = this.createHttpServer();
         server.listen(this.config.port, () => resolve());
       } catch (e) {
         reject(e);
       }
     });
+  }
+
+  public handle(
+    method: string,
+    handlePath: string,
+    handler: Handler,
+    params: HandleParams = {},
+  ): void {
+    const route = path.join('/', this.config.prefix ?? '', '/', handlePath);
+    const routeHandler = params.chain ? this.buildHandlerFromChain(handler, params.chain) : handler;
+    this.router.register(method, route, routeHandler);
   }
 
   public onError(clb: OnErrorHandler): void {
@@ -170,31 +168,7 @@ export class WebServer {
     return body;
   }
 
-  // Initializer
-  private registerClb(controller: Controller, handlers: Handler[]): void {
-    const controllerMetadata = this.getControllerMetadata(controller.constructor);
-    if (!controllerMetadata) return;
-    for (const _handler of handlers) {
-      const handler = _handler.bind(controller);
-      const endpointMetadata = this.getEndpointMetadata(_handler);
-      if (!endpointMetadata) continue;
-      const { path: routerPath, method } = endpointMetadata;
-
-      const route = path.join(
-        '/',
-        this.config.prefix ?? '',
-        controllerMetadata.prefix ?? '',
-        '/',
-        routerPath,
-      );
-
-      const handlerFromChain = this.buildHandlerFromChain(handler, endpointMetadata.chain);
-      this.router.register(method, route, handlerFromChain);
-    }
-  }
-
   private buildHandlerFromChain(handler: Handler, chain: ChainFunc[]): Handler {
-    if (chain.length === 0) return handler;
     let lastFunc = handler;
     for (const chainFunc of chain.reverse()) {
       const prev = lastFunc;
@@ -202,14 +176,10 @@ export class WebServer {
     }
     return lastFunc;
   }
+}
 
-  private getEndpointMetadata(handler: Handler): EndpointMetadata | undefined {
-    return Reflect.get(handler, endpointMetadataSymbol);
-  }
-
-  private getControllerMetadata(controller: Controller): ControllerMetadata | undefined {
-    return Reflect.get(controller, controllerMetadataSymbol);
-  }
+interface HandleParams {
+  chain?: ChainFunc[];
 }
 
 interface Config {

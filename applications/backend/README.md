@@ -6,10 +6,9 @@
 3. [Project structure](#project-structure)
 4. [Web server and controllers](#web-server-and-controllers)
 5. [Web sockets and ws gateways](#web-sockets-and-ws-gateways)
-6. [Custom entrypoints](#custom-entrypoints)
-7. [Databases](#databases)
-8. [Error handling](#error-handling)
-9. [Auth](#auth)
+6. [Databases](#databases)
+7. [Error handling](#error-handling)
+8. [Auth](#auth)
 
 ## Overview
 Backend application. Features:
@@ -66,9 +65,7 @@ Web server is fully self-wrote and available at `@/lib/web-server`. Routing is i
 
 Web server creates main object, called `Context`. Think about it as everything-in-one object. It contains native `req` and `res` (they are used to control request and response in controllers) and some helpful data.
 
-To specify controller you should use `@Controller` decorator and `@Endpoint` decorator to mark methods as endpoint handlers. See examples at `@/app`. Types are available at `@/lib/web-server`.
-
-You can add `chain` array for each `@Endpoint`. Think about it as a chain of functions. You can implement `CoR` or middlewares (not recommended) here. For other stuff like loggers and error handlers you can use `web server hooks`.
+You can pass `chain` array for each handler. Think about it as a chain of functions. You can implement `CoR` or middlewares (not recommended) here. For other stuff like loggers and error handlers you can use `web server hooks`.
 
 Web server has some hooks to perform actions:
 - `onError`. Triggered on request error. Default error handler is available at `@/entrypoints/web-servers/shared/error-handler.ts`. Catches all errors from app, see more in [Error handling](#error-handling) section.
@@ -80,10 +77,7 @@ Pre-flight requests (for CORS) are handled out-of-box.
 ### Example
 
 ```typescript
-@Controller('accounts')
 class AccountsController {
-  
-  @Endpoint('POST', '/')
   async createAccount(ctx: Context) {
     // ...
     ctx.res.end();
@@ -91,10 +85,12 @@ class AccountsController {
 }
 
 const accountsController = new AccountsController();
-const webServer = new WebServer([accountsController], {
+const webServer = new WebServer({
   port: 3000,
   prefix: '/api',
 });
+
+webServer.handle('POST', '/accounts', accountsController.createAccount.bind(accountsController));
 
 webServer.onError(webServerErrorHandler);
 webServer.start();
@@ -105,11 +101,7 @@ Works similar to web servers. Based on `ws` package, available at `@/lib/web-soc
 
 Uses `Context` object with `ws` (WebSocket instance) field.
 
-Alongside with server it gives you `WsEmitter` to emit events to rooms. See at `@/lib/entrypoints/web-sockets`.
-
-To specify gateway you should use `@WsGateway` decorator and `@WsHandler` decorator to mark methods as handlers. Types are available at `@/lib/web-sockets`.
-
-You can add `chain` array for each `@WsGateway` as well.
+You can pass `chain` array for each handler as well.
 
 Web sockets has similar hooks to perform actions:
 - `onError`. Triggered on request error. No default error handler provided. Catches all errors from app, see more in [Error handling](#error-handling) section.
@@ -117,25 +109,32 @@ Web sockets has similar hooks to perform actions:
 - `onEventFinished`. Triggered when event request is finished (when handler function is finished). Triggered if error thrown as well
 
 ### Example
-```typescript
-@WsGateway()
-class AccountsWsGateway {
 
-  @WsHandler('user:message')
+```typescript
+class AccountsWsGateway {
   async processMessage(ctx: Context) {
     // ...
   }
 }
 
 const accountWsGateway = new AccountsWsGateway();
-const wsServer = new WsServer([accountWsGateway], {
+const wsServer = new WsServer({
   port: 3001,
 });
+
+wsServer.handle('user:message', accountWsGateway.processMessage.bind(accountWsGateway));
+
 wsServer.start();
 ```
 
-## Custom entrypoints
-You can implement your own entrypoint in such style. Just take look at `@/lib/initializer` and how it used.
+### Message format example (JSON)
+
+```json
+{
+  "event": "user:message",
+  "data": {}
+}
+```
 
 ## Databases
 `Kysely` is a great query builder with strong types. You can use it with many SQL databases.

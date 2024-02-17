@@ -1,4 +1,4 @@
-import { ApiError, Context, Controller, Endpoint, ErrorType } from '@/lib/web-server';
+import { ApiError, Context, ErrorType } from '@/lib/web-server';
 import { createAccountSchema, loginAccountSchema } from './schemas/accounts.schemas';
 import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
 import { Config, NodeEnv } from '@/config';
@@ -7,9 +7,7 @@ import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/creat
 import { LoginAction } from '@/app/users/auth/actions/login.action';
 import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
 import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
-import { webServerAuth } from '@/di/entrypoints.di';
 
-@Controller('accounts')
 export class AccountsController {
   constructor(
     private readonly config: Config,
@@ -19,7 +17,6 @@ export class AccountsController {
     private readonly invalidateRefreshToken: InvalidateRefreshToken,
   ) {}
 
-  @Endpoint('POST', '/')
   async createAccount(ctx: Context) {
     const { body } = createAccountSchema.parse(ctx);
     const result = await this.createAccountAction.execute({
@@ -34,9 +31,6 @@ export class AccountsController {
     ctx.res.end();
   }
 
-  @Endpoint('POST', '/tokens', {
-    chain: [webServerAuth],
-  })
   async refreshTokens(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;
@@ -63,7 +57,6 @@ export class AccountsController {
     ctx.res.end();
   }
 
-  @Endpoint('POST', '/session')
   async login(ctx: Context) {
     const { body } = loginAccountSchema.parse(ctx);
     const result = await this.loginAction.execute(body.login, body.password);
@@ -75,7 +68,6 @@ export class AccountsController {
     ctx.res.end();
   }
 
-  @Endpoint('DELETE', '/session')
   async logout(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     if (typeof cookieObj.refreshToken === 'string' && cookieObj.refreshToken) {

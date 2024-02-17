@@ -1,19 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 
-export interface EndpointMetadata {
-  path: string;
-  method: string;
-  chain: ChainFunc[];
-}
-
-export interface ControllerMetadata {
-  prefix: string;
-}
-
-export interface Controller {
-  [key: string]: any;
-}
-
 export interface Context {
   req: IncomingMessage;
   res: ServerResponse;

@@ -1,10 +1,8 @@
 import http, { IncomingMessage } from 'node:http';
 import { EventEmitter } from 'node:events';
-import { Initializer } from '@/lib/initializer';
 import { WebSocket, WebSocketServer } from 'ws';
 import { WsRouter } from '../routing/ws-router';
-import { ChainFunc, Context, Gateway, Handler, WsHandlerMetadata } from './types';
-import { wsHandlerMetadataSymbol } from './definition';
+import { ChainFunc, Context, Handler } from './types';
 
 interface Config {
   port: number;
@@ -23,15 +21,12 @@ export type OnEventFinishedHandler = (ctx: Context) => any | Promise<any>;
 export class WsServer {
   private readonly wss: WebSocketServer;
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private readonly initializer: Initializer<Gateway, Handler> = new Initializer();
   private readonly wsRouter: WsRouter = new WsRouter();
   private readonly httpServer: http.Server;
   private readonly config: Config;
-  private readonly gateways: Gateway[];
 
-  constructor(gateways: Gateway[], config: Config) {
+  constructor(config: Config) {
     this.config = config;
-    this.gateways = gateways;
     this.httpServer = http.createServer();
     this.wss = new WebSocketServer({
       server: this.httpServer,
@@ -41,13 +36,17 @@ export class WsServer {
   public async start(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.initializer.init(this.gateways, this.registerClb.bind(this));
         this.handleConnection();
         this.httpServer.listen(this.config.port, () => resolve());
       } catch (e) {
         reject(e);
       }
     });
+  }
+
+  public handle(event: string, handler: Handler, params: HandleParams = {}): void {
+    const eventHandler = params.chain ? this.buildHandlerFromChain(handler, params.chain) : handler;
+    this.wsRouter.add(event, eventHandler);
   }
 
   public onError(clb: OnErrorHandler): void {
@@ -108,29 +107,15 @@ export class WsServer {
     };
   }
 
-  // Initializer
-  private registerClb(gateway: Gateway, handlers: Handler[]) {
-    for (const _handler of handlers) {
-      const handler = _handler.bind(gateway);
-      const handlerMetadata = this.getHandlerMetadata(handler);
-      if (!handlerMetadata) continue;
-
-      const { event } = handlerMetadata as WsHandlerMetadata;
-      const handlerFromChain = this.buildHandlerFromChain(handler, handlerMetadata.chain);
-      this.wsRouter.add(event, handlerFromChain);
-    }
-  }
-
   private buildHandlerFromChain(handler: Handler, chain: ChainFunc[]): Handler {
-    if (chain.length === 0) return handler;
     let lastFunc = handler;
     for (const chainFunc of chain.reverse()) {
       lastFunc = (ctx: Context) => chainFunc(ctx, lastFunc);
     }
     return lastFunc;
   }
+}
 
-  private getHandlerMetadata(handler: any): WsHandlerMetadata | null {
-    return Reflect.get(handler, wsHandlerMetadataSymbol);
-  }
+interface HandleParams {
+  chain?: ChainFunc[];
 }

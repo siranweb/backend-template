@@ -6,4 +6,3 @@ export {
 } from './server/web-server';
 export type { Context, Handler } from './server/types';
 export { ApiError, ErrorType } from './server/api-error';
-export { Endpoint, Controller } from './server/definition';
