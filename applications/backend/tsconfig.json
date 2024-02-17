@@ -16,9 +16,6 @@
     "allowJs": false,
     "inlineSourceMap": true,
 
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-
     "strict": true,
     "skipLibCheck": true
   }
