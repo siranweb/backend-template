@@ -11,6 +11,7 @@ export class WebServer {
   private readonly bodyParser: BodyParser = new BodyParser();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly config: Config;
+  private server?: http.Server;
 
   constructor(config: Config) {
     this.config = config;
@@ -19,11 +20,24 @@ export class WebServer {
   public async start(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       try {
-        const server = this.createHttpServer();
-        server.listen(this.config.port, () => resolve());
+        this.server = this.createHttpServer();
+        this.server.listen(this.config.port, () => resolve());
       } catch (e) {
         reject(e);
       }
+    });
+  }
+
+  public async stop(): Promise<void> {
+    if (!this.server) return;
+    return new Promise<void>((resolve, reject) => {
+      this.server!.close((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 

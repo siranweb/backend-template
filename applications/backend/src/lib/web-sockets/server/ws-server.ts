@@ -44,6 +44,18 @@ export class WsServer {
     });
   }
 
+  public async stop(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.wss.close((err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   public handle(event: string, handler: Handler, params: HandleParams = {}): void {
     const eventHandler = params.chain ? this.buildHandlerFromChain(handler, params.chain) : handler;
     this.wsRouter.add(event, eventHandler);
