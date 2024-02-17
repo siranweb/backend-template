@@ -23,8 +23,6 @@ Backend application. Features:
   - Path alias support
 - Standalone `Docker` app
 - Dev mode with live-reload (in Docker too)
-- Gateways (controllers) using classes and decorators
-  - New gateways can be added by `@/lib/initializer`
 - Database and entities are separated
 - Custom web-server
   - Fast router (similar to Fastify)
