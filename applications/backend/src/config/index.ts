@@ -36,7 +36,7 @@ export interface Config {
 export const config: Config = {
   nodeEnv: (process.env.NODE_ENV ?? NodeEnv.DEVELOPMENT) as NodeEnv,
   webServer: {
-    port: +Number(process.env.WEB_SERVER_PORT),
+    port: Number(process.env.WEB_SERVER_PORT),
   },
   webSockets: {
     port: Number(process.env.WS_SERVER_PORT),
