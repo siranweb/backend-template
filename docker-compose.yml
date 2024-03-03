@@ -8,7 +8,6 @@ services:
       - primary-database
     env_file:
       - applications/backend/.env
-    container_name: "backend"
     ports:
       - "4000:4000"
       - "4001:4001"
@@ -18,7 +17,6 @@ services:
   primary-database:
     tty: true
     image: 'postgres:15.4'
-    container_name: "primary-database"
     env_file:
       - .env
     ports:

@@ -4,7 +4,6 @@ services:
   backend:
     tty: true
     build: applications/backend/
-    container_name: "backend"
     depends_on:
       - primary-database
     env_file:
@@ -21,7 +20,6 @@ services:
   primary-database:
     tty: true
     image: 'postgres:15.4'
-    container_name: "primary-database"
     env_file:
       - .env
     ports:
