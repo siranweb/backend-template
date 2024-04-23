@@ -1,16 +1,16 @@
 import { AppDatabase } from '@/databases/app-database/database';
-import { Account } from '../auth/entities/account.entity';
-import { IUsersRepository } from './types';
+import { Account } from '@/app/users/entities/account.entity';
+import { IUsersRepository } from '../types';
 
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly db: AppDatabase) {}
 
   async saveAccount(account: Account): Promise<Account> {
     const result = await this.db
-        .insertInto('account')
-        .values(account)
-        .returningAll()
-        .executeTakeFirstOrThrow();
+      .insertInto('account')
+      .values(account)
+      .returningAll()
+      .executeTakeFirstOrThrow();
 
     return new Account(result);
   }

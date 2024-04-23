@@ -1,4 +1,4 @@
-import { Account } from '@/app/users/auth/entities/account.entity';
+import { Account } from '@/app/users/entities/account.entity';
 
 export interface IUsersRepository {
   saveAccount(account: Account): Promise<Account>;

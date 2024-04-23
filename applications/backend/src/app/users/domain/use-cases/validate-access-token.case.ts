@@ -1,11 +1,11 @@
-import { IAction } from '@/infra/common/types';
-import { IJWTService } from 'src/app/users/auth/jwt';
-import { Config } from '@/config';
+import { IJWTService } from '@/app/jwt';
+import { IConfig } from '@/config';
+import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 
-export class ValidateAccessTokenAction implements IAction {
+export class ValidateAccessTokenCase implements IValidateAccessTokenCase {
   constructor(
     private readonly jwtService: IJWTService,
-    private readonly config: Config,
+    private readonly config: IConfig,
   ) {}
   async execute(accessToken: string): Promise<boolean> {
     try {

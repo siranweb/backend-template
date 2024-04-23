@@ -1,22 +1,17 @@
-import { IAction } from '@/infra/common/types';
-import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from 'src/app/users/auth/jwt';
-import { Config } from '@/config';
-import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';
-import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
+import { IUsersRepository } from '@/app/users/types';
+import { IJWTService } from '@/app/jwt';
+import { IConfig } from '@/config';
+import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
+import { TokenInvalidError } from '@/app/users/errors/token-invalid.error';
+import { ICreateTokensByRefreshTokenCase, TokenPair } from '@/app/users/domain/types';
 
-interface Result {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export class CreateTokensByRefreshTokenAction implements IAction {
+export class CreateTokensByRefreshTokenCase implements ICreateTokensByRefreshTokenCase {
   constructor(
     private readonly usersRepository: IUsersRepository,
     private readonly jwtService: IJWTService,
-    private readonly config: Config,
+    private readonly config: IConfig,
   ) {}
-  async execute(oldRefreshToken: string): Promise<Result> {
+  async execute(oldRefreshToken: string): Promise<TokenPair> {
     const isUsed = await this.usersRepository.isRefreshTokenUsed(oldRefreshToken);
     if (isUsed) throw new TokenInvalidError();
 

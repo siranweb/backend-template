@@ -1,21 +1,21 @@
 import { config } from '@/config';
-import { JwtService } from '@/app/users/auth/jwt';
+import { JwtService } from 'src/app/jwt';
 import { AuthChainHandler as WebServerAuthChainHandler } from '@/entrypoints/web-servers/shared/auth.chain-handler';
 import { AuthChainHandler as WebSocketsAuthChainHandler } from '@/entrypoints/web-sockets/shared/auth.chain-handler';
 import { ErrorHandler as WebServerErrorHandler } from '@/entrypoints/web-servers/shared/error-handler';
-import { ValidateAccessTokenAction } from '@/app/users/auth/actions/validate-access-token.action';
+import { ValidateAccessTokenCase } from '@/app/users/domain/use-cases/validate-access-token.case';
 
 const jwtService = new JwtService();
 
-const validateAccessTokenAction = new ValidateAccessTokenAction(jwtService, config);
+const validateAccessTokenCase = new ValidateAccessTokenCase(jwtService, config);
 
 const webServer = {
-  authChainHandler: new WebServerAuthChainHandler(validateAccessTokenAction),
+  authChainHandler: new WebServerAuthChainHandler(validateAccessTokenCase),
   errorHandler: new WebServerErrorHandler(),
 };
 
 const webSockets = {
-  authChainHandler: new WebSocketsAuthChainHandler(validateAccessTokenAction),
+  authChainHandler: new WebSocketsAuthChainHandler(validateAccessTokenCase),
 };
 
 export const webServerAuth = webServer.authChainHandler.handle.bind(webServer.authChainHandler);

@@ -5,7 +5,7 @@ export enum NodeEnv {
   PRODUCTION = 'production',
 }
 
-export interface Config {
+export interface IConfig {
   nodeEnv: NodeEnv;
   webServer: {
     port: number;
@@ -33,7 +33,7 @@ export interface Config {
   };
 }
 
-export const config: Config = {
+export const config: IConfig = {
   nodeEnv: (process.env.NODE_ENV ?? NodeEnv.DEVELOPMENT) as NodeEnv,
   webServer: {
     port: Number(process.env.WEB_SERVER_PORT),

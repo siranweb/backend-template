@@ -1,24 +1,19 @@
-import { IAction } from '@/infra/common/types';
-import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from 'src/app/users/auth/jwt';
-import { Config } from '@/config';
-import { UserNotFoundError } from '@/app/users/auth/errors/user-not-found.error';
-import { UserWrongPasswordError } from '@/app/users/auth/errors/user-wrong-password.error';
-import { ICryptographyService } from 'src/lib/cryptography';
+import { IUsersRepository } from '@/app/users/types';
+import { IJWTService } from '@/app/jwt';
+import { IConfig } from '@/config';
+import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
+import { UserWrongPasswordError } from '@/app/users/errors/user-wrong-password.error';
+import { ICryptographyService } from '@/lib/cryptography';
+import { ILoginCase, TokenPair } from '@/app/users/domain/types';
 
-interface Result {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export class LoginAction implements IAction {
+export class LoginCase implements ILoginCase {
   constructor(
     private readonly usersRepository: IUsersRepository,
     private readonly cryptographyService: ICryptographyService,
     private readonly jwtService: IJWTService,
-    private readonly config: Config,
+    private readonly config: IConfig,
   ) {}
-  async execute(login: string, password: string): Promise<Result> {
+  async execute(login: string, password: string): Promise<TokenPair> {
     const existingAccount = await this.usersRepository.getAccountByLogin(login);
     if (!existingAccount) throw new UserNotFoundError();
 

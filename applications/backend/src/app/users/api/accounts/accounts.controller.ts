@@ -1,25 +1,27 @@
 import { ApiError, Context, ErrorType } from '@/lib/web-server';
-import { createAccountSchema, loginAccountSchema } from './schemas/accounts.schemas';
-import { CreateAccountAction } from '@/app/users/auth/actions/create-account.action';
-import { Config, NodeEnv } from '@/config';
+import { createAccountSchema, loginAccountSchema } from './accounts.schema';
+import { IConfig, NodeEnv } from '@/config';
 import { buildCookie, parseCookie } from '@/utils/cookie';
-import { CreateTokensByRefreshTokenAction } from '@/app/users/auth/actions/create-tokens-by-refresh-token.action';
-import { LoginAction } from '@/app/users/auth/actions/login.action';
-import { InvalidateRefreshToken } from '@/app/users/auth/actions/invalidate-refresh-token.action';
-import { TokenInvalidError } from '@/app/users/auth/errors/token-invalid.error';
+import { TokenInvalidError } from '@/app/users/errors/token-invalid.error';
+import {
+  ICreateAccountCase,
+  ICreateTokensByRefreshTokenCase,
+  IInvalidateRefreshTokenCase,
+  ILoginCase,
+} from '@/app/users/domain/types';
 
 export class AccountsController {
   constructor(
-    private readonly config: Config,
-    private readonly createAccountAction: CreateAccountAction,
-    private readonly createTokensByRefreshTokenAction: CreateTokensByRefreshTokenAction,
-    private readonly loginAction: LoginAction,
-    private readonly invalidateRefreshToken: InvalidateRefreshToken,
+    private readonly config: IConfig,
+    private readonly createAccountCase: ICreateAccountCase,
+    private readonly createTokensByRefreshTokenCase: ICreateTokensByRefreshTokenCase,
+    private readonly loginCase: ILoginCase,
+    private readonly invalidateRefreshToken: IInvalidateRefreshTokenCase,
   ) {}
 
   async createAccount(ctx: Context) {
     const { body } = createAccountSchema.parse(ctx);
-    const result = await this.createAccountAction.execute({
+    const result = await this.createAccountCase.execute({
       login: body.login,
       password: body.password,
     });
@@ -35,7 +37,7 @@ export class AccountsController {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;
     try {
-      result = await this.createTokensByRefreshTokenAction.execute(cookieObj.refreshToken);
+      result = await this.createTokensByRefreshTokenCase.execute(cookieObj.refreshToken);
     } catch (e) {
       if (e instanceof TokenInvalidError) {
         throw new ApiError({
@@ -59,7 +61,7 @@ export class AccountsController {
 
   async login(ctx: Context) {
     const { body } = loginAccountSchema.parse(ctx);
-    const result = await this.loginAction.execute(body.login, body.password);
+    const result = await this.loginCase.execute(body.login, body.password);
 
     ctx.res.setHeader('Set-Cookie', [
       this.getAccessTokenCookie(result.accessToken),

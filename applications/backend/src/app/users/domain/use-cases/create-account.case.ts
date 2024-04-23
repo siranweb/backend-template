@@ -1,30 +1,23 @@
-import { IAction } from '@/infra/common/types';
-import { Account } from '@/app/users/auth/entities/account.entity';
-import { UserLoginTakenError } from '@/app/users/auth/errors/user-login-taken.error';
-import { IUsersRepository } from '@/app/users/shared/types';
-import { IJWTService } from 'src/app/users/auth/jwt';
-import { Config } from '@/config';
-import { ICryptographyService } from 'src/lib/cryptography';
+import { Account } from '@/app/users/entities/account.entity';
+import { UserLoginTakenError } from '@/app/users/errors/user-login-taken.error';
+import { IUsersRepository } from '@/app/users/types';
+import { IJWTService } from '@/app/jwt';
+import { IConfig } from '@/config';
+import { ICryptographyService } from '@/lib/cryptography';
+import {
+  CreateAccountCaseParams,
+  CreateAccountCaseResult,
+  ICreateAccountCase,
+} from '@/app/users/domain/types';
 
-interface Params {
-  login: string;
-  password: string;
-}
-
-interface Result {
-  account: Account;
-  accessToken: string;
-  refreshToken: string;
-}
-
-export class CreateAccountAction implements IAction {
+export class CreateAccountCase implements ICreateAccountCase {
   constructor(
     private readonly usersRepository: IUsersRepository,
     private readonly jwtService: IJWTService,
     private readonly cryptographyService: ICryptographyService,
-    private readonly config: Config,
+    private readonly config: IConfig,
   ) {}
-  async execute(params: Params): Promise<Result> {
+  async execute(params: CreateAccountCaseParams): Promise<CreateAccountCaseResult> {
     const existingAccount = await this.usersRepository.getAccountByLogin(params.login);
     if (existingAccount) {
       throw new UserLoginTakenError({ login: params.login });

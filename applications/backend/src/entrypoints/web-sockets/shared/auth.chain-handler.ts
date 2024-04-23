@@ -1,9 +1,9 @@
 import { Context, Handler } from '@/lib/web-sockets';
-import { ValidateAccessTokenAction } from '@/app/users/auth/actions/validate-access-token.action';
 import { parseCookie } from '@/utils/cookie';
+import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 
 export class AuthChainHandler {
-  constructor(private readonly validateAccessTokenAction: ValidateAccessTokenAction) {}
+  constructor(private readonly validateAccessTokenCase: IValidateAccessTokenCase) {}
 
   public async handle(ctx: Context, next: Handler): Promise<void> {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
@@ -12,7 +12,7 @@ export class AuthChainHandler {
       return;
     }
 
-    const isTokenValid = await this.validateAccessTokenAction.execute(cookieObj.accessToken);
+    const isTokenValid = await this.validateAccessTokenCase.execute(cookieObj.accessToken);
     if (!isTokenValid) {
       return;
     }
