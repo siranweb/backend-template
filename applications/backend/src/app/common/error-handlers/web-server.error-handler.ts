@@ -2,8 +2,9 @@ import { AppError } from '@/infra/errors/app-error';
 import { ApiError, ErrorType } from '@/lib/web-server';
 import { ZodError } from 'zod';
 import { IncomingMessage, ServerResponse } from 'node:http';
+import { IOnErrorHandler } from '@/lib/web-server/server/web-server';
 
-export class ErrorHandler {
+export class WebServerErrorHandler implements IOnErrorHandler {
   public async handle(error: any, req: IncomingMessage, res: ServerResponse): Promise<void> {
     const apiError = this.makeApiError(error);
     console.error(apiError);

@@ -1,7 +1,7 @@
 import { Account } from '@/app/users/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/errors/user-login-taken.error';
 import { IUsersRepository } from '../types';
-import { IJWTService } from '@/app/jwt';
+import { IJWTService } from '@/app/jwt/domain/types';
 import { IConfig } from '@/config';
 import { ICryptographyService } from '@/lib/cryptography';
 import {

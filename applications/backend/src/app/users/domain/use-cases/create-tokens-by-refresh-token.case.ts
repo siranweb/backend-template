@@ -1,5 +1,5 @@
 import { IUsersRepository } from '../types';
-import { IJWTService } from '@/app/jwt';
+import { IJWTService } from '@/app/jwt/domain/types';
 import { IConfig } from '@/config';
 import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
 import { TokenInvalidError } from '@/app/users/errors/token-invalid.error';

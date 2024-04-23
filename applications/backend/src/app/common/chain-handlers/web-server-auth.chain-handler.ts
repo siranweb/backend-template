@@ -2,7 +2,7 @@ import { ApiError, Context, ErrorType, Handler } from '@/lib/web-server';
 import { parseCookie } from '@/utils/cookie';
 import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 
-export class AuthChainHandler {
+export class WebServerAuthChainHandler {
   constructor(private readonly validateAccessTokenCase: IValidateAccessTokenCase) {}
 
   public async handle(ctx: Context, next: Handler): Promise<void> {

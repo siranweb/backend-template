@@ -1,4 +1,4 @@
-import { IJWTService } from '@/app/jwt';
+import { IJWTService } from '@/app/jwt/domain/types';
 import { IConfig } from '@/config';
 import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 

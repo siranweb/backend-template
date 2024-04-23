@@ -41,19 +41,19 @@ export class WebServer {
     });
   }
 
-  public handle(
-    method: string,
-    handlePath: string,
-    handler: Handler,
-    params: HandleParams = {},
-  ): void {
+  public handle(params: HandleParams): void {
+    const { handler, path: handlePath, method, chain = [] } = params;
     const route = path.join('/', this.config.prefix ?? '', '/', handlePath);
-    const routeHandler = params.chain ? this.buildHandlerFromChain(handler, params.chain) : handler;
+    const routeHandler = this.buildHandlerFromChain(handler, chain);
     this.router.register(method, route, routeHandler);
   }
 
-  public onError(clb: OnErrorHandler): void {
-    this.eventEmitter.on(WebServerEvent.ERROR, clb);
+  public onError(handler: OnErrorHandlerClb | IOnErrorHandler): void {
+    if ('handle' in handler) {
+      this.eventEmitter.on(WebServerEvent.ERROR, handler.handle.bind(handler));
+    } else {
+      this.eventEmitter.on(WebServerEvent.ERROR, handler);
+    }
   }
 
   public onRequest(clb: OnRequestHandler): void {
@@ -192,20 +192,27 @@ export class WebServer {
   }
 }
 
-interface HandleParams {
-  chain?: ChainFunc[];
-}
-
 interface Config {
   port: number;
   prefix?: string;
 }
 
-export type OnErrorHandler = (
+type HandleParams = {
+  method: string;
+  path: string;
+  handler: Handler;
+  chain?: ChainFunc[];
+};
+
+export interface IOnErrorHandler {
+  handle: OnErrorHandlerClb;
+}
+export type OnErrorHandlerClb = (
   error: any,
   req: IncomingMessage,
   res: ServerResponse,
 ) => any | Promise<any>;
+
 export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
 export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
 

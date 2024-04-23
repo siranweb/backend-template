@@ -28,7 +28,6 @@ export interface IUsersRepository {
   isRefreshTokenUsed(token: string): Promise<boolean>;
 }
 
-
 export type CreateAccountCaseParams = {
   login: string;
   password: string;
@@ -43,4 +42,4 @@ export type CreateAccountCaseResult = {
 export type TokenPair = {
   accessToken: string;
   refreshToken: string;
-}
+};
