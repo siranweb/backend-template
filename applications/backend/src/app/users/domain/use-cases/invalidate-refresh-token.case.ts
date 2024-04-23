@@ -1,4 +1,4 @@
-import { IUsersRepository } from '@/app/users/types';
+import { IUsersRepository } from '../types';
 import { IInvalidateRefreshTokenCase } from '@/app/users/domain/types';
 
 export class InvalidateRefreshTokenCase implements IInvalidateRefreshTokenCase {

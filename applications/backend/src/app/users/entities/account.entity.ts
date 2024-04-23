@@ -1,12 +1,5 @@
 import { uuidv7 } from 'uuidv7';
 
-export interface AccountParams {
-  id?: string;
-  login: string;
-  passwordHash: string;
-  salt: string;
-}
-
 export class Account {
   id: string;
   login: string;
@@ -23,4 +16,11 @@ export class Account {
   public comparePasswordHash(hash: string): boolean {
     return hash === this.passwordHash;
   }
+}
+
+export interface AccountParams {
+  id?: string;
+  login: string;
+  passwordHash: string;
+  salt: string;
 }

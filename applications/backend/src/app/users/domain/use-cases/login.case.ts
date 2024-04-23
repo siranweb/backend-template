@@ -1,4 +1,4 @@
-import { IUsersRepository } from '@/app/users/types';
+import { IUsersRepository } from '../types';
 import { IJWTService } from '@/app/jwt';
 import { IConfig } from '@/config';
 import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';

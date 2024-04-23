@@ -1,6 +1,6 @@
 import { Account } from '@/app/users/entities/account.entity';
 import { UserLoginTakenError } from '@/app/users/errors/user-login-taken.error';
-import { IUsersRepository } from '@/app/users/types';
+import { IUsersRepository } from '../types';
 import { IJWTService } from '@/app/jwt';
 import { IConfig } from '@/config';
 import { ICryptographyService } from '@/lib/cryptography';
