@@ -1,4 +1,4 @@
-import { config } from '@/config';
+import { config } from 'src/app/config';
 import { JwtService } from '@/app/jwt/domain/services/jwt.service';
 import { WebServerAuthChainHandler } from '@/app/common/chain-handlers/web-server-auth.chain-handler';
 import { WebSocketsAuthChainHandler } from '@/app/common/chain-handlers/web-sockets-auth.chain-handler';

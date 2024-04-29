@@ -1,4 +1,4 @@
-import { AppDatabase } from '@/databases/app-database/database';
+import { AppDatabase } from '@/app/databases/app-database/database';
 import { Account } from '@/app/users/entities/account.entity';
 import { IUsersRepository } from '../domain/types';
 

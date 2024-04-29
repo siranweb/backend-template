@@ -1,8 +1,9 @@
-import { AppError } from '@/infra/errors/app-error';
-import { ApiError, ErrorType } from '@/lib/web-server';
+import { AppError } from '@/app/common/errors/app-error';
+import { ApiError, ApiErrorType } from '@/lib/web-server';
 import { ZodError } from 'zod';
 import { IncomingMessage, ServerResponse } from 'node:http';
-import { IOnErrorHandler } from '@/lib/web-server/server/web-server';
+import { IOnErrorHandler } from '@/lib/web-server/types/web-server.interface';
+import { IApiError } from '@/lib/web-server/types/api-error.interface';
 
 export class WebServerErrorHandler implements IOnErrorHandler {
   public async handle(error: any, req: IncomingMessage, res: ServerResponse): Promise<void> {
@@ -21,7 +22,7 @@ export class WebServerErrorHandler implements IOnErrorHandler {
     );
   }
 
-  private makeApiError(error: any): ApiError {
+  private makeApiError(error: any): IApiError {
     const isApiError = error instanceof ApiError;
     if (isApiError) {
       return error;
@@ -30,7 +31,7 @@ export class WebServerErrorHandler implements IOnErrorHandler {
     const isAppError = error instanceof AppError;
     if (isAppError) {
       return new ApiError({
-        type: ErrorType.APP,
+        type: ApiErrorType.APP,
         statusCode: 400,
         errorName: error.errorName,
         data: error.data,
@@ -41,7 +42,7 @@ export class WebServerErrorHandler implements IOnErrorHandler {
     const isValidationError = error instanceof ZodError;
     if (isValidationError) {
       return new ApiError({
-        type: ErrorType.VALIDATION,
+        type: ApiErrorType.VALIDATION,
         statusCode: 400,
         errorName: 'VALIDATION_NOT_PASSED',
         data: {
@@ -52,7 +53,7 @@ export class WebServerErrorHandler implements IOnErrorHandler {
     }
 
     return new ApiError({
-      type: ErrorType.UNKNOWN,
+      type: ApiErrorType.UNKNOWN,
       statusCode: 500,
       errorName: 'UNKNOWN',
       original: error,

@@ -1,24 +1,19 @@
 import http, { IncomingMessage } from 'node:http';
 import { EventEmitter } from 'node:events';
 import { WebSocket, WebSocketServer } from 'ws';
-import { WsRouter } from '../routing/ws-router';
-import { ChainFunc, Context, Handler } from './types';
+import { WsRouter } from '@/lib/web-sockets/server/routing/ws-router';
+import { ChainFunc, Context, Handler } from '../types/shared';
+import {
+  Config,
+  HandleParams,
+  IWsServer,
+  OnErrorHandler,
+  OnEventFinishedHandler,
+  OnEventHandler,
+  WsServerEvent,
+} from '@/lib/web-sockets/types/ws-server.interface';
 
-interface Config {
-  port: number;
-}
-
-enum WsServerEvent {
-  ERROR = 'error',
-  EVENT = 'event',
-  EVENT_FINISHED = 'event_finished',
-}
-
-export type OnErrorHandler = (error: any, ws: WebSocket) => any | Promise<any>;
-export type OnEventHandler = (ctx: Context) => any | Promise<any>;
-export type OnEventFinishedHandler = (ctx: Context) => any | Promise<any>;
-
-export class WsServer {
+export class WsServer implements IWsServer {
   private readonly wss: WebSocketServer;
   private readonly eventEmitter: EventEmitter = new EventEmitter();
   private readonly wsRouter: WsRouter = new WsRouter();
@@ -126,8 +121,4 @@ export class WsServer {
     }
     return lastFunc;
   }
-}
-
-interface HandleParams {
-  chain?: ChainFunc[];
 }

@@ -1,9 +1,9 @@
 import { IUsersRepository } from '../types';
 import { IJWTService } from '@/app/jwt/domain/types';
-import { IConfig } from '@/config';
+import { IConfig } from 'src/app/config';
 import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
 import { UserWrongPasswordError } from '@/app/users/errors/user-wrong-password.error';
-import { ICryptographyService } from '@/lib/cryptography';
+import { ICryptographyService } from '@/app/cryptography/domain/types';
 import { ILoginCase, TokenPair } from '@/app/users/domain/types';
 
 export class LoginCase implements ILoginCase {

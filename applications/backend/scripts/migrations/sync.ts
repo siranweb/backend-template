@@ -1,10 +1,10 @@
-import '@/infra/common/global-imports';
+import '@/app/common/global-imports';
 import path from 'node:path';
 import url from 'node:url';
 import pg from 'pg';
 import process from 'node:process';
 import { Kysely, PostgresDialect } from 'kysely';
-import { config } from '@/config';
+import { config } from '@/app/config';
 import { migrate } from '@/lib/kysely-migrations';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));

@@ -1,5 +1,5 @@
 import { Context, Handler } from '@/lib/web-sockets';
-import { parseCookie } from '@/utils/cookie';
+import { parseCookie } from '@/app/common/utils/cookie';
 import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 
 export class WebSocketsAuthChainHandler {

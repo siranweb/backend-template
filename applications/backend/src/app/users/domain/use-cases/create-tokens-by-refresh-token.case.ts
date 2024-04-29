@@ -1,6 +1,6 @@
 import { IUsersRepository } from '../types';
 import { IJWTService } from '@/app/jwt/domain/types';
-import { IConfig } from '@/config';
+import { IConfig } from 'src/app/config';
 import { UserNotFoundError } from '@/app/users/errors/user-not-found.error';
 import { TokenInvalidError } from '@/app/users/errors/token-invalid.error';
 import { ICreateTokensByRefreshTokenCase, TokenPair } from '@/app/users/domain/types';

@@ -1,27 +1,11 @@
 import { WebSocket } from 'ws';
-import { RoomsStorage } from './rooms-storage';
+import { RoomsStorage } from './storage/rooms-storage';
+import { IRoomsStorage } from '../types/rooms-storage.interface';
+import { IWsEmitter, Message } from '../types/ws-emitter.interface';
 
-interface Message {
-  event: string;
-  data: Record<any, any>;
-  meta: {
-    timestamp: number;
-  };
-}
+export class WsEmitter implements IWsEmitter {
+  private readonly roomsStorage: IRoomsStorage = new RoomsStorage();
 
-export class WsEmitter {
-  private readonly roomsStorage: RoomsStorage = new RoomsStorage();
-
-  public async emit(
-    event: string,
-    data: Record<any, any>,
-    roomName: string | string[],
-  ): Promise<void>;
-  public async emit(
-    event: string,
-    data: Record<any, any>,
-    ws: WebSocket | WebSocket[],
-  ): Promise<void>;
   public async emit(
     event: string,
     data: Record<any, any>,

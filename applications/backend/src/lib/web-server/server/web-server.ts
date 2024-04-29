@@ -1,19 +1,31 @@
 import http, { IncomingMessage, ServerResponse } from 'node:http';
-import path from 'node:path';
+import path from 'node:path/posix';
 import { EventEmitter } from 'node:events';
-import { ChainFunc, Context, Handler } from './types';
-import { Router } from '../routing';
-import { ApiError, ErrorType } from './api-error';
-import { BodyParser } from '@/lib/web-server/server/body-parser';
+import { ChainFunc, Context, HandlerFunc } from '../types/shared';
+import { Router } from '@/lib/web-server/server/routing/router';
+import { ApiError } from '@/lib/web-server';
+import { BodyParser } from '@/lib/web-server/common/body-parser';
+import { ApiErrorType } from '@/lib/web-server/types/api-error.interface';
+import { IRouter } from '@/lib/web-server/types/router.interface';
+import {
+  HandleParams,
+  IOnErrorHandler,
+  IWebServer,
+  OnErrorHandlerClb,
+  OnRequestFinishedHandler,
+  OnRequestHandler,
+  WebServerConfig,
+  WebServerEvent,
+} from '@/lib/web-server/types/web-server.interface';
 
-export class WebServer {
-  private readonly router: Router = new Router();
+export class WebServer implements IWebServer {
+  private readonly router: IRouter = new Router();
   private readonly bodyParser: BodyParser = new BodyParser();
   private readonly eventEmitter: EventEmitter = new EventEmitter();
-  private readonly config: Config;
+  private readonly config: WebServerConfig;
   private server?: http.Server;
 
-  constructor(config: Config) {
+  constructor(config: WebServerConfig) {
     this.config = config;
   }
 
@@ -96,12 +108,12 @@ export class WebServer {
       throw new ApiError({
         statusCode: 404,
         errorName: 'ROUTE_NOT_FOUND',
-        type: ErrorType.APP,
+        type: ApiErrorType.APP,
       });
     }
 
     const { params, search, route } = routeData;
-    const handler = routeData.handler as Handler;
+    const handler = routeData.handler as HandlerFunc;
 
     let body;
     try {
@@ -112,14 +124,14 @@ export class WebServer {
         throw new ApiError({
           statusCode: 400,
           errorName: 'BAD_JSON_BODY',
-          type: ErrorType.APP,
+          type: ApiErrorType.APP,
           original: e,
         });
       }
 
       throw new ApiError({
         statusCode: 500,
-        type: ErrorType.UNKNOWN,
+        type: ApiErrorType.UNKNOWN,
         original: e,
       });
     }
@@ -182,7 +194,7 @@ export class WebServer {
     return body;
   }
 
-  private buildHandlerFromChain(handler: Handler, chain: ChainFunc[]): Handler {
+  private buildHandlerFromChain(handler: HandlerFunc, chain: ChainFunc[]): HandlerFunc {
     let lastFunc = handler;
     for (const chainFunc of chain.reverse()) {
       const prev = lastFunc;
@@ -190,34 +202,4 @@ export class WebServer {
     }
     return lastFunc;
   }
-}
-
-interface Config {
-  port: number;
-  prefix?: string;
-}
-
-type HandleParams = {
-  method: string;
-  path: string;
-  handler: Handler;
-  chain?: ChainFunc[];
-};
-
-export interface IOnErrorHandler {
-  handle: OnErrorHandlerClb;
-}
-export type OnErrorHandlerClb = (
-  error: any,
-  req: IncomingMessage,
-  res: ServerResponse,
-) => any | Promise<any>;
-
-export type OnRequestHandler = (ctx: Context) => any | Promise<any>;
-export type OnRequestFinishedHandler = (ctx: Context) => any | Promise<any>;
-
-enum WebServerEvent {
-  ERROR = 'error',
-  REQUEST = 'request',
-  REQUEST_FINISHED = 'request_finished',
 }

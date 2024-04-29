@@ -1,7 +1,7 @@
-import { config } from '@/config';
-import { appDatabase } from '@/databases/app-database/database';
+import { config } from 'src/app/config';
+import { appDatabase } from '@/app/databases/app-database/database';
 import { JwtService } from '@/app/jwt/domain/services/jwt.service';
-import { CryptographyService } from '@/lib/cryptography';
+import { CryptographyService } from '@/app/cryptography/domain/services/cryptography.service';
 import { AccountsController } from '@/app/users/api/accounts/accounts.controller';
 import { UsersRepository } from '@/app/users/repositories/users.repository';
 import { CreateAccountCase } from '@/app/users/domain/use-cases/create-account.case';

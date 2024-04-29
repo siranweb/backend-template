@@ -1,5 +1,5 @@
 import { IJWTService } from '@/app/jwt/domain/types';
-import { IConfig } from '@/config';
+import { IConfig } from 'src/app/config';
 import { IValidateAccessTokenCase } from '@/app/users/domain/types';
 
 export class ValidateAccessTokenCase implements IValidateAccessTokenCase {
