@@ -19,8 +19,11 @@ export function createControllerDefinition() {
     };
   }
 
-  function Controller(_prefix?: string) {
-    return (_target: any): void => {};
+  function Controller(prefix?: string) {
+    console.log(prefix);
+    return (target: any): void => {
+      console.log(target);
+    };
   }
 
   return { definition, Handler, Chain, Controller };

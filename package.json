@@ -9,7 +9,7 @@
     "start": "tsx app/index.ts",
     "start:dev": "tsx watch -r dotenv/config app/index.ts dotenv_config_path=env/run/app.env",
     "ts-check": "tsc --noEmit",
-    "lint": "eslint --ext .ts app scripts",
+    "lint": "eslint --max-warnings 0 --ext .ts app scripts",
     "format": "prettier --write app scripts",
     "migrations:create": "tsx scripts/migrations/create.ts",
     "migrations:sync": "tsx scripts/migrations/sync.ts",
