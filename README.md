@@ -2,7 +2,7 @@
 
 Инфра
 * [ ] Скедулеры
-* [ ] Git hooks
+* [x] Git hooks
 * [ ] Github CI/CD
 * [x] Убрать бэкенд из docker-compose.dev
 * [ ] Переход на small-di
