@@ -5,12 +5,12 @@ import { IController } from '@/modules/common/interfaces/controller.interface';
 export function registerController(webServer: IWebServer, controller: IController): void {
   const { controller: controllerState, handlers } = controller.definition;
 
-  handlers.forEach(handlerState => {
+  handlers.forEach((handlerState) => {
     webServer.handle({
       method: handlerState.method,
       handler: handlerState.handler,
       path: path.join(controllerState.prefix ?? '', handlerState.path ?? ''),
       chain: handlerState.chain,
-    })
+    });
   });
 }

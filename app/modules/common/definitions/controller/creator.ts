@@ -16,11 +16,11 @@ export function createControllerDefinition() {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
       definition.updateHandlerDescription(handler, { chain });
-    }
+    };
   }
 
-  function Controller(prefix?: string) {
-    return (target: any): void => {};
+  function Controller(_prefix?: string) {
+    return (_target: any): void => {};
   }
 
   return { definition, Handler, Chain, Controller };

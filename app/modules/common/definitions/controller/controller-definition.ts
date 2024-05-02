@@ -2,7 +2,8 @@ import { HandlerFunc } from '@/lib/web-server/types/shared';
 import {
   ControllerState,
   HandlerState,
-  IControllerDefinition, UpdateHandlerDefinitionFields,
+  IControllerDefinition,
+  UpdateHandlerDefinitionFields,
 } from '@/modules/common/interfaces/controller-definition.interface';
 
 export class ControllerDefinition implements IControllerDefinition {
@@ -17,7 +18,10 @@ export class ControllerDefinition implements IControllerDefinition {
     return this.controllerState;
   }
 
-  public updateHandlerDescription(handler: HandlerFunc, fields: UpdateHandlerDefinitionFields): void {
+  public updateHandlerDescription(
+    handler: HandlerFunc,
+    fields: UpdateHandlerDefinitionFields,
+  ): void {
     const description = this.getOrInitHandler(handler);
 
     description.chain = fields.chain ?? description.chain;
@@ -29,7 +33,7 @@ export class ControllerDefinition implements IControllerDefinition {
     const handlerDescription = this.handlersState.get(handler);
     if (handlerDescription) return handlerDescription;
 
-    const newHandlerDescription = { handler, method: '', };
+    const newHandlerDescription = { handler, method: '' };
     this.handlersState.set(handler, newHandlerDescription);
 
     return newHandlerDescription;

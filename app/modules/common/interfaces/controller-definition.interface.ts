@@ -12,15 +12,15 @@ export type HandlerState = {
   method: string;
   path?: string;
   chain?: ChainFunc[];
-}
+};
 
 export type ControllerState = {
   prefix?: string;
   chain?: ChainFunc[];
-}
+};
 
 export type UpdateHandlerDefinitionFields = {
   method?: string;
   path?: string;
   chain?: ChainFunc[];
-}
+};

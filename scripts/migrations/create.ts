@@ -11,11 +11,14 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const databasesPath = path.join(__dirname, '../../src/app/databases');
 
 const availableDatabases = await fsp.readdir(databasesPath);
-const availableDatabasesStr = availableDatabases.map((name, index) => `(${index}) ${name}`).join(', ');
+const availableDatabasesStr = availableDatabases
+  .map((name, index) => `(${index}) ${name}`)
+  .join(', ');
 console.log('Available databases:', availableDatabasesStr);
 
 const databaseInput = await askQuestion('Choose database: ');
-const selectedDatabase = availableDatabases[+databaseInput] ?? availableDatabases.find(d => d === databaseInput);
+const selectedDatabase =
+  availableDatabases[+databaseInput] ?? availableDatabases.find((d) => d === databaseInput);
 
 if (!selectedDatabase) {
   console.error('No such database');
