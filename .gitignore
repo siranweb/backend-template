@@ -1,3 +1,4 @@
 node_modules/
 .idea/
-.env
+.vscode/
+env/run/

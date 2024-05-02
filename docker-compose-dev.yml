@@ -1,36 +1,15 @@
 version: '3'
 
 services:
-  backend:
-    tty: true
-    build: applications/backend/
-    depends_on:
-      - primary-database
-    env_file:
-      - applications/backend/.env
-    ports:
-      - "4000:4000"
-      - "4001:4001"
-    networks:
-      - backend-network
-    volumes:
-      - ./applications/backend/src:/app/src
-    command: pnpm run start:dev
-
   primary-database:
     tty: true
     image: 'postgres:15.4'
     env_file:
-      - .env
+      - env/run/primary-database.env
     ports:
       - "5432:5432"
-    networks:
-      - backend-network
     volumes:
       - primary-database:/var/lib/postgresql/data/
 
 volumes:
   primary-database:
-
-networks:
-  backend-network:

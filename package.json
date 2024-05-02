@@ -1,14 +1,46 @@
 {
-  "name": "webdev-template",
+  "name": "app",
   "private": true,
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
+  "type": "module",
   "scripts": {
-    "compose": "docker compose -f docker-compose.yml up --build",
-    "compose:dev": "docker compose -f docker-compose-dev.yml up --build"
+    "start": "tsx app/index.ts",
+    "start:dev": "tsx watch -r dotenv/config app/index.ts dotenv_config_path=env/run/app.env",
+    "ts-check": "tsc --noEmit",
+    "lint": "eslint --ext .ts src scripts",
+    "format": "prettier --write src scripts",
+    "migrations:create": "tsx scripts/migrations/create.ts",
+    "migrations:sync": "tsx scripts/migrations/sync.ts",
+    "migrations:up": "tsx scripts/migrations/up.ts",
+    "migrations:down": "tsx scripts/migrations/down.ts",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "jose": "^4.14.4",
+    "kysely": "0.26.1",
+    "pg": "^8.11.3",
+    "uuidv7": "^0.6.3",
+    "ws": "^8.14.2",
+    "zod": "3.22.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.4",
+    "@types/node": "^20.3.2",
+    "@types/pg": "^8.10.9",
+    "@types/ws": "^8.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "husky": "^9.0.11",
+    "prettier": "^3.0.0",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  }
 }
