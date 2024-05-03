@@ -2,7 +2,8 @@ import { HandlerFunc } from '@/lib/web-server/types/shared';
 import {
   ControllerState,
   HandlerState,
-  IControllerDefinition, UpdateControllerDefinitionFields,
+  IControllerDefinition,
+  UpdateControllerDefinitionFields,
   UpdateHandlerDefinitionFields,
 } from '@/modules/common/interfaces/controller-definition.interface';
 
@@ -29,9 +30,7 @@ export class ControllerDefinition implements IControllerDefinition {
     definition.path = fields.path ?? definition.path;
   }
 
-  public updateControllerDefinition(
-    fields: UpdateControllerDefinitionFields
-  ): void {
+  public updateControllerDefinition(fields: UpdateControllerDefinitionFields): void {
     this.controllerState.prefix = fields.prefix ?? this.controllerState.prefix;
   }
 

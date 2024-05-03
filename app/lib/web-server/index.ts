@@ -3,8 +3,12 @@ export { ApiError } from './common/api-error';
 export { ApiErrorType } from './types/api-error.interface';
 export type { Context, HandlerFunc } from './types/shared';
 export type {
-  OnRequestHandler,
-  OnRequestFinishedHandler,
-  OnErrorHandlerClb,
   HandleParams,
+  IOnErrorHandler,
 } from './types/web-server.interface';
+export type {
+  OnRequestHandlerClb,
+  OnRequestFinishedHandlerClb,
+  OnErrorHandlerClb,
+} from './types/request-handler.interface';
+export type { IApiError } from './types/api-error.interface';

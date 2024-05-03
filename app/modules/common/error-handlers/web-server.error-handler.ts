@@ -1,17 +1,14 @@
-import { AppError } from '@/modules/common/errors/app-error';
-import { ApiError, ApiErrorType } from '@/lib/web-server';
 import { ZodError } from 'zod';
-import { IncomingMessage, ServerResponse } from 'node:http';
-import { IOnErrorHandler } from '@/lib/web-server/types/web-server.interface';
-import { IApiError } from '@/lib/web-server/types/api-error.interface';
+import { AppError } from '@/modules/common/errors/app-error';
+import { ApiError, ApiErrorType, Context, IOnErrorHandler, IApiError } from '@/lib/web-server';
 
 export class WebServerErrorHandler implements IOnErrorHandler {
-  public async handle(error: any, _req: IncomingMessage, res: ServerResponse): Promise<void> {
+  public async handle(error: any, context: Context): Promise<void> {
     const apiError = this.makeApiError(error);
     console.error(apiError);
-    res.statusCode = apiError.statusCode;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(
+    context.res.statusCode = apiError.statusCode;
+    context.res.setHeader('Content-Type', 'application/json');
+    context.res.end(
       JSON.stringify({
         error: {
           type: apiError.type,
