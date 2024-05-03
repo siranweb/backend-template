@@ -8,9 +8,6 @@ export interface IRequestHandler {
   onRequestFinished(clb: OnRequestFinishedHandlerClb): void;
 }
 
-export type OnErrorHandlerClb = (
-  error: any,
-  context: Context,
-) => any | Promise<any>;
+export type OnErrorHandlerClb = (error: any, context: Context) => any | Promise<any>;
 export type OnRequestHandlerClb = (ctx: Context) => any | Promise<any>;
 export type OnRequestFinishedHandlerClb = (ctx: Context) => any | Promise<any>;

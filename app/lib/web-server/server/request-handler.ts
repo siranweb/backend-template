@@ -6,9 +6,7 @@ import {
   OnRequestFinishedHandlerClb,
   OnRequestHandlerClb,
 } from '../types/request-handler.interface';
-import {
-  WebServerEvent,
-} from '../types/web-server.interface';
+import { WebServerEvent } from '../types/web-server.interface';
 import { ApiError } from '../common/api-error';
 import { BodyParser } from '../common/body-parser';
 import { ApiErrorType } from '../types/api-error.interface';

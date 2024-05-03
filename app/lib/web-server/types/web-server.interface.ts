@@ -1,5 +1,9 @@
 import { ChainFunc, HandlerFunc } from './shared';
-import { OnErrorHandlerClb, OnRequestFinishedHandlerClb, OnRequestHandlerClb } from '../types/request-handler.interface';
+import {
+  OnErrorHandlerClb,
+  OnRequestFinishedHandlerClb,
+  OnRequestHandlerClb,
+} from '../types/request-handler.interface';
 
 export interface IWebServer {
   start(): Promise<void>;
