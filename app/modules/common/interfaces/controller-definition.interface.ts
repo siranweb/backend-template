@@ -1,5 +1,4 @@
-import { HandlerFunc } from '@/lib/web-server';
-import { ChainFunc } from '@/lib/web-server/types/shared';
+import { HandlerFunc, ChainFunc, IChainHandler } from '@/lib/web-server';
 
 export interface IControllerDefinition {
   handlers: HandlerState[];
@@ -12,7 +11,7 @@ export type HandlerState = {
   handler: HandlerFunc;
   method: string;
   path?: string;
-  chain?: ChainFunc[];
+  chain?: (ChainFunc | IChainHandler)[];
 };
 
 export type ControllerState = {
@@ -22,7 +21,7 @@ export type ControllerState = {
 export type UpdateHandlerDefinitionFields = {
   method?: string;
   path?: string;
-  chain?: ChainFunc[];
+  chain?: (ChainFunc | IChainHandler)[];
 };
 
 export type UpdateControllerDefinitionFields = {

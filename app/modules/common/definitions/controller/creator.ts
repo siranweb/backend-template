@@ -1,4 +1,4 @@
-import { ChainFunc, HandlerFunc } from '@/lib/web-server/types/shared';
+import { ChainFunc, HandlerFunc, IChainHandler } from '@/lib/web-server';
 import { ControllerDefinition } from '@/modules/common/definitions/controller/controller-definition';
 import { IControllerDefinition } from '@/modules/common/interfaces/controller-definition.interface';
 
@@ -12,7 +12,7 @@ export function createControllerDefinition() {
     };
   }
 
-  function Chain(...chain: ChainFunc[]) {
+  function Chain(...chain: (ChainFunc | IChainHandler)[]) {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
       definition.updateHandlerDefinition(handler, { chain });

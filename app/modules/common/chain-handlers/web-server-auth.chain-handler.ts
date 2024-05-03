@@ -1,8 +1,8 @@
-import { ApiError, ApiErrorType, Context, HandlerFunc } from '@/lib/web-server';
+import { ApiError, ApiErrorType, Context, HandlerFunc, IChainHandler } from '@/lib/web-server';
 import { parseCookie } from '@/modules/common/utils/cookie';
 import { IValidateAccessTokenCase } from '@/modules/users/domain/types';
 
-export class WebServerAuthChainHandler {
+export class WebServerAuthChainHandler implements IChainHandler {
   constructor(private readonly validateAccessTokenCase: IValidateAccessTokenCase) {}
 
   public async handle(ctx: Context, next: HandlerFunc): Promise<void> {

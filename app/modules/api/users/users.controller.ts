@@ -12,7 +12,7 @@ import {
 import { createControllerDefinition } from '@/modules/common/definitions/controller/creator';
 import { IController } from '@/modules/common/interfaces/controller.interface';
 import { IControllerDefinition } from '@/modules/common/interfaces/controller-definition.interface';
-import { webServerAuth } from '@/di/entrypoints.di';
+import { auth } from '@/di/web-server.di';
 
 const { Handler, Chain, Controller, definition } = createControllerDefinition();
 
@@ -44,7 +44,7 @@ export class UsersController implements IController {
   }
 
   @Handler('POST', 'tokens')
-  @Chain(webServerAuth)
+  @Chain(auth)
   async refreshTokens(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;

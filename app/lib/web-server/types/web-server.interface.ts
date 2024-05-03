@@ -1,4 +1,4 @@
-import { ChainFunc, HandlerFunc } from './shared';
+import { ChainFunc, HandlerFunc, IChainHandler } from './shared';
 import {
   OnErrorHandlerClb,
   OnRequestFinishedHandlerClb,
@@ -10,19 +10,27 @@ export interface IWebServer {
   stop(): Promise<void>;
   handle(params: HandleParams): void;
   onError(handler: OnErrorHandlerClb | IOnErrorHandler): void;
-  onRequest(clb: OnRequestHandlerClb): void;
-  onRequestFinished(clb: OnRequestFinishedHandlerClb): void;
+  onRequest(handler: OnRequestHandlerClb | IOnRequestHandler): void;
+  onRequestFinished(handler: OnRequestFinishedHandlerClb | IOnRequestFinishedHandler): void;
 }
 
 export type HandleParams = {
   method: string;
   path: string;
   handler: HandlerFunc;
-  chain?: ChainFunc[];
+  chain?: (ChainFunc | IChainHandler)[];
 };
 
 export interface IOnErrorHandler {
   handle: OnErrorHandlerClb;
+}
+
+export interface IOnRequestHandler {
+  handle: OnRequestHandlerClb;
+}
+
+export interface IOnRequestFinishedHandler {
+  handle: OnRequestFinishedHandlerClb;
 }
 
 export type WebServerConfig = {

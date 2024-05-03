@@ -16,3 +16,6 @@ export type Context = {
 
 export type HandlerFunc = (ctx: Context) => any;
 export type ChainFunc = (ctx: Context, next: HandlerFunc) => any;
+export interface IChainHandler {
+  handle: ChainFunc;
+}

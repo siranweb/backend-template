@@ -1,11 +1,13 @@
 import http from 'node:http';
 import path from 'node:path/posix';
-import { ChainFunc, Context, HandlerFunc } from '../types/shared';
+import { ChainFunc, Context, HandlerFunc, IChainHandler } from '../types/shared';
 import { Router } from './routing/router';
 import { IRouter } from '../types/router.interface';
 import {
   HandleParams,
   IOnErrorHandler,
+  IOnRequestFinishedHandler,
+  IOnRequestHandler,
   IWebServer,
   WebServerConfig,
 } from '../types/web-server.interface';
@@ -72,12 +74,20 @@ export class WebServer implements IWebServer {
     }
   }
 
-  public onRequest(clb: OnRequestHandlerClb): void {
-    this.requestHandler.onRequest(clb);
+  public onRequest(handler: OnRequestHandlerClb | IOnRequestHandler): void {
+    if ('handle' in handler) {
+      this.requestHandler.onRequest(handler.handle.bind(handler));
+    } else {
+      this.requestHandler.onRequest(handler);
+    }
   }
 
-  public onRequestFinished(clb: OnRequestFinishedHandlerClb): void {
-    this.requestHandler.onRequestFinished(clb);
+  public onRequestFinished(handler: OnRequestFinishedHandlerClb | IOnRequestFinishedHandler): void {
+    if ('handle' in handler) {
+      this.requestHandler.onRequestFinished(handler.handle.bind(handler));
+    } else {
+      this.requestHandler.onRequestFinished(handler);
+    }
   }
 
   private createHttpServer() {
@@ -88,12 +98,23 @@ export class WebServer implements IWebServer {
     return path.join('/', this.config.prefix ?? '', '/', handlerPath);
   }
 
-  private buildHandlerFromChain(handler: HandlerFunc, chain: ChainFunc[]): HandlerFunc {
+  private buildHandlerFromChain(
+    handler: HandlerFunc,
+    chain: (ChainFunc | IChainHandler)[],
+  ): HandlerFunc {
     let lastFunc = handler;
-    for (const chainFunc of chain.reverse()) {
+    for (const chainHandler of chain.reverse()) {
+      const chainFunc = this.getChainFunc(chainHandler);
       const prev = lastFunc;
       lastFunc = (ctx: Context) => chainFunc(ctx, prev);
     }
     return lastFunc;
+  }
+
+  private getChainFunc(chainHandler: ChainFunc | IChainHandler): ChainFunc {
+    if ('handle' in chainHandler) {
+      return chainHandler.handle.bind(chainHandler);
+    }
+    return chainHandler;
   }
 }
