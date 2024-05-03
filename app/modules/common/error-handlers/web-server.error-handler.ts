@@ -6,7 +6,7 @@ import { IOnErrorHandler } from '@/lib/web-server/types/web-server.interface';
 import { IApiError } from '@/lib/web-server/types/api-error.interface';
 
 export class WebServerErrorHandler implements IOnErrorHandler {
-  public async handle(error: any, req: IncomingMessage, res: ServerResponse): Promise<void> {
+  public async handle(error: any, _req: IncomingMessage, res: ServerResponse): Promise<void> {
     const apiError = this.makeApiError(error);
     console.error(apiError);
     res.statusCode = apiError.statusCode;

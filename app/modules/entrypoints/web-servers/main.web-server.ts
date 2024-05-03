@@ -1,6 +1,6 @@
 import { config } from '@/modules/config';
 import { WebServer } from '@/lib/web-server';
-import { accountsController } from '@/di/users.di';
+import { usersController } from '@/di/users.di';
 import { webServerErrorHandler } from '@/di/entrypoints.di';
 import { registerController } from '@/modules/common/definitions/controller/register-controller';
 
@@ -11,4 +11,4 @@ export const mainWebServer = new WebServer({
 
 mainWebServer.onError(webServerErrorHandler);
 
-registerController(mainWebServer, accountsController);
+registerController(mainWebServer, usersController);

@@ -14,7 +14,7 @@ export class ValidateAccessTokenCase implements IValidateAccessTokenCase {
         secret: this.config.jwt.secret,
       });
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

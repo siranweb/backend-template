@@ -2,7 +2,7 @@ import { HandlerFunc } from '@/lib/web-server/types/shared';
 import {
   ControllerState,
   HandlerState,
-  IControllerDefinition,
+  IControllerDefinition, UpdateControllerDefinitionFields,
   UpdateHandlerDefinitionFields,
 } from '@/modules/common/interfaces/controller-definition.interface';
 
@@ -18,15 +18,21 @@ export class ControllerDefinition implements IControllerDefinition {
     return this.controllerState;
   }
 
-  public updateHandlerDescription(
+  public updateHandlerDefinition(
     handler: HandlerFunc,
     fields: UpdateHandlerDefinitionFields,
   ): void {
-    const description = this.getOrInitHandler(handler);
+    const definition = this.getOrInitHandler(handler);
 
-    description.chain = fields.chain ?? description.chain;
-    description.method = fields.method ?? description.method;
-    description.path = fields.path ?? description.path;
+    definition.chain = fields.chain ?? definition.chain;
+    definition.method = fields.method ?? definition.method;
+    definition.path = fields.path ?? definition.path;
+  }
+
+  public updateControllerDefinition(
+    fields: UpdateControllerDefinitionFields
+  ): void {
+    this.controllerState.prefix = fields.prefix ?? this.controllerState.prefix;
   }
 
   private getOrInitHandler(handler: HandlerFunc): HandlerState {

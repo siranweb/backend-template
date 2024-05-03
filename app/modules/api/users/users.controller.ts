@@ -1,5 +1,5 @@
 import { ApiError, ApiErrorType, Context } from '@/lib/web-server';
-import { createAccountSchema, loginAccountSchema } from './accounts.schema';
+import { createUserSchema, loginSchema } from './users.schema';
 import { IConfig, NodeEnv } from '@/modules/config';
 import { buildCookie, parseCookie } from '@/modules/common/utils/cookie';
 import { TokenInvalidError } from '@/modules/users/errors/token-invalid.error';
@@ -16,8 +16,8 @@ import { webServerAuth } from '@/di/entrypoints.di';
 
 const { Handler, Chain, Controller, definition } = createControllerDefinition();
 
-@Controller('accounts')
-export class AccountsController implements IController {
+@Controller('users')
+export class UsersController implements IController {
   public readonly definition: IControllerDefinition = definition;
 
   constructor(
@@ -30,7 +30,7 @@ export class AccountsController implements IController {
 
   @Handler('POST')
   async createAccount(ctx: Context) {
-    const { body } = createAccountSchema.parse(ctx);
+    const { body } = createUserSchema.parse(ctx);
     const result = await this.createAccountCase.execute({
       login: body.login,
       password: body.password,
@@ -73,7 +73,7 @@ export class AccountsController implements IController {
 
   @Handler('POST', 'session')
   async login(ctx: Context) {
-    const { body } = loginAccountSchema.parse(ctx);
+    const { body } = loginSchema.parse(ctx);
     const result = await this.loginCase.execute(body.login, body.password);
 
     ctx.res.setHeader('Set-Cookie', [

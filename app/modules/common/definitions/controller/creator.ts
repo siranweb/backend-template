@@ -8,21 +8,20 @@ export function createControllerDefinition() {
   function Handler(method: string, path?: string) {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
-      definition.updateHandlerDescription(handler, { method, path });
+      definition.updateHandlerDefinition(handler, { method, path });
     };
   }
 
   function Chain(...chain: ChainFunc[]) {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
-      definition.updateHandlerDescription(handler, { chain });
+      definition.updateHandlerDefinition(handler, { chain });
     };
   }
 
   function Controller(prefix?: string) {
-    console.log(prefix);
-    return (target: any): void => {
-      console.log(target);
+    return (_target: any): void => {
+      definition.updateControllerDefinition({ prefix });
     };
   }
 

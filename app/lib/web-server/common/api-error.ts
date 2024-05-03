@@ -8,8 +8,9 @@ export class ApiError extends Error implements IApiError {
   public readonly original?: any;
 
   constructor(params: ApiErrorParams) {
-    super((params.errorName ?? params.statusCode).toString());
-    this.errorName = (params.errorName ?? params.statusCode).toString();
+    const errorName = (params.errorName ?? params.statusCode).toString();
+    super(errorName);
+    this.errorName = errorName;
     this.statusCode = params.statusCode;
     this.type = params.type;
     this.data = params.data ?? {};

@@ -41,9 +41,13 @@ export class WebServer implements IWebServer {
   }
 
   public async stop(): Promise<void> {
-    if (!this.server) return;
     return new Promise<void>((resolve, reject) => {
-      this.server!.close((err) => {
+      if (!this.server) {
+        resolve();
+        return;
+      }
+
+      this.server.close((err) => {
         if (err) {
           reject(err);
         } else {
@@ -54,10 +58,10 @@ export class WebServer implements IWebServer {
   }
 
   public handle(params: HandleParams): void {
-    const { handler, path: handlePath, method, chain = [] } = params;
-    const route = path.join('/', this.config.prefix ?? '', '/', handlePath);
-    const routeHandler = this.buildHandlerFromChain(handler, chain);
-    this.router.register(method, route, routeHandler);
+    const { handler, path, method, chain = [] } = params;
+    const route = this.buildRoute(path);
+    const handlerWithChain = this.buildHandlerFromChain(handler, chain);
+    this.router.register(method, route, handlerWithChain);
   }
 
   public onError(handler: OnErrorHandlerClb | IOnErrorHandler): void {
@@ -74,6 +78,10 @@ export class WebServer implements IWebServer {
 
   public onRequestFinished(clb: OnRequestFinishedHandler): void {
     this.eventEmitter.on(WebServerEvent.REQUEST_FINISHED, clb);
+  }
+
+  private buildRoute(handlerPath: string): string {
+    return path.join('/', this.config.prefix ?? '', '/', handlerPath);
   }
 
   private createHttpServer() {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const createAccountSchema = z.object({
+export const createUserSchema = z.object({
   body: z
     .object({
       login: z.string().max(40).nonempty(),
@@ -9,4 +9,4 @@ export const createAccountSchema = z.object({
     .required(),
 });
 
-export const loginAccountSchema = createAccountSchema;
+export const loginSchema = createUserSchema;

@@ -3,7 +3,7 @@ import { JwtService } from '@/modules/jwt/domain/services/jwt.service';
 import { WebServerAuthChainHandler } from '@/modules/common/chain-handlers/web-server-auth.chain-handler';
 import { WebSocketsAuthChainHandler } from '@/modules/common/chain-handlers/web-sockets-auth.chain-handler';
 import { WebServerErrorHandler } from '@/modules/common/error-handlers/web-server.error-handler';
-import { ValidateAccessTokenCase } from '@/modules/users/domain/use-cases/validate-access-token.case';
+import { ValidateAccessTokenCase } from '@/modules/users/domain/cases/validate-access-token.case';
 
 const jwtService = new JwtService();
 

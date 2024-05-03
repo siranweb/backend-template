@@ -4,7 +4,8 @@ import { ChainFunc } from '@/lib/web-server/types/shared';
 export interface IControllerDefinition {
   handlers: HandlerState[];
   controller: ControllerState;
-  updateHandlerDescription(handler: HandlerFunc, fields: UpdateHandlerDefinitionFields): void;
+  updateHandlerDefinition(handler: HandlerFunc, fields: UpdateHandlerDefinitionFields): void;
+  updateControllerDefinition(fields: UpdateControllerDefinitionFields): void;
 }
 
 export type HandlerState = {
@@ -16,11 +17,14 @@ export type HandlerState = {
 
 export type ControllerState = {
   prefix?: string;
-  chain?: ChainFunc[];
 };
 
 export type UpdateHandlerDefinitionFields = {
   method?: string;
   path?: string;
   chain?: ChainFunc[];
+};
+
+export type UpdateControllerDefinitionFields = {
+  prefix?: string;
 };
