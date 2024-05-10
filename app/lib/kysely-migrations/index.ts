@@ -1,1 +1,1 @@
-export { migrate } from './migrate';
+export { MigrationsService } from './migrations.service';
