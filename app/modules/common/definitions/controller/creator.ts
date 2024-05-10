@@ -1,6 +1,10 @@
 import { ChainFunc, HandlerFunc, IChainHandler } from '@/lib/web-server';
-import { ControllerDefinition } from '@/modules/common/definitions/controller/controller-definition';
-import { IControllerDefinition } from '@/modules/common/interfaces/controller-definition.interface';
+import { ControllerDefinition } from '../../definitions/controller/controller-definition';
+import {
+  IControllerDefinition,
+  OpenApiResult,
+  OpenApiRoute,
+} from '../../interfaces/controller-definition.interface';
 
 export function createControllerDefinition() {
   const definition: IControllerDefinition = new ControllerDefinition();
@@ -25,5 +29,19 @@ export function createControllerDefinition() {
     };
   }
 
-  return { definition, Handler, Chain, Controller };
+  function OpenApiRoute(_openApiRoute: OpenApiRoute) {
+    return (target: any, field: string): void => {
+      const _handler: HandlerFunc = target[field];
+      // definition.updateHandlerDefinition(handler, { chain });
+    };
+  }
+
+  function OpenApiResult(_openApiResult: OpenApiResult) {
+    return (target: any, field: string): void => {
+      const _handler: HandlerFunc = target[field];
+      // definition.updateHandlerDefinition(handler, { chain });
+    };
+  }
+
+  return { definition, Handler, Chain, Controller, OpenApiRoute, OpenApiResult };
 }
