@@ -12,6 +12,7 @@ import {
   OnEventHandler,
   WsServerEvent,
 } from '../types/ws-server.interface';
+import { messageSchema } from '@/lib/web-sockets/schemas/message.schema';
 
 export class WsServer implements IWsServer {
   private readonly wss: WebSocketServer;
@@ -75,9 +76,7 @@ export class WsServer implements IWsServer {
         this.eventEmitter.emit(WsServerEvent.EVENT, ctx);
         const message = JSON.parse(buffer.toString());
 
-        const isCorrectMessage =
-          message.event && typeof message.data === 'object' && message.data !== null;
-        if (!isCorrectMessage) {
+        if (!this.checkIsCorrectMessage(message)) {
           const error = new Error(`Bad message ${message}`);
           this.eventEmitter.emit(WsServerEvent.ERROR, error, ws);
           return;
@@ -92,15 +91,15 @@ export class WsServer implements IWsServer {
         }
 
         const wsHandler = eventHandlerData.handler as Handler;
-        try {
-          await wsHandler(ctx);
-        } catch (e) {
-          this.eventEmitter.emit(WsServerEvent.ERROR, e, ws);
-        } finally {
-          this.eventEmitter.emit(WsServerEvent.EVENT_FINISHED, ctx);
-        }
+        wsHandler(ctx)
+          .catch((err: unknown) => this.eventEmitter.emit(WsServerEvent.ERROR, err, ws))
+          .finally(() => this.eventEmitter.emit(WsServerEvent.EVENT_FINISHED, ctx));
       });
     });
+  }
+
+  private checkIsCorrectMessage(message: unknown): boolean {
+    return messageSchema.safeParse(message).success;
   }
 
   private getBaseContext(ws: WebSocket, req: IncomingMessage): Context {
