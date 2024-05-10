@@ -15,7 +15,8 @@ import { IControllerDefinition } from '@/modules/common/types/controller-definit
 import { auth } from '@/di/web-server.di';
 import { HttpStatus } from '@/modules/common/types/http-statuses';
 
-const { Handler, Chain, Controller, OpenApiRoute, OpenApiResult, definition } = createControllerDefinition();
+const { Handler, Chain, Controller, OpenApiRoute, OpenApiResult, definition } =
+  createControllerDefinition();
 
 @Controller('/users')
 export class UsersController implements IController {
