@@ -1,6 +1,6 @@
 import path from 'node:path/posix';
 import { IWebServer } from '@/lib/web-server/types/web-server.interface';
-import { IController } from '@/modules/common/interfaces/controller.interface';
+import { IController } from '@/modules/common/types/controller.interface';
 
 export function registerController(webServer: IWebServer, controller: IController): void {
   const { controller: controllerState, handlers } = controller.definition;

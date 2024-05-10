@@ -25,7 +25,7 @@ export type OpenApiRoute = {
 };
 
 export type OpenApiResult = {
-  code: number;
+  code?: number;
   description?: string;
   result?: ZodSchema;
 };

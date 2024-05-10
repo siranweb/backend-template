@@ -10,13 +10,14 @@ import {
   ILoginCase,
 } from '@/modules/users/domain/types';
 import { createControllerDefinition } from '@/modules/common/definitions/controller/creator';
-import { IController } from '@/modules/common/interfaces/controller.interface';
-import { IControllerDefinition } from '@/modules/common/interfaces/controller-definition.interface';
+import { IController } from '@/modules/common/types/controller.interface';
+import { IControllerDefinition } from '@/modules/common/types/controller-definition.interface';
 import { auth } from '@/di/web-server.di';
+import { HttpStatus } from '@/modules/common/types/http-statuses';
 
-const { Handler, Chain, Controller, definition } = createControllerDefinition();
+const { Handler, Chain, Controller, OpenApiRoute, OpenApiResult, definition } = createControllerDefinition();
 
-@Controller('users')
+@Controller('/users')
 export class UsersController implements IController {
   public readonly definition: IControllerDefinition = definition;
 
@@ -29,8 +30,16 @@ export class UsersController implements IController {
   ) {}
 
   @Handler('POST')
-  async createAccount(ctx: Context) {
-    const { body } = createUserSchema.parse(ctx);
+  @OpenApiRoute({
+    description: 'Create user and get new token pair',
+    body: createUserSchema,
+  })
+  @OpenApiResult({
+    code: HttpStatus.CREATED,
+    description: 'Token pair in cookies',
+  })
+  async createUser(ctx: Context) {
+    const body = createUserSchema.parse(ctx.body);
     const result = await this.createAccountCase.execute({
       login: body.login,
       password: body.password,
@@ -40,11 +49,18 @@ export class UsersController implements IController {
       this.getAccessTokenCookie(result.accessToken),
       this.getRefreshTokenCookie(result.refreshToken),
     ]);
+    ctx.res.statusCode = HttpStatus.CREATED;
     ctx.res.end();
   }
 
-  @Handler('POST', 'tokens')
+  @Handler('POST', '/tokens')
   @Chain(auth)
+  @OpenApiRoute({
+    description: 'Get new token pair by refresh token',
+  })
+  @OpenApiResult({
+    description: 'Token pair in cookies',
+  })
   async refreshTokens(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     let result;
@@ -71,9 +87,16 @@ export class UsersController implements IController {
     ctx.res.end();
   }
 
-  @Handler('POST', 'session')
+  @Handler('POST', '/session')
+  @OpenApiRoute({
+    description: 'Get new token pair (login)',
+    body: loginSchema,
+  })
+  @OpenApiResult({
+    description: 'Token pair in cookies',
+  })
   async login(ctx: Context) {
-    const { body } = loginSchema.parse(ctx);
+    const body = loginSchema.parse(ctx.body);
     const result = await this.loginCase.execute(body.login, body.password);
 
     ctx.res.setHeader('Set-Cookie', [
@@ -83,7 +106,10 @@ export class UsersController implements IController {
     ctx.res.end();
   }
 
-  @Handler('DELETE', 'session')
+  @Handler('DELETE', '/session')
+  @OpenApiRoute({
+    description: 'Remove token pair from cookie (logout)',
+  })
   async logout(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');
     if (typeof cookieObj.refreshToken === 'string' && cookieObj.refreshToken) {

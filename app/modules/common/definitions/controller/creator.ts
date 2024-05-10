@@ -4,7 +4,7 @@ import {
   IControllerDefinition,
   OpenApiResult,
   OpenApiRoute,
-} from '../../interfaces/controller-definition.interface';
+} from '@/modules/common/types/controller-definition.interface';
 
 export function createControllerDefinition() {
   const definition: IControllerDefinition = new ControllerDefinition();

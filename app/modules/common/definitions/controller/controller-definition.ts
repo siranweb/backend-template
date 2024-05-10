@@ -5,7 +5,7 @@ import {
   IControllerDefinition,
   UpdateControllerDefinitionFields,
   UpdateHandlerDefinitionFields,
-} from '../../interfaces/controller-definition.interface';
+} from '@/modules/common/types/controller-definition.interface';
 
 export class ControllerDefinition implements IControllerDefinition {
   private readonly controllerState: ControllerState = {};
