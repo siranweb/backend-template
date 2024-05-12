@@ -14,4 +14,16 @@ export const createUserSchema = z
   })
   .required();
 
-export const loginSchema = createUserSchema;
+export const loginSchema = z
+  .object({
+    login: z.string().max(40).nonempty().openapi({
+      description: 'User login',
+      example: 'siran',
+    }),
+    // TODO password regex
+    password: z.string().max(40).nonempty().openapi({
+      description: 'User password',
+      example: 'qwerty12345',
+    }),
+  })
+  .required();
