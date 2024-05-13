@@ -1,10 +1,26 @@
+import {
+  ZodObjectInputType,
+  ZodOpenApiMediaTypeObject,
+  ZodOpenApiObject,
+  ZodOpenApiPathsObject,
+} from 'zod-openapi/lib-types/create/document';
+import { TagObject } from 'zod-openapi/lib-types/openapi3-ts/dist/model/openapi31';
+import { AvailableMethod } from './shared';
+
 export interface IRedoc {
-  make(options: Options): string;
+  make(): string;
+  addPath(path: string, method: AvailableMethod, routeParams: RouteParams): void;
 }
 
-export type Options = {
-  /** Document title */
-  title: string;
-  /** Open Api object specification */
-  spec: object;
+export type Spec = Omit<ZodOpenApiObject, 'paths' | 'tags'> & {
+  paths: ZodOpenApiPathsObject;
+  tags: TagObject[];
+};
+
+export type RouteParams = {
+  tags?: string[];
+  summary?: string;
+  description?: string;
+  body?: ZodOpenApiMediaTypeObject['schema'];
+  queryParams?: ZodObjectInputType;
 };

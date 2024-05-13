@@ -1,10 +1,49 @@
-import { IRedoc, Options } from './types/redoc.interface';
-import { html } from '@/lib/redoc/template';
+import { html } from './template';
+import { IRedoc, RouteParams, Spec } from './types/redoc.interface';
+import { AvailableMethod } from './types/shared';
+import { createDocument } from 'zod-openapi';
 
 export class Redoc implements IRedoc {
-  make(options: Options): string {
+  private readonly spec: Spec;
+
+  constructor(title: string) {
+    this.spec = {
+      openapi: '3.1.0',
+      info: {
+        title,
+        version: '',
+      },
+      paths: {},
+      tags: [],
+    };
+  }
+
+  public make(): string {
+    const builtSpec = createDocument(this.spec);
     return html
-      .replace('[[title]]', options.title)
-      .replace('[[spec]]', JSON.stringify(options.spec));
+      .replace('[[title]]', this.spec.info.title)
+      .replace('[[spec]]', JSON.stringify(builtSpec));
+  }
+
+  public addPath(path: string, method: AvailableMethod, routeParams: RouteParams): void {
+    if (!(path in this.spec.paths)) {
+      this.spec.paths[path] = {};
+    }
+    const pathObj = this.spec.paths[path];
+
+    pathObj[method] = {
+      tags: routeParams.tags,
+      summary: routeParams.summary,
+      description: routeParams.description,
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: routeParams.body,
+          },
+        },
+      },
+      // requestParams: routeParams.params,
+      responses: {},
+    };
   }
 }

@@ -1,5 +1,5 @@
 import { HandlerFunc, ChainFunc, IChainHandler } from '@/lib/web-server';
-import { ZodSchema } from 'zod';
+import { ZodType } from 'zod';
 
 export interface IControllerDefinition {
   handlers: HandlerState[];
@@ -13,25 +13,28 @@ export type HandlerState = {
   method: string;
   path?: string;
   chain?: (ChainFunc | IChainHandler)[];
-  openApiRoute?: OpenApiRoute;
-  openApiResults?: OpenApiResult[];
+  openApiRoute: OpenApiRoute;
+  openApiResults: OpenApiResult[];
 };
 
 export type OpenApiRoute = {
-  params?: ZodSchema;
-  body?: ZodSchema;
-  search?: ZodSchema;
+  params?: ZodType;
+  body?: ZodType;
+  search?: ZodType;
   description?: string;
+  summary?: string;
 };
 
 export type OpenApiResult = {
   code?: number;
+  contentType?: string;
   description?: string;
-  result?: ZodSchema;
+  result?: ZodType;
 };
 
 export type ControllerState = {
   prefix?: string;
+  tags?: string[];
 };
 
 export type UpdateHandlerDefinitionFields = {
@@ -40,8 +43,12 @@ export type UpdateHandlerDefinitionFields = {
   chain?: (ChainFunc | IChainHandler)[];
   openApiRoute?: OpenApiRoute;
   openApiResult?: OpenApiResult;
+  description?: string;
+  summary?: string;
+  body?: ZodType;
 };
 
 export type UpdateControllerDefinitionFields = {
   prefix?: string;
+  tags?: string[];
 };

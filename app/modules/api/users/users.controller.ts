@@ -18,7 +18,7 @@ import { HttpStatus } from '@/modules/common/types/http-statuses';
 const { Handler, Chain, Controller, OpenApiRoute, OpenApiResult, definition } =
   createControllerDefinition();
 
-@Controller('/users')
+@Controller({ prefix: '/users' })
 export class UsersController implements IController {
   public readonly definition: IControllerDefinition = definition;
 
@@ -32,7 +32,7 @@ export class UsersController implements IController {
 
   @Handler('POST')
   @OpenApiRoute({
-    description: 'Create user and get new token pair',
+    summary: 'Create user and get new token pair',
     body: createUserSchema,
   })
   @OpenApiResult({
@@ -57,7 +57,7 @@ export class UsersController implements IController {
   @Handler('POST', '/tokens')
   @Chain(auth)
   @OpenApiRoute({
-    description: 'Get new token pair by refresh token',
+    summary: 'Get new token pair by refresh token',
   })
   @OpenApiResult({
     description: 'Token pair in cookies',
@@ -90,7 +90,7 @@ export class UsersController implements IController {
 
   @Handler('POST', '/session')
   @OpenApiRoute({
-    description: 'Get new token pair (login)',
+    summary: 'Get new token pair (login)',
     body: loginSchema,
   })
   @OpenApiResult({
@@ -109,7 +109,7 @@ export class UsersController implements IController {
 
   @Handler('DELETE', '/session')
   @OpenApiRoute({
-    description: 'Remove token pair from cookie (logout)',
+    summary: 'Remove token pair from cookie (logout)',
   })
   async logout(ctx: Context) {
     const cookieObj = parseCookie(ctx.req.headers.cookie ?? '');

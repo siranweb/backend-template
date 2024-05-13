@@ -3,7 +3,9 @@ import { WebServerAuthChainHandler } from '@/modules/common/chain-handlers/web-s
 import { ValidateAccessTokenCase } from '@/modules/users/domain/cases/validate-access-token.case';
 import { config } from '@/modules/config';
 import { JwtService } from '@/modules/jwt/domain/services/jwt.service';
+import { Redoc } from '@/lib/redoc';
 
+export const redoc = new Redoc('Backend Template');
 const jwtService = new JwtService();
 const validateAccessTokenCase = new ValidateAccessTokenCase(jwtService, config);
 

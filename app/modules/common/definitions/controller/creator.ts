@@ -23,16 +23,18 @@ export function createControllerDefinition() {
     };
   }
 
-  function Controller(prefix?: string) {
+  function Controller(params: { prefix?: string; tags?: string[] }) {
     return (_target: any): void => {
-      definition.updateControllerDefinition({ prefix });
+      const { prefix, tags } = params;
+      const calculatedTags = prefix ? [prefix.replaceAll('/', '')] : [];
+      definition.updateControllerDefinition({ prefix, tags: tags ?? calculatedTags });
     };
   }
 
-  function OpenApiRoute(_openApiRoute: OpenApiRoute) {
+  function OpenApiRoute(openApiRoute: OpenApiRoute) {
     return (target: any, field: string): void => {
-      const _handler: HandlerFunc = target[field];
-      // definition.updateHandlerDefinition(handler, { chain });
+      const handler: HandlerFunc = target[field];
+      definition.updateHandlerDefinition(handler, { ...openApiRoute });
     };
   }
 

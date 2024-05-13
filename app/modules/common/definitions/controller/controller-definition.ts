@@ -28,17 +28,26 @@ export class ControllerDefinition implements IControllerDefinition {
     definition.chain = fields.chain ?? definition.chain;
     definition.method = fields.method ?? definition.method;
     definition.path = fields.path ?? definition.path;
+    definition.openApiRoute.description = fields.description ?? definition.openApiRoute.description;
+    definition.openApiRoute.summary = fields.summary ?? definition.openApiRoute.summary;
+    definition.openApiRoute.body = fields.body ?? definition.openApiRoute.body;
   }
 
   public updateControllerDefinition(fields: UpdateControllerDefinitionFields): void {
     this.controllerState.prefix = fields.prefix ?? this.controllerState.prefix;
+    this.controllerState.tags = fields.tags ?? this.controllerState.tags;
   }
 
   private getOrInitHandler(handler: HandlerFunc): HandlerState {
     const handlerDescription = this.handlersState.get(handler);
     if (handlerDescription) return handlerDescription;
 
-    const newHandlerDescription = { handler, method: '' };
+    const newHandlerDescription: HandlerState = {
+      handler,
+      method: '',
+      openApiRoute: {},
+      openApiResults: [],
+    };
     this.handlersState.set(handler, newHandlerDescription);
 
     return newHandlerDescription;
