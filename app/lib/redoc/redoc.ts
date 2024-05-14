@@ -41,6 +41,8 @@ export class Redoc implements IRedoc {
 
     if (routeParams.body) {
       pathObj[method]!.requestBody = {
+        description: routeParams.body.description,
+        required: true,
         content: {
           [routeParams.body.contentType ?? 'application/json']: {
             schema: routeParams.body.schema,

@@ -23,6 +23,7 @@ export type RouteParams = {
   summary?: string;
   description?: string;
   body?: {
+    description?: string;
     schema: ZodType | oas31.SchemaObject | oas31.ReferenceObject;
     contentType: string;
   };

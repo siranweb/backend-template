@@ -2,7 +2,7 @@ import path from 'node:path/posix';
 import { IWebServer } from '@/lib/web-server/types/web-server.interface';
 import { IController } from '@/modules/common/types/controller.interface';
 import { IRedoc } from '@/lib/redoc';
-import { checkIsCorrectMethod } from '@/lib/redoc/utils';
+import { checkOpenApiIsCorrectMethod } from '@/lib/redoc/utils';
 
 export function registerController(
   webServer: IWebServer,
@@ -22,11 +22,9 @@ export function registerController(
     });
 
     const lowerCasedMethod = handlerState.method.toLowerCase();
-    if (!checkIsCorrectMethod(lowerCasedMethod)) {
+    if (!checkOpenApiIsCorrectMethod(lowerCasedMethod)) {
       return;
     }
-
-    console.log(handlerState);
 
     redoc.addPath(route, lowerCasedMethod, {
       tags: controllerState.tags,

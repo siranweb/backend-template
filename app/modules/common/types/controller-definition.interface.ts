@@ -25,6 +25,7 @@ export type HandlerStateUpdateFields = Partial<Omit<HandlerState, 'openApiRespon
 export type OpenApiRequest = {
   params?: ZodType;
   body?: {
+    description: string;
     contentType: string;
     schema: ZodType | oas31.SchemaObject | oas31.ReferenceObject;
   };

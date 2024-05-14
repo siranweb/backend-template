@@ -3,6 +3,7 @@ import { createControllerDefinition } from '@/modules/common/definitions/control
 import { IController } from '@/modules/common/types/controller.interface';
 import { IControllerDefinition } from '@/modules/common/types/controller-definition.interface';
 import { IRedoc } from '@/lib/redoc';
+import { HttpMethod } from '@/modules/common/types/http-method';
 
 const { Handler, Controller, OpenApiRequest, OpenApiResponse, definition } =
   createControllerDefinition();
@@ -13,7 +14,7 @@ export class DocsController implements IController {
 
   constructor(private readonly redoc: IRedoc) {}
 
-  @Handler('GET', '/redoc')
+  @Handler(HttpMethod.GET, '/redoc')
   @OpenApiRequest({
     summary: 'Get redoc document',
   })

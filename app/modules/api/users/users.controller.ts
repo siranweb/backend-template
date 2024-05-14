@@ -13,7 +13,8 @@ import { createControllerDefinition } from '@/modules/common/definitions/control
 import { IController } from '@/modules/common/types/controller.interface';
 import { IControllerDefinition } from '@/modules/common/types/controller-definition.interface';
 import { auth } from '@/di/web-server.di';
-import { HttpStatus } from '@/modules/common/types/http-statuses';
+import { HttpStatus } from '@/modules/common/types/http-status';
+import { HttpMethod } from '@/modules/common/types/http-method';
 
 const { Handler, Chain, Controller, OpenApiRequest, OpenApiResponse, definition } =
   createControllerDefinition();
@@ -30,7 +31,7 @@ export class UsersController implements IController {
     private readonly invalidateRefreshToken: IInvalidateRefreshTokenCase,
   ) {}
 
-  @Handler('POST')
+  @Handler(HttpMethod.POST)
   @OpenApiRequest({
     summary: 'Create user and get new token pair',
     body: createUserSchema,
@@ -54,7 +55,7 @@ export class UsersController implements IController {
     ctx.res.end();
   }
 
-  @Handler('POST', '/tokens')
+  @Handler(HttpMethod.POST, '/tokens')
   @Chain(auth)
   @OpenApiRequest({
     summary: 'Get new token pair by refresh token',
@@ -88,7 +89,7 @@ export class UsersController implements IController {
     ctx.res.end();
   }
 
-  @Handler('POST', '/session')
+  @Handler(HttpMethod.POST, '/session')
   @OpenApiRequest({
     summary: 'Get new token pair (login)',
     body: loginSchema,
@@ -107,7 +108,7 @@ export class UsersController implements IController {
     ctx.res.end();
   }
 
-  @Handler('DELETE', '/session')
+  @Handler(HttpMethod.DELETE, '/session')
   @OpenApiRequest({
     summary: 'Remove token pair from cookie (logout)',
   })

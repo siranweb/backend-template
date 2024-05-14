@@ -7,6 +7,7 @@ import {
   OpenApiRequest,
   UpdateControllerDefinitionFields,
 } from '@/modules/common/types/controller-definition.interface';
+import { HttpMethod } from '@/modules/common/types/http-method';
 
 export class ControllerDefinition implements IControllerDefinition {
   private readonly controllerState: ControllerState = {};
@@ -30,7 +31,7 @@ export class ControllerDefinition implements IControllerDefinition {
     }
   }
 
-  public updateHandlerMethod(handler: HandlerFunc, method: string): void {
+  public updateHandlerMethod(handler: HandlerFunc, method: HttpMethod): void {
     const definition = this.getOrInitHandler(handler);
     definition.method = method;
   }
