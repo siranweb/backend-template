@@ -1,11 +1,12 @@
 import { HandlerFunc, ChainFunc, IChainHandler } from '@/lib/web-server';
 import { ZodType } from 'zod';
+import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
 
 export interface IControllerDefinition {
   handlers: HandlerState[];
   controller: ControllerState;
-  updateHandlerDefinition(handler: HandlerFunc, fields: UpdateHandlerDefinitionFields): void;
   updateControllerDefinition(fields: UpdateControllerDefinitionFields): void;
+  updateHandlerDefinition(handler: HandlerFunc, fields: HandlerStateUpdateFields): void;
 }
 
 export type HandlerState = {
@@ -13,19 +14,26 @@ export type HandlerState = {
   method: string;
   path?: string;
   chain?: (ChainFunc | IChainHandler)[];
-  openApiRoute: OpenApiRoute;
-  openApiResults: OpenApiResult[];
+  openApiRequest: OpenApiRequest;
+  openApiResponses: OpenApiResponse[];
 };
 
-export type OpenApiRoute = {
+export type HandlerStateUpdateFields = Partial<Omit<HandlerState, 'openApiResponses'>> & {
+  openApiResponse?: OpenApiResponse;
+};
+
+export type OpenApiRequest = {
   params?: ZodType;
-  body?: ZodType;
+  body?: {
+    contentType: string;
+    schema: ZodType | oas31.SchemaObject | oas31.ReferenceObject;
+  };
   search?: ZodType;
   description?: string;
   summary?: string;
 };
 
-export type OpenApiResult = {
+export type OpenApiResponse = {
   code?: number;
   contentType?: string;
   description?: string;
@@ -35,17 +43,6 @@ export type OpenApiResult = {
 export type ControllerState = {
   prefix?: string;
   tags?: string[];
-};
-
-export type UpdateHandlerDefinitionFields = {
-  method?: string;
-  path?: string;
-  chain?: (ChainFunc | IChainHandler)[];
-  openApiRoute?: OpenApiRoute;
-  openApiResult?: OpenApiResult;
-  description?: string;
-  summary?: string;
-  body?: ZodType;
 };
 
 export type UpdateControllerDefinitionFields = {

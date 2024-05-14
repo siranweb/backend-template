@@ -2,17 +2,35 @@ import { ChainFunc, HandlerFunc, IChainHandler } from '@/lib/web-server';
 import { ControllerDefinition } from '../../definitions/controller/controller-definition';
 import {
   IControllerDefinition,
-  OpenApiResult,
-  OpenApiRoute,
-} from '@/modules/common/types/controller-definition.interface';
+  OpenApiResponse,
+} from '../../types/controller-definition.interface';
+import {
+  ControllerDecoratorParams,
+  OpenApiRequestDecoratorParams,
+} from '../../types/controller-definition-decorators.interface';
+import { ZodType } from 'zod';
 
 export function createControllerDefinition() {
   const definition: IControllerDefinition = new ControllerDefinition();
 
+  function Controller(params: ControllerDecoratorParams) {
+    return (_target: any): void => {
+      const { prefix, tags } = params;
+      const calculatedTags = prefix ? [prefix.replaceAll('/', '')] : [];
+      definition.updateControllerDefinition({ prefix, tags: tags ?? calculatedTags });
+    };
+  }
+
   function Handler(method: string, path?: string) {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
-      definition.updateHandlerDefinition(handler, { method, path });
+
+      const fields: Record<string, any> = { method };
+      if (path) {
+        fields.path = path;
+      }
+
+      definition.updateHandlerDefinition(handler, fields);
     };
   }
 
@@ -23,27 +41,28 @@ export function createControllerDefinition() {
     };
   }
 
-  function Controller(params: { prefix?: string; tags?: string[] }) {
-    return (_target: any): void => {
-      const { prefix, tags } = params;
-      const calculatedTags = prefix ? [prefix.replaceAll('/', '')] : [];
-      definition.updateControllerDefinition({ prefix, tags: tags ?? calculatedTags });
-    };
-  }
-
-  function OpenApiRoute(openApiRoute: OpenApiRoute) {
+  function OpenApiRequest(params: OpenApiRequestDecoratorParams) {
     return (target: any, field: string): void => {
       const handler: HandlerFunc = target[field];
-      definition.updateHandlerDefinition(handler, { ...openApiRoute });
+
+      const openApiRequest: Record<string, any> = { ...params };
+      if (params.body instanceof ZodType) {
+        openApiRequest.body = {
+          contentType: 'application/json',
+          schema: params.body,
+        };
+      }
+
+      definition.updateHandlerDefinition(handler, { openApiRequest });
     };
   }
 
-  function OpenApiResult(_openApiResult: OpenApiResult) {
+  function OpenApiResponse(_openApiResponse: OpenApiResponse) {
     return (target: any, field: string): void => {
       const _handler: HandlerFunc = target[field];
       // definition.updateHandlerDefinition(handler, { chain });
     };
   }
 
-  return { definition, Handler, Chain, Controller, OpenApiRoute, OpenApiResult };
+  return { definition, Handler, Chain, Controller, OpenApiRequest, OpenApiResponse };
 }

@@ -2,10 +2,9 @@ import { Context } from '@/lib/web-server';
 import { createControllerDefinition } from '@/modules/common/definitions/controller/creator';
 import { IController } from '@/modules/common/types/controller.interface';
 import { IControllerDefinition } from '@/modules/common/types/controller-definition.interface';
-import { HttpStatus } from '@/modules/common/types/http-statuses';
 import { IRedoc } from '@/lib/redoc';
 
-const { Handler, Controller, OpenApiRoute, OpenApiResult, definition } =
+const { Handler, Controller, OpenApiRequest, OpenApiResponse, definition } =
   createControllerDefinition();
 
 @Controller({ prefix: '/docs' })
@@ -15,11 +14,10 @@ export class DocsController implements IController {
   constructor(private readonly redoc: IRedoc) {}
 
   @Handler('GET', '/redoc')
-  @OpenApiRoute({
+  @OpenApiRequest({
     summary: 'Get redoc document',
   })
-  @OpenApiResult({
-    code: HttpStatus.CREATED,
+  @OpenApiResponse({
     contentType: 'text/html',
     description: 'Redoc document',
   })

@@ -1,10 +1,11 @@
-import { HandlerFunc } from '@/lib/web-server/types/shared';
+import { ChainFunc, HandlerFunc, IChainHandler } from '@/lib/web-server/types/shared';
 import {
   ControllerState,
   HandlerState,
+  HandlerStateUpdateFields,
   IControllerDefinition,
+  OpenApiRequest,
   UpdateControllerDefinitionFields,
-  UpdateHandlerDefinitionFields,
 } from '@/modules/common/types/controller-definition.interface';
 
 export class ControllerDefinition implements IControllerDefinition {
@@ -19,18 +20,34 @@ export class ControllerDefinition implements IControllerDefinition {
     return this.controllerState;
   }
 
-  public updateHandlerDefinition(
-    handler: HandlerFunc,
-    fields: UpdateHandlerDefinitionFields,
-  ): void {
+  public updateHandlerDefinition(handler: HandlerFunc, fields: HandlerStateUpdateFields): void {
     const definition = this.getOrInitHandler(handler);
+    const { openApiResponse, ...straightforwardFields } = fields;
+    Object.assign(definition, straightforwardFields);
 
-    definition.chain = fields.chain ?? definition.chain;
-    definition.method = fields.method ?? definition.method;
-    definition.path = fields.path ?? definition.path;
-    definition.openApiRoute.description = fields.description ?? definition.openApiRoute.description;
-    definition.openApiRoute.summary = fields.summary ?? definition.openApiRoute.summary;
-    definition.openApiRoute.body = fields.body ?? definition.openApiRoute.body;
+    if (openApiResponse) {
+      definition.openApiResponses.push(openApiResponse);
+    }
+  }
+
+  public updateHandlerMethod(handler: HandlerFunc, method: string): void {
+    const definition = this.getOrInitHandler(handler);
+    definition.method = method;
+  }
+
+  public updateHandlerPath(handler: HandlerFunc, path: string): void {
+    const definition = this.getOrInitHandler(handler);
+    definition.path = path;
+  }
+
+  public updateHandlerChain(handler: HandlerFunc, chain: (ChainFunc | IChainHandler)[]): void {
+    const definition = this.getOrInitHandler(handler);
+    definition.chain = chain;
+  }
+
+  public updateHandlerOpenApiRequest(handler: HandlerFunc, openApi: OpenApiRequest): void {
+    const definition = this.getOrInitHandler(handler);
+    definition.openApiRequest = openApi;
   }
 
   public updateControllerDefinition(fields: UpdateControllerDefinitionFields): void {
@@ -45,8 +62,8 @@ export class ControllerDefinition implements IControllerDefinition {
     const newHandlerDescription: HandlerState = {
       handler,
       method: '',
-      openApiRoute: {},
-      openApiResults: [],
+      openApiRequest: {},
+      openApiResponses: [],
     };
     this.handlersState.set(handler, newHandlerDescription);
 

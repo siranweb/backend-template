@@ -15,7 +15,7 @@ import { IControllerDefinition } from '@/modules/common/types/controller-definit
 import { auth } from '@/di/web-server.di';
 import { HttpStatus } from '@/modules/common/types/http-statuses';
 
-const { Handler, Chain, Controller, OpenApiRoute, OpenApiResult, definition } =
+const { Handler, Chain, Controller, OpenApiRequest, OpenApiResponse, definition } =
   createControllerDefinition();
 
 @Controller({ prefix: '/users' })
@@ -31,11 +31,11 @@ export class UsersController implements IController {
   ) {}
 
   @Handler('POST')
-  @OpenApiRoute({
+  @OpenApiRequest({
     summary: 'Create user and get new token pair',
     body: createUserSchema,
   })
-  @OpenApiResult({
+  @OpenApiResponse({
     code: HttpStatus.CREATED,
     description: 'Token pair in cookies',
   })
@@ -56,10 +56,10 @@ export class UsersController implements IController {
 
   @Handler('POST', '/tokens')
   @Chain(auth)
-  @OpenApiRoute({
+  @OpenApiRequest({
     summary: 'Get new token pair by refresh token',
   })
-  @OpenApiResult({
+  @OpenApiResponse({
     description: 'Token pair in cookies',
   })
   async refreshTokens(ctx: Context) {
@@ -89,11 +89,11 @@ export class UsersController implements IController {
   }
 
   @Handler('POST', '/session')
-  @OpenApiRoute({
+  @OpenApiRequest({
     summary: 'Get new token pair (login)',
     body: loginSchema,
   })
-  @OpenApiResult({
+  @OpenApiResponse({
     description: 'Token pair in cookies',
   })
   async login(ctx: Context) {
@@ -108,7 +108,7 @@ export class UsersController implements IController {
   }
 
   @Handler('DELETE', '/session')
-  @OpenApiRoute({
+  @OpenApiRequest({
     summary: 'Remove token pair from cookie (logout)',
   })
   async logout(ctx: Context) {

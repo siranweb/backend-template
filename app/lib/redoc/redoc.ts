@@ -35,15 +35,18 @@ export class Redoc implements IRedoc {
       tags: routeParams.tags,
       summary: routeParams.summary,
       description: routeParams.description,
-      requestBody: {
-        content: {
-          'application/json': {
-            schema: routeParams.body,
-          },
-        },
-      },
       // requestParams: routeParams.params,
       responses: {},
     };
+
+    if (routeParams.body) {
+      pathObj[method]!.requestBody = {
+        content: {
+          [routeParams.body.contentType ?? 'application/json']: {
+            schema: routeParams.body.schema,
+          },
+        },
+      };
+    }
   }
 }

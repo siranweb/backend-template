@@ -30,10 +30,10 @@ export function registerController(
 
     redoc.addPath(route, lowerCasedMethod, {
       tags: controllerState.tags,
-      summary: handlerState.openApiRoute.summary,
-      description: handlerState.openApiRoute.description,
-      body: handlerState.openApiRoute.body,
-      queryParams: handlerState.openApiRoute.search,
+      summary: handlerState.openApiRequest.summary,
+      description: handlerState.openApiRequest.description,
+      body: handlerState.openApiRequest.body,
+      queryParams: handlerState.openApiRequest.search,
     });
   });
 }
