@@ -1,13 +1,13 @@
-import { config } from '@/modules/config';
-import { appDatabase } from '@/modules/databases/app-database/database';
-import { JwtService } from '@/modules/jwt/domain/services/jwt.service';
-import { CryptographyService } from '@/modules/cryptography/domain/services/cryptography.service';
-import { UsersController } from '@/modules/api/users/users.controller';
-import { UsersRepository } from '@/modules/users/repositories/users.repository';
-import { CreateAccountCase } from '@/modules/users/domain/cases/create-account.case';
-import { CreateTokensByRefreshTokenCase } from '@/modules/users/domain/cases/create-tokens-by-refresh-token.case';
-import { LoginCase } from '@/modules/users/domain/cases/login.case';
-import { InvalidateRefreshTokenCase } from '@/modules/users/domain/cases/invalidate-refresh-token.case';
+import { config } from 'app/infrastructure/config';
+import { appDatabase } from '@/infrastructure/app-database/database';
+import { JwtService } from '@/domain/jwt/services/jwt.service';
+import { CryptographyService } from '@/domain/cryptography/services/cryptography.service';
+import { UsersController } from '@/infrastructure/web-server/api/users/controller';
+import { UsersRepository } from '@/domain/users/repositories/users.repository';
+import { CreateAccountCase } from '@/domain/users/cases/create-account.case';
+import { CreateTokensByRefreshTokenCase } from '@/domain/users/cases/create-tokens-by-refresh-token.case';
+import { LoginCase } from '@/domain/users/cases/login.case';
+import { InvalidateRefreshTokenCase } from '@/domain/users/cases/invalidate-refresh-token.case';
 
 const jwtService = new JwtService();
 const cryptographyService = new CryptographyService();

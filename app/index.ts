@@ -1,15 +1,11 @@
 import process from 'node:process';
-import { mainWebServer } from '@/modules/entrypoints/web-servers/main.web-server';
-import { mainWsServer } from '@/modules/entrypoints/web-sockets/main.ws-server';
-import { appDatabase } from '@/modules/databases/app-database/database';
+import { appDatabase } from '@/infrastructure/app-database/database';
+import { startServer, stopServer } from 'app/infrastructure/web-server';
 
-mainWebServer.start().then(() => console.log('Web server started'));
-mainWsServer.start().then(() => console.log('WebSockets server started'));
+startServer().then(() => console.log('Server started'));
 
 const shutdown = () => {
-  Promise.allSettled([mainWebServer.stop(), mainWsServer.stop(), appDatabase.destroy()]).finally(
-    () => process.exit(0),
-  );
+  Promise.allSettled([stopServer(), appDatabase.destroy()]).finally(() => process.exit(0));
 };
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);

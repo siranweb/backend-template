@@ -1,6 +1,6 @@
 import { MigrationsService } from '@/lib/kysely-migrations';
-import { appDatabase } from '@/modules/databases/app-database/database';
-import { askQuestion } from '@/modules/common/utils/cli';
+import { appDatabase } from '@/infrastructure/app-database/database';
+import { askQuestion } from '@/common/utils/cli';
 import path from 'node:path';
 import url from 'node:url';
 
