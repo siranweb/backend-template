@@ -2,7 +2,7 @@ import { IController } from '@/infrastructure/web-server/types/controller.interf
 import { IControllerDefinition } from '@/infrastructure/web-server/types/controller-definition.interface';
 import { createControllerDefinition } from '@/infrastructure/web-server/controller-definitions/creator';
 import { H3Event } from 'h3';
-import { logExample } from '@/di/web-server.di';
+import { logExample } from '@/infrastructure/web-server/chain-handlers.di';
 
 const { Handler, Chain, Controller, definition } = createControllerDefinition();
 

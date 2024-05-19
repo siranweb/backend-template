@@ -1,3 +1,4 @@
+import { auth } from '@/infrastructure/web-server/chain-handlers.di';
 import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h3';
 import { createUserSchema, loginSchema } from './schemas';
 import { IConfig, NodeEnv } from '@/infrastructure/config';
@@ -11,7 +12,6 @@ import {
 import { createControllerDefinition } from '@/infrastructure/web-server/controller-definitions/creator';
 import { IController } from '@/infrastructure/web-server/types/controller.interface';
 import { IControllerDefinition } from '@/infrastructure/web-server/types/controller-definition.interface';
-import { auth } from '@/di/web-server.di';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/infrastructure/web-server/constants';
 
 const { Handler, Chain, Controller, definition } = createControllerDefinition();

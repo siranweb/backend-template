@@ -1,6 +1,5 @@
 import { createRouter, defineEventHandler, handleCors } from 'h3';
-import { exampleController } from '@/di/example.di';
-import { usersController } from '@/di/users.di';
+import { usersController, exampleController } from '@/infrastructure/web-server/di';
 import { registerController } from '@/infrastructure/web-server/controller-definitions/register-controller';
 
 export const apiRouter = createRouter();

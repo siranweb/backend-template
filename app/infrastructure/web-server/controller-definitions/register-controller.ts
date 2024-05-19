@@ -1,7 +1,7 @@
 import { defineEventHandler, H3Event, HTTPMethod, Router } from 'h3';
 import { IController } from '@/infrastructure/web-server/types/controller.interface';
 import { HandlerFunc, IChainHandler } from '@/infrastructure/web-server/types/shared';
-import { errorHandler } from '@/di/web-server.di';
+import { errorHandler } from '@/infrastructure/web-server/di';
 
 export function registerController(router: Router, controller: IController): void {
   const { controller: controllerState, handlers } = controller.definition;
