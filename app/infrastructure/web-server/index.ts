@@ -1,15 +1,15 @@
 import { createApp, toNodeListener } from 'h3';
 import { createServer } from 'node:http';
-import { config } from '@/infrastructure/config';
 import { apiRouter } from '@/infrastructure/web-server/routers/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
-import console from 'node:console';
+import { makeLogger } from '@/infrastructure/logger/make-logger';
+
+const logger = makeLogger('WebServer');
 
 const app = createApp({
   onRequest: () => {
-    const { requestId } = requestStorage.getStore()!;
-    console.log(requestId);
+    logger.info('New request');
   },
 });
 app.use(apiRouter);
@@ -25,9 +25,9 @@ const webServer = createServer((...args) => {
   );
 });
 
-export async function startServer(): Promise<void> {
+export async function startServer(port: number): Promise<void> {
   return new Promise((res, rej) => {
-    webServer.listen(config.webServer.port).on('error', rej).on('listening', res);
+    webServer.listen(port).on('error', rej).on('listening', res);
   });
 }
 

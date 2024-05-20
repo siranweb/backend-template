@@ -8,6 +8,7 @@ import { InvalidateRefreshTokenCase } from '@/domain/users/cases/invalidate-refr
 import { ValidateAccessTokenCase } from '@/domain/users/cases/validate-access-token.case';
 import { jwtService } from '@/domain/jwt/di';
 import { cryptographyService } from '@/domain/cryptography/di';
+import { makeLogger } from '@/infrastructure/logger/make-logger';
 
 const usersRepository = new UsersRepository(appDatabase);
 
@@ -16,6 +17,7 @@ export const createAccountCase = new CreateAccountCase(
   jwtService,
   cryptographyService,
   config,
+  makeLogger(CreateAccountCase.name),
 );
 export const createTokensCase = new CreateTokensByRefreshTokenCase(
   usersRepository,

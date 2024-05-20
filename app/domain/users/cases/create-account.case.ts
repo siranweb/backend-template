@@ -9,6 +9,7 @@ import {
   CreateAccountCaseResult,
   ICreateAccountCase,
 } from '@/domain/users/types/cases.interfaces';
+import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 
 export class CreateAccountCase implements ICreateAccountCase {
   constructor(
@@ -16,11 +17,16 @@ export class CreateAccountCase implements ICreateAccountCase {
     private readonly jwtService: IJWTService,
     private readonly cryptographyService: ICryptographyService,
     private readonly config: IConfig,
+    private readonly logger: ILogger,
   ) {}
   async execute(params: CreateAccountCaseParams): Promise<CreateAccountCaseResult> {
+    this.logger.info('Starting account creating.', params);
+
     const existingAccount = await this.usersRepository.getAccountByLogin(params.login);
     if (existingAccount) {
-      throw new UserLoginTakenError({ login: params.login });
+      const error = new UserLoginTakenError({ login: params.login });
+      this.logger.error(error, 'Failed to create account.', params);
+      throw error;
     }
 
     const salt = this.cryptographyService.random(20);
