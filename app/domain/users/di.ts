@@ -9,20 +9,33 @@ import { ValidateTokenCase } from '@/domain/users/cases/validate-token.case';
 import { jwtService } from '@/domain/jwt/di';
 import { cryptographyService } from '@/domain/cryptography/di';
 import { makeLogger } from '@/infrastructure/logger/make-logger';
+import { CreateTokensCase } from '@/domain/users/cases/create-tokens.case';
 
 const usersRepository = new UsersRepository(appDatabase);
+
+const createTokensCase = new CreateTokensCase(
+  makeLogger(CreateTokensCase.name),
+  config,
+  jwtService,
+);
+
+export const invalidateRefreshTokenCase = new InvalidateRefreshTokenCase(
+  makeLogger(InvalidateRefreshTokenCase.name),
+  usersRepository,
+);
 
 export const createUserCase = new CreateUserCase(
   makeLogger(CreateUserCase.name),
   usersRepository,
-  jwtService,
+  createTokensCase,
   cryptographyService,
-  config,
 );
 
 export const refreshTokensCase = new RefreshTokensCase(
   makeLogger(RefreshTokensCase.name),
   usersRepository,
+  createTokensCase,
+  invalidateRefreshTokenCase,
   jwtService,
   config,
 );
@@ -31,13 +44,7 @@ export const createTokensByCredentialsCase = new CreateTokensByCredentialsCase(
   makeLogger(CreateTokensByCredentialsCase.name),
   usersRepository,
   cryptographyService,
-  jwtService,
-  config,
-);
-
-export const invalidateRefreshTokenCase = new InvalidateRefreshTokenCase(
-  makeLogger(InvalidateRefreshTokenCase.name),
-  usersRepository,
+  createTokensCase,
 );
 
 export const validateTokenCase = new ValidateTokenCase(

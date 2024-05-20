@@ -6,11 +6,15 @@ import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 import { IRefreshTokensCase } from '@/domain/users/types/refresh-tokens-case.interface';
 import { IUsersRepository } from '@/domain/users/types/users-repository.interface';
 import { TokenPair } from '@/domain/users/types/shared';
+import { ICreateTokensCase } from '@/domain/users/types/create-tokens-case.interface';
+import { IInvalidateRefreshTokenCase } from '@/domain/users/types/invalidate-refresh-token-case.interface';
 
 export class RefreshTokensCase implements IRefreshTokensCase {
   constructor(
     private readonly logger: ILogger,
     private readonly usersRepository: IUsersRepository,
+    private readonly createTokensCase: ICreateTokensCase,
+    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase,
     private readonly jwtService: IJWTService,
     private readonly config: IConfig,
   ) {}
@@ -26,7 +30,9 @@ export class RefreshTokensCase implements IRefreshTokensCase {
     const user = await this.usersRepository.getUserById(userId);
     if (!user) throw new UserNotFoundError();
 
-    const tokens = await this.createTokens(userId);
+    const tokens = await this.createTokensCase.execute(userId);
+
+    await this.invalidateRefreshTokenCase.execute(oldRefreshToken);
 
     this.logger.info('Tokens were refreshed.');
 
@@ -40,29 +46,5 @@ export class RefreshTokensCase implements IRefreshTokensCase {
     });
 
     return payload.id ?? null;
-  }
-
-  private async createTokens(userId: string): Promise<TokenPair> {
-    const [accessToken, refreshToken] = await Promise.all([
-      await this.jwtService.createToken({
-        payload: {
-          id: userId,
-        },
-        secret: this.config.jwt.secret,
-        expirationTime: this.config.jwt.accessToken.expirationTime,
-      }),
-      await this.jwtService.createToken({
-        payload: {
-          id: userId,
-        },
-        secret: this.config.jwt.secret,
-        expirationTime: this.config.jwt.refreshToken.expirationTime,
-      }),
-    ]);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
   }
 }

@@ -66,9 +66,6 @@ export class UsersController implements IController {
       }
     }
 
-    // TODO move to createTokensByRefreshTokenCase
-    await this.invalidateRefreshToken.execute(clientRefreshToken);
-
     this.setAccessTokenCookie(event, accessToken);
     this.setRefreshTokenCookie(event, refreshToken);
   }

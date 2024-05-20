@@ -1,20 +1,18 @@
 import { User } from '@/domain/users/entities/user.entity';
 import { UserLoginTakenError } from '@/domain/users/errors/user-login-taken.error';
-import { IJWTService } from '@/domain/jwt/types/jwt-service.interface';
-import { IConfig } from '@/infrastructure/config';
 import { ICryptographyService } from '@/domain/cryptography/types/cryptography-service.interface';
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 import { TokenPair, UserCredentials } from '@/domain/users/types/shared';
 import { ICreateUserCase } from '@/domain/users/types/create-user-case.interface';
 import { IUsersRepository } from '@/domain/users/types/users-repository.interface';
+import { ICreateTokensCase } from '@/domain/users/types/create-tokens-case.interface';
 
 export class CreateUserCase implements ICreateUserCase {
   constructor(
     private readonly logger: ILogger,
     private readonly usersRepository: IUsersRepository,
-    private readonly jwtService: IJWTService,
+    private readonly createTokensCase: ICreateTokensCase,
     private readonly cryptographyService: ICryptographyService,
-    private readonly config: IConfig,
   ) {}
   async execute(credentials: UserCredentials): Promise<TokenPair> {
     const { login, password } = credentials;
@@ -28,7 +26,7 @@ export class CreateUserCase implements ICreateUserCase {
     const user = await this.createUser(login, password);
     await this.usersRepository.saveUser(user);
 
-    const tokens = await this.createTokens(user.id);
+    const tokens = await this.createTokensCase.execute(user.id);
 
     this.logger.info('User was created.', user);
     return tokens;
@@ -47,29 +45,5 @@ export class CreateUserCase implements ICreateUserCase {
       passwordHash,
       salt,
     });
-  }
-
-  private async createTokens(userId: string): Promise<TokenPair> {
-    const [accessToken, refreshToken] = await Promise.all([
-      await this.jwtService.createToken({
-        payload: {
-          id: userId,
-        },
-        secret: this.config.jwt.secret,
-        expirationTime: this.config.jwt.accessToken.expirationTime,
-      }),
-      await this.jwtService.createToken({
-        payload: {
-          id: userId,
-        },
-        secret: this.config.jwt.secret,
-        expirationTime: this.config.jwt.refreshToken.expirationTime,
-      }),
-    ]);
-
-    return {
-      accessToken,
-      refreshToken,
-    };
   }
 }

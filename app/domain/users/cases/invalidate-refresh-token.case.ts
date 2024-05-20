@@ -9,7 +9,9 @@ export class InvalidateRefreshTokenCase implements IInvalidateRefreshTokenCase {
   ) {}
   async execute(token: string): Promise<void> {
     this.logger.info('Starting refresh token invalidating.');
+
     await this.usersRepository.storeInvalidRefreshToken(token);
+
     this.logger.info('Refresh token wasd invalidated.');
   }
 }
