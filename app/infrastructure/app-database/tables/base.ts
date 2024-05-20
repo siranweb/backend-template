@@ -1,6 +1,5 @@
 import { Generated } from 'kysely';
 
 export interface TableBase {
-  id: string;
-  createdAt: Generated<Date>;
+  created_at: Generated<Date>;
 }

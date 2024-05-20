@@ -1,24 +1,24 @@
 import { uuidv7 } from 'uuidv7';
 
-export class Account {
+export class User {
   id: string;
   login: string;
   passwordHash: string;
   salt: string;
 
-  constructor(data: AccountParams) {
+  constructor(data: UserParams) {
     this.id = data.id ?? uuidv7();
     this.login = data.login;
     this.passwordHash = data.passwordHash;
     this.salt = data.salt;
   }
 
-  public comparePasswordHash(hash: string): boolean {
+  public isCorrectPasswordHash(hash: string): boolean {
     return hash === this.passwordHash;
   }
 }
 
-export interface AccountParams {
+export interface UserParams {
   id?: string;
   login: string;
   passwordHash: string;

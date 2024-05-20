@@ -1,12 +1,12 @@
-import { Kysely, PostgresDialect } from 'kysely';
 import pg from 'pg';
+import { Kysely, PostgresDialect } from 'kysely';
 import { config } from 'app/infrastructure/config';
-import { AccountTable } from '@/infrastructure/app-database/tables/account.table';
+import { UserTable } from '@/infrastructure/app-database/tables/user.table';
 import { InvalidRefreshTokenTable } from '@/infrastructure/app-database/tables/invalid-refresh-token.table';
 
 interface Database {
-  account: AccountTable;
-  invalidRefreshToken: InvalidRefreshTokenTable;
+  user: UserTable;
+  invalid_refresh_token: InvalidRefreshTokenTable;
 }
 
 const dialect = new PostgresDialect({

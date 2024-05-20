@@ -1,50 +1,73 @@
 import { AppDatabase } from '@/infrastructure/app-database/database';
-import { Account } from '@/domain/users/entities/account.entity';
-import { IUsersRepository } from '../types/cases.interfaces';
+import { User } from '@/domain/users/entities/user.entity';
+import { UserTable } from '@/infrastructure/app-database/tables/user.table';
+import { IUsersRepository } from '@/domain/users/types/users-repository.interface';
 
 export class UsersRepository implements IUsersRepository {
   constructor(private readonly db: AppDatabase) {}
 
-  async saveAccount(account: Account): Promise<Account> {
+  async saveUser(user: User): Promise<User> {
     const result = await this.db
-      .insertInto('account')
-      .values(account)
+      .insertInto('user')
+      .values(this.mapFromUser(user))
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    return new Account(result);
+    return this.mapToUser(result);
   }
 
-  async getAccountByLogin(login: string): Promise<Account | null> {
+  async getUserByLogin(login: string): Promise<User | null> {
     const result = await this.db
-      .selectFrom('account')
+      .selectFrom('user')
       .where('login', '=', login)
       .selectAll()
       .executeTakeFirst();
 
-    return result ? new Account(result) : null;
+    return result ? this.mapToUser(result) : null;
   }
 
-  async getAccountById(id: string): Promise<Account | null> {
+  async getUserById(id: string): Promise<User | null> {
     const result = await this.db
-      .selectFrom('account')
+      .selectFrom('user')
       .where('id', '=', id)
       .selectAll()
       .executeTakeFirst();
 
-    return result ? new Account(result) : null;
+    return result ? this.mapToUser(result) : null;
   }
 
   async storeInvalidRefreshToken(token: string): Promise<void> {
-    await this.db.insertInto('invalidRefreshToken').values({ token }).returning('token').execute();
+    await this.db
+      .insertInto('invalid_refresh_token')
+      .values({ token })
+      .returning('token')
+      .execute();
   }
 
   async isRefreshTokenUsed(token: string): Promise<boolean> {
     const result = await this.db
-      .selectFrom('invalidRefreshToken')
+      .selectFrom('invalid_refresh_token')
       .where('token', '=', token)
       .select('token')
       .executeTakeFirst();
     return !!result;
+  }
+
+  private mapToUser(fields: Omit<UserTable, 'created_at'>): User {
+    return new User({
+      id: fields.id,
+      salt: fields.salt,
+      login: fields.login,
+      passwordHash: fields.password_hash,
+    });
+  }
+
+  private mapFromUser(user: User): Omit<UserTable, 'created_at'> {
+    return {
+      id: user.id,
+      salt: user.salt,
+      login: user.login,
+      password_hash: user.passwordHash,
+    };
   }
 }

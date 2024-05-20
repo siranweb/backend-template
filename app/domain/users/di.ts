@@ -1,29 +1,47 @@
 import { config } from '@/infrastructure/config';
 import { appDatabase } from '@/infrastructure/app-database/database';
 import { UsersRepository } from '@/domain/users/repositories/users.repository';
-import { CreateAccountCase } from '@/domain/users/cases/create-account.case';
-import { CreateTokensByRefreshTokenCase } from '@/domain/users/cases/create-tokens-by-refresh-token.case';
-import { LoginCase } from '@/domain/users/cases/login.case';
+import { CreateUserCase } from '@/domain/users/cases/create-user.case';
+import { RefreshTokensCase } from '@/domain/users/cases/refresh-tokens.case';
+import { CreateTokensByCredentialsCase } from '@/domain/users/cases/create-tokens-by-credentials.case';
 import { InvalidateRefreshTokenCase } from '@/domain/users/cases/invalidate-refresh-token.case';
-import { ValidateAccessTokenCase } from '@/domain/users/cases/validate-access-token.case';
+import { ValidateTokenCase } from '@/domain/users/cases/validate-token.case';
 import { jwtService } from '@/domain/jwt/di';
 import { cryptographyService } from '@/domain/cryptography/di';
 import { makeLogger } from '@/infrastructure/logger/make-logger';
 
 const usersRepository = new UsersRepository(appDatabase);
 
-export const createAccountCase = new CreateAccountCase(
+export const createUserCase = new CreateUserCase(
+  makeLogger(CreateUserCase.name),
   usersRepository,
   jwtService,
   cryptographyService,
   config,
-  makeLogger(CreateAccountCase.name),
 );
-export const createTokensCase = new CreateTokensByRefreshTokenCase(
+
+export const refreshTokensCase = new RefreshTokensCase(
+  makeLogger(RefreshTokensCase.name),
   usersRepository,
   jwtService,
   config,
 );
-export const loginCase = new LoginCase(usersRepository, cryptographyService, jwtService, config);
-export const invalidateRefreshTokenCase = new InvalidateRefreshTokenCase(usersRepository);
-export const validateAccessTokenCase = new ValidateAccessTokenCase(jwtService, config);
+
+export const createTokensByCredentialsCase = new CreateTokensByCredentialsCase(
+  makeLogger(CreateTokensByCredentialsCase.name),
+  usersRepository,
+  cryptographyService,
+  jwtService,
+  config,
+);
+
+export const invalidateRefreshTokenCase = new InvalidateRefreshTokenCase(
+  makeLogger(InvalidateRefreshTokenCase.name),
+  usersRepository,
+);
+
+export const validateTokenCase = new ValidateTokenCase(
+  makeLogger(ValidateTokenCase.name),
+  jwtService,
+  config,
+);

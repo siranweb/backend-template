@@ -3,16 +3,14 @@ import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h
 import { createUserSchema, loginSchema } from './schemas';
 import { IConfig, NodeEnv } from '@/infrastructure/config';
 import { TokenInvalidError } from '@/domain/users/errors/token-invalid.error';
-import {
-  ICreateAccountCase,
-  ICreateTokensByRefreshTokenCase,
-  IInvalidateRefreshTokenCase,
-  ILoginCase,
-} from '@/domain/users/types/cases.interfaces';
 import { createControllerDefinition } from '@/infrastructure/web-server/controller-definitions/creator';
 import { IController } from '@/infrastructure/web-server/types/controller.interface';
 import { IControllerDefinition } from '@/infrastructure/web-server/types/controller-definition.interface';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/infrastructure/web-server/constants';
+import { ICreateUserCase } from '@/domain/users/types/create-user-case.interface';
+import { IRefreshTokensCase } from '@/domain/users/types/refresh-tokens-case.interface';
+import { ICreateTokensByCredentialsCase } from '@/domain/users/types/create-tokens-by-credentials-case.interface';
+import { IInvalidateRefreshTokenCase } from '@/domain/users/types/invalidate-refresh-token-case.interface';
 
 const { Handler, Chain, Controller, definition } = createControllerDefinition();
 
@@ -22,17 +20,17 @@ export class UsersController implements IController {
 
   constructor(
     private readonly config: IConfig,
-    private readonly createAccountCase: ICreateAccountCase,
-    private readonly createTokensByRefreshTokenCase: ICreateTokensByRefreshTokenCase,
-    private readonly loginCase: ILoginCase,
+    private readonly createUserCase: ICreateUserCase,
+    private readonly refreshTokensCase: IRefreshTokensCase,
+    private readonly createTokensByCredentialsCase: ICreateTokensByCredentialsCase,
     private readonly invalidateRefreshToken: IInvalidateRefreshTokenCase,
   ) {}
 
   @Handler('POST')
-  async createAccount(event: H3Event) {
+  async createUser(event: H3Event) {
     const body = await readValidatedBody(event, createUserSchema.parse);
 
-    const { accessToken, refreshToken } = await this.createAccountCase.execute({
+    const { accessToken, refreshToken } = await this.createUserCase.execute({
       login: body.login,
       password: body.password,
     });
@@ -55,7 +53,7 @@ export class UsersController implements IController {
     let accessToken: string;
     let refreshToken: string;
     try {
-      const result = await this.createTokensByRefreshTokenCase.execute(clientRefreshToken);
+      const result = await this.refreshTokensCase.execute(clientRefreshToken);
       accessToken = result.accessToken;
       refreshToken = result.refreshToken;
     } catch (e) {
@@ -77,8 +75,9 @@ export class UsersController implements IController {
 
   @Handler('POST', '/session')
   async login(event: H3Event) {
-    const { login, password } = await readValidatedBody(event, loginSchema.parse);
-    const { accessToken, refreshToken } = await this.loginCase.execute(login, password);
+    const credentials = await readValidatedBody(event, loginSchema.parse);
+    const { accessToken, refreshToken } =
+      await this.createTokensByCredentialsCase.execute(credentials);
 
     this.setAccessTokenCookie(event, accessToken);
     this.setRefreshTokenCookie(event, refreshToken);

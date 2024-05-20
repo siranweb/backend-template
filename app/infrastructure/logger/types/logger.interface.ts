@@ -4,7 +4,7 @@ import { IRequestStorage } from '@/infrastructure/request-storage/types/request-
 export interface ILogger {
   /**
    * Used to trace the path of code execution within a program
-   * @example logger.trace('Entering createAccountCase.execute() function.');
+   * @example logger.trace('Entering createUserCase.execute() function.');
    */
   trace(message: string, data?: Record<string, any>): void;
   /**
