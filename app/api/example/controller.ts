@@ -11,7 +11,7 @@ export class ExampleController implements IController {
   public readonly definition: IControllerDefinition = definition;
 
   @Handler('POST')
-  public postExample(_event: H3Event): Record<string, any> {
+  public async postExample(_event: H3Event): Promise<Record<string, any>> {
     return { hello: 'world' };
   }
 

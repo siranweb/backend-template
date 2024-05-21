@@ -10,4 +10,4 @@ export interface IErrorHandler {
 
 export type HandlerFunc = (event: H3Event) => any;
 export type NextHandlerFunc = HandlerFunc;
-export type ErrorHandlerFunc = (error: unknown, event: H3Event) => void;
+export type ErrorHandlerFunc = (error: unknown) => void;

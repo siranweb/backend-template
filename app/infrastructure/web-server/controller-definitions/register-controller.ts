@@ -37,7 +37,7 @@ function withErrorHandler(handler: HandlerFunc): HandlerFunc {
     try {
       return await handler(event);
     } catch (error: unknown) {
-      errorHandler.handle(error, event);
+      errorHandler.handle(error);
     }
   };
 }

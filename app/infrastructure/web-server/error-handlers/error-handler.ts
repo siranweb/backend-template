@@ -1,11 +1,12 @@
 import { IErrorHandler } from '@/infrastructure/web-server/types/shared';
-import { createError, H3Error, H3Event, isError as isH3Error, sendError } from 'h3';
+import { createError, H3Error, isError as isH3Error } from 'h3';
 import { AppError } from '@/common/errors/app-error';
 
+// TODO rename to error normalizer
+// TODO debug mode (across all app)
 export class ErrorHandler implements IErrorHandler {
-  public handle(error: unknown, event: H3Event): void {
-    const normalizedError = this.normalizeError(error);
-    sendError(event, normalizedError);
+  public handle(error: unknown): void {
+    throw this.normalizeError(error);
   }
 
   private normalizeError(error: unknown): H3Error {

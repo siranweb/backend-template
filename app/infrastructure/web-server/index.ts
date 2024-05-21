@@ -4,13 +4,16 @@ import { apiRouter } from '@/infrastructure/web-server/routers/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
 import { makeLogger } from '@/infrastructure/logger/make-logger';
+import { IRequestLogger } from '@/infrastructure/web-server/types/request-logger.interface';
+import { RequestLogger } from '@/infrastructure/web-server/request-logger';
 
 const logger = makeLogger('WebServer');
+const requestLogger: IRequestLogger = new RequestLogger(logger);
 
 const app = createApp({
-  onRequest: () => {
-    logger.info('New request');
-  },
+  onError: (error, event) => requestLogger.error(error, event),
+  onRequest: (event) => requestLogger.request(event),
+  onBeforeResponse: (event) => requestLogger.finished(event),
 });
 app.use(apiRouter);
 
