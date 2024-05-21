@@ -3,12 +3,7 @@ import { createServer } from 'node:http';
 import { apiRouter } from '@/infrastructure/web-server/routers/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
-import { makeLogger } from '@/infrastructure/logger/make-logger';
-import { IRequestLogger } from '@/infrastructure/web-server/types/request-logger.interface';
-import { RequestLogger } from '@/infrastructure/web-server/request-logger';
-
-const logger = makeLogger('WebServer');
-const requestLogger: IRequestLogger = new RequestLogger(logger);
+import { requestLogger } from '@/infrastructure/web-server/di';
 
 const app = createApp({
   onError: (error, event) => requestLogger.error(error, event),

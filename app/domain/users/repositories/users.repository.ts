@@ -1,6 +1,5 @@
 import { AppDatabase } from '@/infrastructure/app-database/database';
 import { User } from '@/domain/users/entities/user.entity';
-import { UserTable } from '@/infrastructure/app-database/tables/user.table';
 import { IUsersRepository } from '@/domain/users/types/users-repository.interface';
 
 export class UsersRepository implements IUsersRepository {
@@ -9,11 +8,11 @@ export class UsersRepository implements IUsersRepository {
   async saveUser(user: User): Promise<User> {
     const result = await this.db
       .insertInto('user')
-      .values(this.mapFromUser(user))
+      .values(user)
       .returningAll()
       .executeTakeFirstOrThrow();
 
-    return this.mapToUser(result);
+    return new User(result);
   }
 
   async getUserByLogin(login: string): Promise<User | null> {
@@ -23,7 +22,7 @@ export class UsersRepository implements IUsersRepository {
       .selectAll()
       .executeTakeFirst();
 
-    return result ? this.mapToUser(result) : null;
+    return result ? new User(result) : null;
   }
 
   async getUserById(id: string): Promise<User | null> {
@@ -33,41 +32,19 @@ export class UsersRepository implements IUsersRepository {
       .selectAll()
       .executeTakeFirst();
 
-    return result ? this.mapToUser(result) : null;
+    return result ? new User(result) : null;
   }
 
   async storeInvalidRefreshToken(token: string): Promise<void> {
-    await this.db
-      .insertInto('invalid_refresh_token')
-      .values({ token })
-      .returning('token')
-      .execute();
+    await this.db.insertInto('invalidRefreshToken').values({ token }).returning('token').execute();
   }
 
   async isRefreshTokenUsed(token: string): Promise<boolean> {
     const result = await this.db
-      .selectFrom('invalid_refresh_token')
+      .selectFrom('invalidRefreshToken')
       .where('token', '=', token)
       .select('token')
       .executeTakeFirst();
     return !!result;
-  }
-
-  private mapToUser(fields: Omit<UserTable, 'created_at'>): User {
-    return new User({
-      id: fields.id,
-      salt: fields.salt,
-      login: fields.login,
-      passwordHash: fields.password_hash,
-    });
-  }
-
-  private mapFromUser(user: User): Omit<UserTable, 'created_at'> {
-    return {
-      id: user.id,
-      salt: user.salt,
-      login: user.login,
-      password_hash: user.passwordHash,
-    };
   }
 }

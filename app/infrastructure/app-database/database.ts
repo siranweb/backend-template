@@ -1,12 +1,13 @@
 import pg from 'pg';
-import { Kysely, PostgresDialect } from 'kysely';
+import { CamelCasePlugin, Kysely, PostgresDialect } from 'kysely';
 import { config } from 'app/infrastructure/config';
 import { UserTable } from '@/infrastructure/app-database/tables/user.table';
 import { InvalidRefreshTokenTable } from '@/infrastructure/app-database/tables/invalid-refresh-token.table';
+import { UpdatedAtPlugin } from '@/infrastructure/app-database/plugins/updated-at.plugin';
 
 interface Database {
   user: UserTable;
-  invalid_refresh_token: InvalidRefreshTokenTable;
+  invalidRefreshToken: InvalidRefreshTokenTable;
 }
 
 const dialect = new PostgresDialect({
@@ -23,4 +24,10 @@ const dialect = new PostgresDialect({
 export type AppDatabase = Kysely<Database>;
 export const appDatabase = new Kysely<Database>({
   dialect,
+  plugins: [
+    new UpdatedAtPlugin('updated_at'),
+    new CamelCasePlugin({
+      underscoreBeforeDigits: true,
+    }),
+  ],
 });
