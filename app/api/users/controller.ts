@@ -1,23 +1,22 @@
-import { auth } from '@/infrastructure/web-server/chain-handlers.di';
+import { auth, logExample } from '@/infrastructure/web-server/chain-handlers.di';
 import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h3';
 import { createUserSchema, loginSchema } from './schemas';
 import { IConfig, NodeEnv } from '@/infrastructure/config';
 import { TokenInvalidError } from '@/domain/users/errors/token-invalid.error';
-import { createControllerDefinition } from '@/infrastructure/web-server/controller-definitions/creator';
-import { IController } from '@/infrastructure/web-server/types/controller.interface';
-import { IControllerDefinition } from '@/infrastructure/web-server/types/controller-definition.interface';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/infrastructure/web-server/constants';
 import { ICreateUserCase } from '@/domain/users/types/create-user-case.interface';
 import { IRefreshTokensCase } from '@/domain/users/types/refresh-tokens-case.interface';
 import { ICreateTokensByCredentialsCase } from '@/domain/users/types/create-tokens-by-credentials-case.interface';
 import { IInvalidateRefreshTokenCase } from '@/domain/users/types/invalidate-refresh-token-case.interface';
-
-const { Handler, Chain, Controller, definition } = createControllerDefinition();
+import {
+  Chain,
+  Controller,
+  Handler,
+} from '@/infrastructure/web-server/controllers-definition/decorators';
 
 @Controller('/users')
-export class UsersController implements IController {
-  public readonly definition: IControllerDefinition = definition;
-
+@Chain(logExample)
+export class UsersController {
   constructor(
     private readonly config: IConfig,
     private readonly createUserCase: ICreateUserCase,

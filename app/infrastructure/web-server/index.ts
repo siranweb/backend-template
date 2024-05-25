@@ -1,15 +1,17 @@
 import { createApp, toNodeListener } from 'h3';
 import { createServer } from 'node:http';
-import { apiRouter } from '@/infrastructure/web-server/routers/api.router';
+import { initApiRouter } from '@/infrastructure/web-server/routers/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
-import { requestLogger } from '@/infrastructure/web-server/di';
+import { requestLogger, apiRouter } from '@/infrastructure/web-server/di';
 
 const app = createApp({
   onError: (error, event) => requestLogger.error(error, event),
   onRequest: (event) => requestLogger.request(event),
   onBeforeResponse: (event) => requestLogger.finished(event),
 });
+
+initApiRouter(apiRouter);
 app.use(apiRouter);
 
 const webServer = createServer((...args) => {

@@ -1,21 +1,23 @@
-import { createRouter, defineEventHandler, handleCors } from 'h3';
-import { usersController, exampleController } from '@/infrastructure/web-server/di';
-import { registerController } from '@/infrastructure/web-server/controller-definitions/register-controller';
+import { defineEventHandler, handleCors, Router } from 'h3';
+import {
+  usersController,
+  exampleController,
+  apiControllerInitializer,
+} from '@/infrastructure/web-server/di';
 
-export const apiRouter = createRouter();
+export function initApiRouter(apiRouter: Router) {
+  apiControllerInitializer.init(usersController).init(exampleController);
 
-registerController(apiRouter, exampleController);
-registerController(apiRouter, usersController);
-
-apiRouter.use(
-  '/**',
-  defineEventHandler(async (event) => {
-    handleCors(event, {
-      origin: '*',
-      preflight: {
-        statusCode: 204,
-      },
-      methods: '*',
-    });
-  }),
-);
+  apiRouter.use(
+    '/**',
+    defineEventHandler(async (event) => {
+      handleCors(event, {
+        origin: '*',
+        preflight: {
+          statusCode: 204,
+        },
+        methods: '*',
+      });
+    }),
+  );
+}

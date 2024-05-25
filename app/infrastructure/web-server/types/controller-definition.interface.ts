@@ -1,5 +1,6 @@
 import { EventHandler, HTTPMethod } from 'h3';
-import { HandlerFunc, IChainHandler } from './shared';
+import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
+import { HandlerFunc } from './shared';
 
 export interface IControllerDefinition {
   handlers: HandlerState[];

@@ -8,7 +8,7 @@ scheduler.onTrigger((ctx) =>
 );
 
 export async function startScheduler() {
-  scheduler.add('* * * * * *', 'Test scheduler', () => {
+  scheduler.add('* * * * *', 'Test scheduler', () => {
     console.log('I am test scheduler');
   });
 }

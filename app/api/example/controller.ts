@@ -1,15 +1,14 @@
 import { H3Event } from 'h3';
-import { IController } from '@/infrastructure/web-server/types/controller.interface';
-import { IControllerDefinition } from '@/infrastructure/web-server/types/controller-definition.interface';
-import { createControllerDefinition } from '@/infrastructure/web-server/controller-definitions/creator';
 import { logExample } from '@/infrastructure/web-server/chain-handlers.di';
-
-const { Handler, Chain, Controller, definition } = createControllerDefinition();
+import {
+  Chain,
+  Controller,
+  Handler,
+} from '@/infrastructure/web-server/controllers-definition/decorators';
 
 @Controller('/example')
-export class ExampleController implements IController {
-  public readonly definition: IControllerDefinition = definition;
-
+@Chain(logExample)
+export class ExampleController {
   @Handler('POST')
   public async postExample(_event: H3Event): Promise<Record<string, any>> {
     return { hello: 'world' };

@@ -1,7 +1,8 @@
 import { createError, getCookie, H3Event } from 'h3';
 import { ACCESS_TOKEN_NAME } from '@/infrastructure/web-server/constants';
-import { NextHandlerFunc, IChainHandler } from '@/infrastructure/web-server/types/shared';
+import { NextHandlerFunc } from '@/infrastructure/web-server/types/shared';
 import { IValidateTokenCase } from '@/domain/users/types/validate-token.interface';
+import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
 
 export class Auth implements IChainHandler {
   constructor(private readonly validateTokenCase: IValidateTokenCase) {}
