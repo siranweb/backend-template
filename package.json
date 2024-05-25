@@ -21,6 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node-cron": "^3.0.11",
+    "cron": "^3.1.7",
     "dotenv": "^16.4.5",
     "h3": "^1.11.1",
     "jose": "^4.15.5",
@@ -28,6 +30,7 @@
     "pg": "^8.11.5",
     "pino": "^9.1.0",
     "pino-pretty": "^11.0.0",
+    "tsx": "^4.10.5",
     "uuidv7": "^0.6.3",
     "ws": "^8.17.0",
     "zod": "3.22.0"
@@ -43,7 +46,6 @@
     "eslint-config-prettier": "^8.10.0",
     "husky": "^9.0.11",
     "prettier": "^3.2.5",
-    "tsx": "^4.10.5",
     "typescript": "^5.4.5"
   }
 }
