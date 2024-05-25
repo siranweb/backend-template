@@ -5,9 +5,11 @@ import { IControllersState } from '@/infrastructure/web-server/controllers-defin
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 import { normalizeApiError } from '@/infrastructure/web-server/errors/normalize-api-error';
 import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
+import { IOpenApi } from '@/infrastructure/web-server/open-api/types/open-api-builder.interface';
 
 export class ControllerInitializer implements IControllerInitializer {
   constructor(
+    private readonly openApi: IOpenApi,
     private readonly logger: ILogger,
     private readonly controllersState: IControllersState,
     private readonly router: Router,
@@ -27,12 +29,20 @@ export class ControllerInitializer implements IControllerInitializer {
       const fullChain = [...controllerDef.chain, ...handlerDef.chain];
       const boundHandler = handlerDef.handler.bind(controller);
       const handler = this.withErrorHandler(this.withChain(boundHandler, fullChain));
+      const method = handlerDef.method.toLowerCase() as Lowercase<HTTPMethod>;
 
-      this.router.add(
-        fullPath,
-        defineEventHandler(handler),
-        handlerDef.method.toLowerCase() as Lowercase<HTTPMethod>,
-      );
+      this.router.add(fullPath, defineEventHandler(handler), method);
+
+      if (method === 'connect') return;
+
+      this.openApi.addPath(method, fullPath, {
+        responses: [...controllerDef.openApiResponses, ...handlerDef.openApiResponses],
+        requestBody: handlerDef.openApiBody,
+        params: handlerDef.openApiParams,
+        query: handlerDef.openApiQuery,
+        cookie: handlerDef.openApiCookie,
+        header: handlerDef.openApiHeader,
+      });
     });
 
     return this;

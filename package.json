@@ -33,7 +33,8 @@
     "tsx": "^4.10.5",
     "uuidv7": "^0.6.3",
     "ws": "^8.17.0",
-    "zod": "3.22.0"
+    "zod": "3.22.0",
+    "zod-openapi": "^2.17.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.10",
