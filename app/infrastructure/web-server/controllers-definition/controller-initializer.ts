@@ -5,7 +5,7 @@ import { IControllersState } from '@/infrastructure/web-server/controllers-defin
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 import { normalizeApiError } from '@/infrastructure/web-server/errors/normalize-api-error';
 import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
-import { IOpenApi } from '@/infrastructure/web-server/open-api/types/open-api-builder.interface';
+import { IOpenApi } from '@/infrastructure/web-server/types/open-api-builder.interface';
 
 export class ControllerInitializer implements IControllerInitializer {
   constructor(

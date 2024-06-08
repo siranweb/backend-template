@@ -4,7 +4,7 @@ import {
   Handler,
   Response,
 } from '@/infrastructure/web-server/controllers-definition/decorators';
-import { IOpenApi } from '@/infrastructure/web-server/open-api/types/open-api-builder.interface';
+import { IOpenApi } from '@/infrastructure/web-server/types/open-api-builder.interface';
 import { redocTemplate } from '@/infrastructure/redoc/template';
 
 @Controller('/docs')

@@ -1,10 +1,10 @@
 import { createApp, toNodeListener } from 'h3';
 import { createServer } from 'node:http';
-import { initApiRouter } from '@/infrastructure/web-server/routers/api.router';
+import { initApiRouter } from '@/infrastructure/web-server/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
 import { requestLogger, apiRouter, docsRouter } from '@/infrastructure/web-server/di';
-import { initDocsRouter } from '@/infrastructure/web-server/routers/docs.router';
+import { initDocsRouter } from '@/infrastructure/web-server/docs/docs.router';
 import { appOpenApi } from '@/infrastructure/web-server/open-api.di';
 
 const app = createApp({

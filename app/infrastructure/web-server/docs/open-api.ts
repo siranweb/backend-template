@@ -5,7 +5,7 @@ import {
   PathParams,
   RequestBodySpec,
   ResponseSpec,
-} from '@/infrastructure/web-server/open-api/types/open-api-builder.interface';
+} from '@/infrastructure/web-server/types/open-api-builder.interface';
 import { InfoObject, OpenAPIObject } from 'zod-openapi/lib-types/openapi3-ts/dist/model/openapi31';
 import {
   ZodOpenApiObject,

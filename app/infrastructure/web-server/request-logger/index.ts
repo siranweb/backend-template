@@ -15,7 +15,7 @@ export class RequestLogger implements IRequestLogger {
     this.logger.info(`${event.method} ${event.path}`, { params, query, body });
   }
 
-  finished(event: H3Event): void {
+  public finished(event: H3Event): void {
     this.logger.info(`Finished ${event.method} ${event.path}`);
   }
 
