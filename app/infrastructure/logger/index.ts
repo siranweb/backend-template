@@ -3,7 +3,7 @@ import { ILogger, LoggerOptions } from '@/infrastructure/logger/types/logger.int
 import { IRequestStorage } from '@/infrastructure/request-storage/types/request-storage.interface';
 
 export class Logger implements ILogger {
-  private readonly context: string;
+  private context: string;
   private readonly pinoLogger: PinoLogger;
   private readonly requestStorage?: IRequestStorage;
 
@@ -34,6 +34,10 @@ export class Logger implements ILogger {
     }
 
     this.pinoLogger = pino(pinoConfig);
+  }
+
+  public setContext(context: string): void {
+    this.context = context;
   }
 
   public trace(message: string, data: Record<string, any> = {}): void {

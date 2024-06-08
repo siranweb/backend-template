@@ -3,6 +3,10 @@ import { IRequestStorage } from '@/infrastructure/request-storage/types/request-
 
 export interface ILogger {
   /**
+   * Setting logger context. Used in prefix
+   */
+  setContext(context: string): void;
+  /**
    * Used to trace the path of code execution within a program
    * @example logger.trace('Entering createUserCase.execute() function.');
    */

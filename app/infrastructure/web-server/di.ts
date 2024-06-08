@@ -13,7 +13,6 @@ import { createRouter } from 'h3';
 import { ControllerInitializer } from '@/infrastructure/web-server/controllers-definition/controller-initializer';
 import { controllersState } from '@/infrastructure/web-server/controllers-definition/controllers-state';
 import { appOpenApi } from '@/infrastructure/web-server/open-api.di';
-import { DocsController } from '@/api/docs/controller';
 
 const webServerLogger = makeLogger('webServer');
 export const requestLogger = new RequestLogger(webServerLogger);
@@ -37,4 +36,3 @@ export const usersController = new UsersController(
 );
 
 export const exampleController = new ExampleController();
-export const docsController = new DocsController(appOpenApi);
