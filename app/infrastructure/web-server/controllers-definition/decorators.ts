@@ -51,14 +51,14 @@ export function Body(
   schema?: ZodType | oas31.SchemaObject,
 ) {
   return (controller: ControllerPrototype, property: string): void => {
-    let responseSchema: ZodType | oas31.SchemaObject | undefined;
+    let responseSchema: ZodType | oas31.SchemaObject = {};
     let contentType: string = 'application/json';
 
     if (contentTypeOrSchema !== undefined) {
       if (typeof contentTypeOrSchema !== 'string') {
         responseSchema = contentTypeOrSchema;
       } else {
-        responseSchema = schema;
+        responseSchema = schema ?? {};
         contentType = contentTypeOrSchema;
       }
     }
@@ -114,14 +114,14 @@ export function Response(
   schema?: ZodType | oas31.SchemaObject,
 ) {
   return (controller: ControllerPrototype | Controller, property?: string): void => {
-    let responseSchema: ZodType | oas31.SchemaObject | undefined;
+    let responseSchema: ZodType | oas31.SchemaObject = {};
     let contentType: string = 'application/json';
 
     if (contentTypeOrSchema !== undefined) {
       if (typeof contentTypeOrSchema !== 'string') {
         responseSchema = contentTypeOrSchema;
       } else {
-        responseSchema = schema;
+        responseSchema = schema ?? {};
         contentType = contentTypeOrSchema;
       }
     }

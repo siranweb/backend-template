@@ -18,7 +18,8 @@ export class OpenApi implements IOpenApi {
   private readonly spec: ZodOpenApiObject = {
     openapi: '3.1.0',
     info: {
-      title: '',
+      title: 'Title',
+      description: 'Description',
       version: '',
     },
     paths: {},

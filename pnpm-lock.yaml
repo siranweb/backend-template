@@ -35,6 +35,9 @@ importers:
       pino-pretty:
         specifier: ^11.0.0
         version: 11.0.0
+      swagger-ui-dist:
+        specifier: ^5.17.12
+        version: 5.17.12
       tsx:
         specifier: ^4.10.5
         version: 4.10.5
@@ -60,6 +63,9 @@ importers:
       '@types/pg':
         specifier: ^8.11.6
         version: 8.11.6
+      '@types/swagger-ui-dist':
+        specifier: ^3.30.4
+        version: 3.30.4
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
@@ -286,6 +292,9 @@ packages:
 
   '@types/semver@7.5.8':
     resolution: {integrity: sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==}
+
+  '@types/swagger-ui-dist@3.30.4':
+    resolution: {integrity: sha512-FeOBc7uj4/lAIh4jkBzorvmNoUU9JgSccyDIRo0E9MJw9KQfSxlwpHCyKGnU9kfV5N5dEdfpY8wm7to3nSwTmA==}
 
   '@types/ws@8.5.10':
     resolution: {integrity: sha512-vmQSUcfalpIq0R9q7uTo2lXs6eGIpt9wtnLdMv9LVpIjCA/+ufZRozlVoVelIYixx1ugCBKDhn89vnsEGOCx9A==}
@@ -1004,6 +1013,9 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
+  swagger-ui-dist@5.17.12:
+    resolution: {integrity: sha512-gHzs6CYQjgm0rpnFJGsjvWLua6znq+nipi89RDcu0a8R8JPXuVQrybVRBoOFmZ8mVTo9uPJDWgEYqnJRl4dHCQ==}
+
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
@@ -1237,6 +1249,8 @@ snapshots:
       pg-types: 4.0.2
 
   '@types/semver@7.5.8': {}
+
+  '@types/swagger-ui-dist@3.30.4': {}
 
   '@types/ws@8.5.10':
     dependencies:
@@ -1976,6 +1990,8 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
+
+  swagger-ui-dist@5.17.12: {}
 
   text-table@0.2.0: {}
 

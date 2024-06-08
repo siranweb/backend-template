@@ -3,7 +3,9 @@ import { createServer } from 'node:http';
 import { initApiRouter } from '@/infrastructure/web-server/routers/api.router';
 import { requestStorage } from '@/infrastructure/request-storage';
 import { uuidv4 } from 'uuidv7';
-import { requestLogger, apiRouter } from '@/infrastructure/web-server/di';
+import { requestLogger, apiRouter, docsRouter } from '@/infrastructure/web-server/di';
+import { initDocsRouter } from '@/infrastructure/web-server/routers/docs.router';
+import { appOpenApi } from '@/infrastructure/web-server/open-api.di';
 
 const app = createApp({
   onError: (error, event) => requestLogger.error(error, event),
@@ -12,7 +14,9 @@ const app = createApp({
 });
 
 initApiRouter(apiRouter);
+initDocsRouter(docsRouter, appOpenApi);
 app.use(apiRouter);
+app.use(docsRouter);
 
 const webServer = createServer((...args) => {
   requestStorage.run(

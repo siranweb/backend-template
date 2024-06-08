@@ -12,14 +12,17 @@ import { RequestLogger } from '@/infrastructure/web-server/request-logger';
 import { createRouter } from 'h3';
 import { ControllerInitializer } from '@/infrastructure/web-server/controllers-definition/controller-initializer';
 import { controllersState } from '@/infrastructure/web-server/controllers-definition/controllers-state';
-import { appApiSpec } from '@/infrastructure/web-server/open-api.di';
+import { appOpenApi } from '@/infrastructure/web-server/open-api.di';
+import { DocsController } from '@/api/docs/controller';
 
 const webServerLogger = makeLogger('webServer');
 export const requestLogger = new RequestLogger(webServerLogger);
+
 export const apiRouter = createRouter();
+export const docsRouter = createRouter();
 
 export const apiControllerInitializer = new ControllerInitializer(
-  appApiSpec,
+  appOpenApi,
   webServerLogger,
   controllersState,
   apiRouter,
@@ -34,3 +37,4 @@ export const usersController = new UsersController(
 );
 
 export const exampleController = new ExampleController();
+export const docsController = new DocsController(appOpenApi);

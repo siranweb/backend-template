@@ -1,4 +1,5 @@
 import process from 'node:process';
+import 'zod-openapi/extend';
 import { appDatabase } from '@/infrastructure/app-database/database';
 import { startServer, stopServer } from '@/infrastructure/web-server';
 import { config } from '@/infrastructure/config';
@@ -17,5 +18,3 @@ const shutdown = () => {
   Promise.allSettled([stopServer(), appDatabase.destroy()]).finally(() => process.exit(0));
 };
 process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
-process.on('exit', shutdown);
