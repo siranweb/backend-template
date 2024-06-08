@@ -1,5 +1,6 @@
 import process from 'node:process';
 import 'zod-openapi/extend';
+import '@/di';
 import { appDatabase } from '@/infrastructure/app-database/database';
 import { startServer, stopServer } from '@/infrastructure/web-server';
 import { config } from '@/infrastructure/config';
