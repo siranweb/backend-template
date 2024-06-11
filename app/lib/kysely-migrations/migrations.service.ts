@@ -15,9 +15,8 @@ export class MigrationsService implements IMigrationsService {
   public async down(migrationsPath: string): Promise<void> {
     const migrationsFileNames = await fsp.readdir(migrationsPath);
 
-    const downMigrationsFileName = await this.getDownMigrationFileNameToProcess(
-      migrationsFileNames,
-    );
+    const downMigrationsFileName =
+      await this.getDownMigrationFileNameToProcess(migrationsFileNames);
 
     if (!downMigrationsFileName) {
       return;
