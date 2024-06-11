@@ -7,7 +7,11 @@
   "type": "module",
   "scripts": {
     "start": "tsx -r dotenv/config app/index.ts dotenv_config_path=env/run/app.env",
+    "compose:up": "docker compose up -d --build",
+    "compose:down": "docker compose down",
     "start:dev": "tsx watch -r dotenv/config app/index.ts dotenv_config_path=env/run/app.env",
+    "compose:dev:up": "docker compose -f docker-compose-dev.yml up -d",
+    "compose:dev:down": "docker compose -f docker-compose-dev.yml down",
     "ts-check": "tsc --noEmit",
     "lint": "eslint --max-warnings 0 --ext .ts app scripts",
     "format": "prettier --log-level warn --write app scripts",
