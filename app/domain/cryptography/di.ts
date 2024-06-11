@@ -3,8 +3,6 @@ import { CryptographyService } from '@/domain/cryptography/services/cryptography
 import { appDi } from '@/infrastructure/ioc-container';
 import { ICryptographyService } from '@/domain/cryptography/types/cryptography-service.interface';
 
-export const cryptographyService = new CryptographyService();
-
 appDi.register({
   cryptographyService: asClass(
     CryptographyService,

@@ -1,8 +1,8 @@
-import { asClass, Resolver } from 'awilix';
+import { asFunction, Resolver } from 'awilix';
 import { appDi } from '@/infrastructure/ioc-container';
-import { Scheduler } from '@/lib/scheduler';
-import { IScheduler } from '@/lib/scheduler/types/scheduler.interface';
+import { makeScheduler } from '@/infrastructure/scheduler/make-scheduler';
+import { IScheduler } from '@/infrastructure/scheduler/types/scheduler.interface';
 
 appDi.register({
-  scheduler: asClass(Scheduler).singleton() satisfies Resolver<IScheduler>,
+  scheduler: asFunction(makeScheduler).singleton() satisfies Resolver<IScheduler>,
 });

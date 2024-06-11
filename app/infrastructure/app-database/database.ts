@@ -9,11 +9,11 @@ interface Database {
   user: UserTable;
   invalidRefreshToken: InvalidRefreshTokenTable;
 }
-export type AppDatabase = Kysely<Database>;
+export type IAppDatabase = Kysely<Database>;
 
 export const appDatabase = makeAppDatabase();
 
-export function makeAppDatabase(): AppDatabase {
+export function makeAppDatabase(): IAppDatabase {
   return new Kysely({
     dialect: new PostgresDialect({
       pool: new pg.Pool({

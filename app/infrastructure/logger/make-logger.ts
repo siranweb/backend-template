@@ -1,8 +1,12 @@
 import { Logger } from '@/infrastructure/logger/index';
-import { config, NodeEnv } from '@/infrastructure/config';
-import { requestStorage } from '@/infrastructure/request-storage';
+import { IConfig, NodeEnv } from '@/infrastructure/config/types/config.interface';
+import { IRequestStorage } from '@/infrastructure/request-storage/types/request-storage.interface';
 
-export function makeLogger(context?: string): Logger {
+export function makeLogger(
+  requestStorage: IRequestStorage,
+  config: IConfig,
+  context?: string,
+): Logger {
   return new Logger({
     context,
     pretty: config.nodeEnv === NodeEnv.DEVELOPMENT,

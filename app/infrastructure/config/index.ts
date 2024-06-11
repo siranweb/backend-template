@@ -1,37 +1,5 @@
 import * as process from 'process';
-
-export enum NodeEnv {
-  DEVELOPMENT = 'development',
-  PRODUCTION = 'production',
-}
-
-export interface IConfig {
-  nodeEnv: NodeEnv;
-  webServer: {
-    port: number;
-  };
-  webSockets: {
-    port: number;
-  };
-  jwt: {
-    secret: string;
-    accessToken: {
-      expirationTime: string;
-    };
-    refreshToken: {
-      expirationTime: string;
-    };
-  };
-  database: {
-    primary: {
-      user: string;
-      password: string;
-      db: string;
-      host: string;
-      port: number;
-    };
-  };
-}
+import { IConfig, NodeEnv } from '@/infrastructure/config/types/config.interface';
 
 export const config: IConfig = {
   nodeEnv: (process.env.NODE_ENV ?? NodeEnv.DEVELOPMENT) as NodeEnv,

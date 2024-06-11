@@ -2,7 +2,7 @@ import { ICreateTokensCase } from '@/domain/users/types/create-tokens-case.inter
 import { TokenPair } from '@/domain/users/types/shared';
 import { IJWTService } from '@/domain/jwt/types/jwt-service.interface';
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
-import { IConfig } from '@/infrastructure/config';
+import { IConfig } from '@/infrastructure/config/types/config.interface';
 
 export class CreateTokensCase implements ICreateTokensCase {
   constructor(

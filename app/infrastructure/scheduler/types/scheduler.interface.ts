@@ -1,6 +1,6 @@
 export interface IScheduler {
   add(cron: string, name: string, action: () => any, config?: CronConfig): void;
-  onTrigger(clb: () => any): void;
+  start(): void;
 }
 
 export type CronConfig = {

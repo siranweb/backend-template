@@ -21,7 +21,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node-cron": "^3.0.11",
     "awilix": "^10.0.2",
     "cron": "^3.1.7",
     "dotenv": "^16.4.5",
@@ -34,7 +33,6 @@
     "swagger-ui-dist": "^5.17.12",
     "tsx": "^4.10.5",
     "uuidv7": "^0.6.3",
-    "ws": "^8.17.0",
     "zod": "3.22.0",
     "zod-openapi": "^2.17.0"
   },

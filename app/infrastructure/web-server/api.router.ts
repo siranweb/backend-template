@@ -1,14 +1,9 @@
-import { defineEventHandler, handleCors, Router } from 'h3';
-import {
-  usersController,
-  exampleController,
-  apiControllerInitializer,
-} from '@/infrastructure/web-server/di';
+import { createRouter, defineEventHandler, handleCors } from 'h3';
 
-export function initApiRouter(apiRouter: Router) {
-  apiControllerInitializer.init(usersController).init(exampleController);
+export function makeApiRouter() {
+  const router = createRouter();
 
-  apiRouter.use(
+  router.use(
     '/**',
     defineEventHandler(async (event) => {
       handleCors(event, {
@@ -20,4 +15,6 @@ export function initApiRouter(apiRouter: Router) {
       });
     }),
   );
+
+  return router;
 }

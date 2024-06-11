@@ -1,21 +1,25 @@
 import process from 'node:process';
 import 'zod-openapi/extend';
 import '@/di';
-import { appDatabase } from '@/infrastructure/app-database/database';
-import { startServer, stopServer } from '@/infrastructure/web-server';
-import { config } from '@/infrastructure/config';
-import { makeLogger } from '@/infrastructure/logger/make-logger';
-import { startScheduler } from '@/infrastructure/scheduler';
+import { IAppDatabase } from '@/infrastructure/app-database/database';
+import { appDi } from '@/infrastructure/ioc-container';
+import { IWebServer } from '@/infrastructure/web-server/types/web-server.interface';
+import { IScheduler } from '@/infrastructure/scheduler/types/scheduler.interface';
+import { IControllerInitializer } from '@/infrastructure/web-server/controllers-definition/types/controller-initializer.interface';
 
-const logger = makeLogger('App');
+const webServer = appDi.resolve<IWebServer>('webServer');
+const db = appDi.resolve<IAppDatabase>('db');
+const scheduler = appDi.resolve<IScheduler>('scheduler');
+const apiControllerInitializer = appDi.resolve<IControllerInitializer>('apiControllerInitializer');
+const usersController = appDi.resolve('usersController');
+const exampleController = appDi.resolve('exampleController');
 
-startServer(config.webServer.port).then(() =>
-  logger.info(`Web server started on port ${config.webServer.port}.`),
-);
-
-startScheduler().then(() => logger.info('Scheduler started.'));
+// TODO apiControllerInitializer move out?
+apiControllerInitializer.init(usersController).init(exampleController);
+webServer.start();
+scheduler.start();
 
 const shutdown = () => {
-  Promise.allSettled([stopServer(), appDatabase.destroy()]).finally(() => process.exit(0));
+  Promise.allSettled([webServer.stop(), db.destroy()]).finally(() => process.exit(0));
 };
 process.on('SIGTERM', shutdown);

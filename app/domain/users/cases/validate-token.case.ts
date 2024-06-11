@@ -1,5 +1,5 @@
 import { IJWTService } from '@/domain/jwt/types/jwt-service.interface';
-import { IConfig } from '@/infrastructure/config';
+import { IConfig } from '@/infrastructure/config/types/config.interface';
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 import { IValidateTokenCase } from '@/domain/users/types/validate-token.interface';
 

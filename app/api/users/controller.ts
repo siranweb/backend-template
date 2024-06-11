@@ -1,7 +1,7 @@
 import { auth, logExample } from '@/infrastructure/web-server/chain-handlers.di';
 import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h3';
 import { createUserSchema, loginSchema } from './schemas';
-import { IConfig, NodeEnv } from '@/infrastructure/config';
+import { IConfig, NodeEnv } from '@/infrastructure/config/types/config.interface';
 import { TokenInvalidError } from '@/domain/users/errors/token-invalid.error';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/infrastructure/web-server/constants';
 import { ICreateUserCase } from '@/domain/users/types/create-user-case.interface';
@@ -22,7 +22,7 @@ export class UsersController {
     private readonly createUserCase: ICreateUserCase,
     private readonly refreshTokensCase: IRefreshTokensCase,
     private readonly createTokensByCredentialsCase: ICreateTokensByCredentialsCase,
-    private readonly invalidateRefreshToken: IInvalidateRefreshTokenCase,
+    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase,
   ) {}
 
   @Handler('POST')
@@ -84,7 +84,7 @@ export class UsersController {
     const clientRefreshToken = getCookie(event, REFRESH_TOKEN_NAME);
 
     if (clientRefreshToken) {
-      await this.invalidateRefreshToken.execute(clientRefreshToken);
+      await this.invalidateRefreshTokenCase.execute(clientRefreshToken);
     }
 
     this.setAccessTokenCookie(event, '');

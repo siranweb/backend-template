@@ -1,9 +1,9 @@
-import { AppDatabase } from '@/infrastructure/app-database/database';
+import { IAppDatabase } from '@/infrastructure/app-database/database';
 import { User } from '@/domain/users/entities/user.entity';
 import { IUsersRepository } from '@/domain/users/types/users-repository.interface';
 
 export class UsersRepository implements IUsersRepository {
-  constructor(private readonly db: AppDatabase) {}
+  constructor(private readonly db: IAppDatabase) {}
 
   async saveUser(user: User): Promise<User> {
     const result = await this.db

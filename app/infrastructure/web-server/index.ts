@@ -1,44 +1,62 @@
-import { createApp, toNodeListener } from 'h3';
-import { createServer } from 'node:http';
-import { initApiRouter } from '@/infrastructure/web-server/api.router';
-import { requestStorage } from '@/infrastructure/request-storage';
+import { createApp, Router, toNodeListener } from 'h3';
+import { createServer, Server } from 'node:http';
 import { uuidv4 } from 'uuidv7';
-import { requestLogger, apiRouter, docsRouter } from '@/infrastructure/web-server/di';
-import { initDocsRouter } from '@/infrastructure/web-server/docs/docs.router';
-import { appOpenApi } from '@/infrastructure/web-server/open-api.di';
+import { IWebServer } from '@/infrastructure/web-server/types/web-server.interface';
+import { IConfig } from '@/infrastructure/config/types/config.interface';
+import { IRequestLogger } from '@/infrastructure/web-server/types/request-logger.interface';
+import { IRequestStorage } from '@/infrastructure/request-storage/types/request-storage.interface';
+import { ILogger } from '@/infrastructure/logger/types/logger.interface';
 
-const app = createApp({
-  onError: (error, event) => requestLogger.error(error, event),
-  onRequest: (event) => requestLogger.request(event),
-  onBeforeResponse: (event) => requestLogger.finished(event),
-});
+export class WebServer implements IWebServer {
+  private readonly httpServer: Server;
 
-initApiRouter(apiRouter);
-initDocsRouter(docsRouter, appOpenApi);
-app.use(apiRouter);
-app.use(docsRouter);
+  constructor(
+    private readonly config: IConfig,
+    private readonly logger: ILogger,
+    requestLogger: IRequestLogger,
+    requestStorage: IRequestStorage,
+    apiRouter: Router,
+    docsRouter: Router,
+  ) {
+    const app = createApp({
+      onError: (error, event) => requestLogger.error(error, event),
+      onRequest: (event) => requestLogger.request(event),
+      onBeforeResponse: (event) => requestLogger.finished(event),
+    });
 
-const webServer = createServer((...args) => {
-  requestStorage.run(
-    {
-      requestId: uuidv4(),
-    },
-    () => {
-      toNodeListener(app)(...args);
-    },
-  );
-});
+    app.use(apiRouter);
+    app.use(docsRouter);
 
-export async function startServer(port: number): Promise<void> {
-  return new Promise((res, rej) => {
-    webServer.listen(port).on('error', rej).on('listening', res);
-  });
+    this.httpServer = createServer((...args) => {
+      requestStorage.run(
+        {
+          requestId: uuidv4(),
+        },
+        () => {
+          toNodeListener(app)(...args);
+        },
+      );
+    });
+  }
+
+  public async start(): Promise<void> {
+    return new Promise((res, rej) => {
+      this.httpServer
+        .listen(this.config.webServer.port)
+        .on('error', (err) => {
+          this.logger.error(err, `Failed to start web server.`);
+          rej();
+        })
+        .on('listening', () => {
+          this.logger.info(`Web server started on port ${this.config.webServer.port}.`);
+          res();
+        });
+    });
+  }
+
+  public async stop(): Promise<void> {
+    return new Promise((res, rej) => {
+      this.httpServer.close().on('error', rej).on('close', res);
+    });
+  }
 }
-
-export async function stopServer(): Promise<void> {
-  return new Promise((res, rej) => {
-    webServer.close().on('error', rej).on('close', res);
-  });
-}
-
-// TODO di?

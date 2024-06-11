@@ -11,7 +11,7 @@ import { ControllerPrototype } from '@/infrastructure/web-server/types/shared';
 import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
 import { ZodType } from 'zod';
 
-class ControllersState implements IControllersState {
+export class ControllersState implements IControllersState {
   private readonly controllers: Map<ControllerPrototype, ControllerDef> = new Map();
 
   public getControllerDef(controller: ControllerPrototype): ControllerDef | null {
@@ -149,5 +149,3 @@ class ControllersState implements IControllersState {
     return handlerDef;
   }
 }
-
-export const controllersState = new ControllersState();

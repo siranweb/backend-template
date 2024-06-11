@@ -12,7 +12,7 @@ export class ControllerInitializer implements IControllerInitializer {
     private readonly openApi: IOpenApi,
     private readonly logger: ILogger,
     private readonly controllersState: IControllersState,
-    private readonly router: Router,
+    private readonly apiRouter: Router,
   ) {}
 
   public init(controller: Controller): this {
@@ -31,7 +31,7 @@ export class ControllerInitializer implements IControllerInitializer {
       const handler = this.withErrorHandler(this.withChain(boundHandler, fullChain));
       const method = handlerDef.method.toLowerCase() as Lowercase<HTTPMethod>;
 
-      this.router.add(fullPath, defineEventHandler(handler), method);
+      this.apiRouter.add(fullPath, defineEventHandler(handler), method);
 
       if (method === 'connect') return;
 

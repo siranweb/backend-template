@@ -1,26 +1,28 @@
-import { defineEventHandler, Router, serveStatic } from 'h3';
+import { createRouter, defineEventHandler, Router, serveStatic } from 'h3';
 import fsp from 'node:fs/promises';
 import swaggerUiDist from 'swagger-ui-dist';
 import path from 'node:path';
 import { html } from '@/infrastructure/web-server/docs/swagger-template';
 import { IOpenApi } from '@/infrastructure/web-server/types/open-api-builder.interface';
 
-export function initDocsRouter(apiRouter: Router, openApi: IOpenApi) {
-  apiRouter.use(
+export function makeDocsRouter(openApi: IOpenApi): Router {
+  const router = createRouter();
+
+  router.use(
     '/docs',
     defineEventHandler(() => {
       return html;
     }),
   );
 
-  apiRouter.use(
+  router.use(
     '/open-api.json',
     defineEventHandler(() => {
       return openApi.build();
     }),
   );
 
-  apiRouter.use(
+  router.use(
     '/docs/**',
     defineEventHandler((event) => {
       return serveStatic(event, {
@@ -51,4 +53,6 @@ export function initDocsRouter(apiRouter: Router, openApi: IOpenApi) {
       });
     }),
   );
+
+  return router;
 }

@@ -4,10 +4,13 @@ import {
   ControllerPrototype,
   Controller,
 } from '@/infrastructure/web-server/types/shared';
-import { controllersState } from '@/infrastructure/web-server/controllers-definition/controllers-state';
 import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
 import { ZodType } from 'zod';
 import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
+import { appDi } from '@/infrastructure/ioc-container';
+import { IControllersState } from '@/infrastructure/web-server/controllers-definition/types/controllers-state.interface';
+
+const controllersState = appDi.resolve<IControllersState>('controllersState');
 
 export function Handler(method: HTTPMethod, path?: string) {
   return (controller: ControllerPrototype, property: string): void => {

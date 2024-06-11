@@ -1,5 +1,5 @@
 import { IJWTService } from '@/domain/jwt/types/jwt-service.interface';
-import { IConfig } from '@/infrastructure/config';
+import { IConfig } from '@/infrastructure/config/types/config.interface';
 import { UserNotFoundError } from '@/domain/users/errors/user-not-found.error';
 import { TokenInvalidError } from '@/domain/users/errors/token-invalid.error';
 import { ILogger } from '@/infrastructure/logger/types/logger.interface';
