@@ -50,6 +50,7 @@ export class MigrationsService implements IMigrationsService {
   public async sync(migrationsPath: string): Promise<void> {
     const migrationsFileNames = await fsp.readdir(migrationsPath);
 
+    // TODO получать все миграции с таблицы и делать up/down
     const upMigrationsFileNames = await this.getUpMigrationFileNamesToProcess(migrationsFileNames);
 
     const migrations: Migration[] = await this.getMigrations(
