@@ -6,5 +6,3 @@ export const createUserSchema = z
     password: z.string().max(40).nonempty(),
   })
   .required();
-
-export const loginSchema = createUserSchema;

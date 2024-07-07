@@ -17,11 +17,11 @@ export function makeAppDatabase(): IAppDatabase {
   return new Kysely({
     dialect: new PostgresDialect({
       pool: new pg.Pool({
-        database: config.database.primary.db,
-        user: config.database.primary.user,
-        password: config.database.primary.password,
-        host: config.database.primary.host,
-        port: config.database.primary.port,
+        database: config.database.app.db,
+        user: config.database.app.user,
+        password: config.database.app.password,
+        host: config.database.app.host,
+        port: config.database.app.port,
         max: 10,
       }),
     }),

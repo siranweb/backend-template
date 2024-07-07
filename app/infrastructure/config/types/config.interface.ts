@@ -16,7 +16,7 @@ export interface IConfig {
     };
   };
   database: {
-    primary: {
+    app: {
       user: string;
       password: string;
       db: string;

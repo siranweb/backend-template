@@ -1,6 +1,7 @@
 import { auth, logExample } from '@/infrastructure/web-server/chain-handlers.di';
 import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h3';
-import { createUserSchema, loginSchema } from './schemas';
+import { loginUserSchema } from './schemas/login-user.schema';
+import { createUserSchema } from './schemas/create-user.schema';
 import { IConfig, NodeEnv } from '@/infrastructure/config/types/config.interface';
 import { TokenInvalidError } from '@/domain/users/errors/token-invalid.error';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/infrastructure/web-server/constants';
@@ -71,7 +72,7 @@ export class UsersController {
 
   @Handler('POST', '/session')
   async login(event: H3Event) {
-    const credentials = await readValidatedBody(event, loginSchema.parse);
+    const credentials = await readValidatedBody(event, loginUserSchema.parse);
     const { accessToken, refreshToken } =
       await this.createTokensByCredentialsCase.execute(credentials);
 

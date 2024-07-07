@@ -14,18 +14,18 @@ services:
     networks:
       - app-network
 
-  primary-database:
+  app-database:
     tty: true
     image: 'postgres:15.4'
     env_file:
-      - env/run/primary-database.env
+      - env/run/app-database.env
     networks:
       - app-network
     volumes:
-      - primary-database:/var/lib/postgresql/data/
+      - app-database:/var/lib/postgresql/data/
 
 volumes:
-  primary-database:
+  app-database:
 
 networks:
   app-network:

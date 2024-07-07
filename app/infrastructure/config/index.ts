@@ -19,7 +19,7 @@ export const config: IConfig = {
     },
   },
   database: {
-    primary: {
+    app: {
       user: process.env.POSTGRES_USER ?? '',
       password: process.env.POSTGRES_PASSWORD ?? '',
       db: process.env.POSTGRES_DB ?? '',
