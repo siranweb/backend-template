@@ -5,6 +5,8 @@
 * [ ] Использовать plain error в логгере
 * [ ] Исправить DI, где ещё не используется
 * [ ] Исправить husky pre-commit
+* [ ] Исправить запуск tsx
+* [ ] Добавить SIGINT graceful shutdown
 * [ ] Перейти на sql-migrations-core
 
 ## Проблемы
