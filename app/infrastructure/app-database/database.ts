@@ -1,17 +1,19 @@
+import pg from 'pg';
 import { CamelCasePlugin, Kysely, PostgresDialect } from 'kysely';
 import { UserTable } from '@/infrastructure/app-database/tables/user.table';
 import { InvalidRefreshTokenTable } from '@/infrastructure/app-database/tables/invalid-refresh-token.table';
-import pg from 'pg';
-import { config } from '@/infrastructure/config';
-import { UpdatedAtPlugin } from '@/infrastructure/app-database/plugins/updated-at.plugin';
+import { appDi } from '@/infrastructure/ioc-container';
+import { IConfig } from '@/infrastructure/config/types/config.interface';
+import { MigrationTable } from '@/infrastructure/app-database/tables/migration.table';
+
+const config = appDi.resolve<IConfig>('config');
 
 interface Database {
   user: UserTable;
   invalidRefreshToken: InvalidRefreshTokenTable;
+  __migration: MigrationTable;
 }
 export type IAppDatabase = Kysely<Database>;
-
-export const appDatabase = makeAppDatabase();
 
 export function makeAppDatabase(): IAppDatabase {
   return new Kysely({
@@ -26,7 +28,6 @@ export function makeAppDatabase(): IAppDatabase {
       }),
     }),
     plugins: [
-      new UpdatedAtPlugin('updated_at'),
       new CamelCasePlugin({
         underscoreBeforeDigits: true,
       }),

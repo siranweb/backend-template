@@ -4,7 +4,7 @@ import { NextHandlerFunc } from '@/infrastructure/web-server/types/shared';
 import { IValidateTokenCase } from '@/domain/users/types/validate-token.interface';
 import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
 
-export class Auth implements IChainHandler {
+export class AuthChain implements IChainHandler {
   constructor(private readonly validateTokenCase: IValidateTokenCase) {}
 
   async handle(event: H3Event, next: NextHandlerFunc): Promise<void> {

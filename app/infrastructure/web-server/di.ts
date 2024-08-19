@@ -13,6 +13,9 @@ import { OpenApi } from '@/infrastructure/web-server/docs/open-api';
 import { IOpenApi } from '@/infrastructure/web-server/types/open-api-builder.interface';
 import { ControllersState } from '@/infrastructure/web-server/controllers-definition/controllers-state';
 import { IControllersState } from '@/infrastructure/web-server/controllers-definition/types/controllers-state.interface';
+import { AuthChain } from '@/infrastructure/web-server/chain-handlers/auth.chain';
+import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
+import { LogExampleChain } from '@/infrastructure/web-server/chain-handlers/log-example.chain';
 
 appDi.register({
   openApi: asClass(OpenApi).singleton() satisfies Resolver<IOpenApi>,
@@ -24,4 +27,6 @@ appDi.register({
   apiControllerInitializer: asClass(
     ControllerInitializer,
   ).singleton() satisfies Resolver<IControllerInitializer>,
+  authChain: asClass(AuthChain).singleton() satisfies Resolver<IChainHandler>,
+  logExampleChain: asClass(LogExampleChain).singleton() satisfies Resolver<IChainHandler>,
 });

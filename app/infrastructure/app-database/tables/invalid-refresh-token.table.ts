@@ -1,5 +1,5 @@
 import { TableBase } from './base';
 
-export interface InvalidRefreshTokenTable extends TableBase {
+export type InvalidRefreshTokenTable = TableBase & {
   token: string;
-}
+};

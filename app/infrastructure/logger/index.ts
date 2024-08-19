@@ -57,7 +57,10 @@ export class Logger implements ILogger {
   }
 
   public error(error: Error, message: string, data: Record<string, any> = {}): void {
-    this.pinoLogger.error({ ...data, error }, this.prepareMessage(message));
+    this.pinoLogger.error(
+      { ...data, error: this.getPlainError(error) },
+      this.prepareMessage(message),
+    );
   }
 
   public fatal(error: Error, message: string, data: Record<string, any> = {}): void {
@@ -66,5 +69,12 @@ export class Logger implements ILogger {
 
   private prepareMessage(message: string): string {
     return this.context ? `[${this.context}] ${message}` : message;
+  }
+
+  private getPlainError(error: object): object {
+    const plainError: object = { ...error };
+    // @ts-ignore
+    Object.getOwnPropertyNames(error).forEach((name) => (plainError[name] = error[name]));
+    return plainError;
   }
 }

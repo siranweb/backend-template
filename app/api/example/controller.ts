@@ -1,5 +1,4 @@
 import { H3Event } from 'h3';
-import { logExample } from '@/infrastructure/web-server/chain-handlers.di';
 import {
   Body,
   Chain,
@@ -13,6 +12,10 @@ import { createExampleSchema } from '@/api/example/schemas/create-example.schema
 import { getExampleQuerySchema } from '@/api/example/schemas/get-example-query.schema';
 import { exampleResponseSchema } from '@/api/example/schemas/example-response.schema';
 import { getExampleByIdParamsSchema } from '@/api/example/schemas/get-example-by-id-params.schema';
+import { appDi } from '@/infrastructure/ioc-container';
+import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
+
+const logExample = appDi.resolve<IChainHandler>('logExampleChain');
 
 @Controller('/example')
 @Chain(logExample)

@@ -1,16 +1,10 @@
 # WIP
 
 ## TODO
-* [ ] Исправить тудушки в коде
-* [ ] Использовать plain error в логгере
-* [ ] Исправить DI, где ещё не используется
-* [ ] Исправить husky pre-commit
-* [ ] Исправить запуск tsx
-* [ ] Добавить SIGINT graceful shutdown
-* [ ] Перейти на sql-migrations-core
+* [ ] Fix code TODOs
 
-## Проблемы
-* Ограничения tsx
+## Issues
+* tsx limitations
 
 # Backend App Template
 This is template information page. If you are looking for startup page - check [START.md](START.md)

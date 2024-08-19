@@ -22,4 +22,6 @@ scheduler.start();
 const shutdown = () => {
   Promise.allSettled([webServer.stop(), db.destroy()]).finally(() => process.exit(0));
 };
+
+process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

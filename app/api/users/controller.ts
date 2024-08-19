@@ -1,4 +1,3 @@
-import { auth, logExample } from '@/infrastructure/web-server/chain-handlers.di';
 import { createError, getCookie, H3Event, readValidatedBody, setCookie } from 'h3';
 import { loginUserSchema } from './schemas/login-user.schema';
 import { createUserSchema } from './schemas/create-user.schema';
@@ -14,6 +13,11 @@ import {
   Controller,
   Handler,
 } from '@/infrastructure/web-server/controllers-definition/decorators';
+import { appDi } from '@/infrastructure/ioc-container';
+import { IChainHandler } from '@/infrastructure/web-server/types/chain-handler.interface';
+
+const logExample = appDi.resolve<IChainHandler>('logExampleChain');
+const auth = appDi.resolve<IChainHandler>('authChain');
 
 @Controller('/users')
 @Chain(logExample)

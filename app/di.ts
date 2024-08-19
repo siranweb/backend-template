@@ -17,6 +17,7 @@ import { BuildResolver } from 'awilix/lib/resolvers';
 const config = appDi.resolve<IConfig>('config');
 const requestStorage = appDi.resolve<IRequestStorage>('requestStorage');
 
+// Automatically pass logger with DI key as context
 Object.keys(appDi.registrations).forEach((key) => {
   const resolver = appDi.registrations[key] as BuildResolver<any>;
 
