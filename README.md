@@ -1,8 +1,5 @@
 # WIP
 
-## TODO
-* [ ] Fix code TODOs
-
 ## Issues
 * tsx limitations
 
