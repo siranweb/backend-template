@@ -1,6 +1,6 @@
-import { Scheduler } from '@/infrastructure/scheduler/index';
-import { IScheduler } from '@/infrastructure/scheduler/types/scheduler.interface';
-import { ILogger } from '@/infrastructure/logger/types/logger.interface';
+import { Scheduler } from '@/lib/scheduler';
+import { IScheduler } from '@/lib/scheduler/types/scheduler.interface';
+import { ILogger } from '@/lib/logger/types/logger.interface';
 
 export function makeScheduler(logger: ILogger): IScheduler {
   const scheduler = new Scheduler(logger);
