@@ -1,26 +1,18 @@
 import { H3Event } from 'h3';
 import {
   Body,
-  Chain,
   Controller,
   Handler,
   Params,
   Query,
   Response,
-} from '@/infrastructure/web-api/decorators';
+} from '@/infrastructure/controllers-state/decorators';
 import { createExampleSchema } from '@/api/example/schemas/create-example.schema';
 import { getExampleQuerySchema } from '@/api/example/schemas/get-example-query.schema';
 import { exampleResponseSchema } from '@/api/example/schemas/example-response.schema';
 import { getExampleByIdParamsSchema } from '@/api/example/schemas/get-example-by-id-params.schema';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
-import { webApiModule } from '@/infrastructure/web-api/web-api.module';
-
-webApiModule.init();
-
-const logExample = webApiModule.resolve<IChainHandler>('logExampleChain');
 
 @Controller('/example')
-@Chain(logExample)
 export class ExampleController {
   @Handler('POST')
   @Body(createExampleSchema)
@@ -29,7 +21,6 @@ export class ExampleController {
   }
 
   @Handler('GET')
-  @Chain(logExample)
   @Query(getExampleQuerySchema)
   @Response(200, exampleResponseSchema)
   public async getExample(_event: H3Event): Promise<Record<string, any>> {
@@ -37,7 +28,6 @@ export class ExampleController {
   }
 
   @Handler('GET', '/:id')
-  @Chain(logExample)
   @Params(getExampleByIdParamsSchema)
   @Response(200, exampleResponseSchema)
   public async getExampleById(_event: H3Event): Promise<Record<string, any>> {

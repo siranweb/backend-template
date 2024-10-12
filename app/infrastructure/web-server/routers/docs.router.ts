@@ -5,7 +5,7 @@ import path from 'node:path';
 import { html } from '@/lib/open-api/swagger-template';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
 
-export function makeDocsRouter(openApi: IOpenApiBuilder): Router {
+export function makeDocsRouter(openApiBuilder: IOpenApiBuilder): Router {
   const router = createRouter();
 
   router.use(
@@ -18,7 +18,7 @@ export function makeDocsRouter(openApi: IOpenApiBuilder): Router {
   router.use(
     '/open-api.json',
     defineEventHandler(() => {
-      return openApi.build();
+      return openApiBuilder.build();
     }),
   );
 

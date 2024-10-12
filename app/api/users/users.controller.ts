@@ -3,18 +3,18 @@ import { loginUserSchema } from './schemas/login-user.schema';
 import { createUserSchema } from './schemas/create-user.schema';
 import { IConfig, NodeEnv } from '@/infrastructure/shared/types/config.interface';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/common/constants/web';
-import { Chain, Controller, Handler } from '@/infrastructure/web-api/decorators';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
-import { webApiModule } from '@/infrastructure/web-api/web-api.module';
+import { Chain, Controller, Handler } from '@/infrastructure/controllers-state/decorators';
+import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { ICreateUserCase } from '@/core/users/types/create-user-case.interface';
 import { IRefreshTokensCase } from '@/core/users/types/refresh-tokens-case.interface';
 import { ICreateTokensByCredentialsCase } from '@/core/users/types/create-tokens-by-credentials-case.interface';
 import { IInvalidateRefreshTokenCase } from '@/core/users/types/invalidate-refresh-token-case.interface';
 import { TokenInvalidError } from '@/core/users/errors/token-invalid.error';
+import { controllersStateModule } from '@/infrastructure/controllers-state/controllers-state.module';
 
-webApiModule.init();
+controllersStateModule.init();
 
-const auth = webApiModule.resolve<IChainHandler>('authChainHandler');
+const auth = controllersStateModule.resolve<IChainHandler>('authChainHandler');
 
 @Controller('/users')
 export class UsersController {

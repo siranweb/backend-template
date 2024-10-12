@@ -1,6 +1,6 @@
 import { ControllerPrototype, HandlerFunc } from '@/common/types/controller.types';
 import { HTTPMethod } from 'h3';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
+import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { ZodType } from 'zod';
 import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
 

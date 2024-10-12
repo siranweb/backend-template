@@ -1,5 +1,4 @@
 import { createBody } from '@/lib/controller-tools/decorator-creators/create-body';
-import { webApiModule } from '@/infrastructure/web-api/web-api.module';
 import { IControllersState } from '@/lib/controller-tools/types/controllers-state.interface';
 import { createChain } from '@/lib/controller-tools/decorator-creators/create-chain';
 import { createController } from '@/lib/controller-tools/decorator-creators/create-controller';
@@ -9,10 +8,11 @@ import { createHeader } from '@/lib/controller-tools/decorator-creators/create-h
 import { createParams } from '@/lib/controller-tools/decorator-creators/create-params';
 import { createQuery } from '@/lib/controller-tools/decorator-creators/create-query';
 import { createResponse } from '@/lib/controller-tools/decorator-creators/create-response';
+import { controllersStateModule } from '@/infrastructure/controllers-state/controllers-state.module';
 
-webApiModule.init();
+controllersStateModule.init();
 
-const controllersState = webApiModule.resolve<IControllersState>('controllersState');
+const controllersState = controllersStateModule.resolve<IControllersState>('controllersState');
 
 export const Body = createBody(controllersState);
 export const Chain = createChain(controllersState);

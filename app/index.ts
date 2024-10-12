@@ -11,7 +11,9 @@ import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface
 
 rootModule.init();
 
-const controllerInitializer = rootModule.resolve<IControllerInitializer>('controllerInitializer');
+const apiControllerInitializer = rootModule.resolve<IControllerInitializer>(
+  'apiControllerInitializer',
+);
 const webServer = rootModule.resolve<IWebServer>('webServer');
 const db = rootModule.resolve<IAppDatabase>('db');
 const scheduler = rootModule.resolve<IScheduler>('scheduler');
@@ -21,8 +23,8 @@ const apiRouter = rootModule.resolve<Router>('apiRouter');
 const usersController = rootModule.resolve('usersController');
 const exampleController = rootModule.resolve('exampleController');
 
-controllerInitializer.init(usersController, apiRouter, openApiBuilder);
-controllerInitializer.init(exampleController, apiRouter, openApiBuilder);
+apiControllerInitializer.init(usersController, apiRouter, openApiBuilder);
+apiControllerInitializer.init(exampleController, apiRouter, openApiBuilder);
 
 webServer.start();
 scheduler.start();

@@ -1,6 +1,6 @@
 import { Controller, ControllerPrototype, HandlerFunc } from '@/common/types/controller.types';
 import { IControllersState } from '@/lib/controller-tools/types/controllers-state.interface';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
+import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 
 export function createChain(controllersState: IControllersState) {
   return function Chain(...chain: IChainHandler[]) {

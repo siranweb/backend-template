@@ -1,6 +1,6 @@
 import { pino, Logger as PinoLogger, LoggerOptions as PinoLoggerOptions } from 'pino';
 import { ILogger, LoggerOptions } from '@/lib/logger/types/logger.interface';
-import { IRequestStorage } from '@/infrastructure/request-storage/types/request-storage.interface';
+import { IRequestStorage } from '@/infrastructure/shared/types/request-storage.interface';
 import { IConfig, NodeEnv } from '@/infrastructure/shared/types/config.interface';
 
 export class Logger implements ILogger {

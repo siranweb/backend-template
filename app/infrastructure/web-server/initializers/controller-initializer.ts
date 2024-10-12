@@ -8,7 +8,7 @@ import {
 } from '@/lib/controller-tools/types/controllers-state.interface';
 import { ILogger } from '@/lib/logger/types/logger.interface';
 import { normalizeApiError } from '@/lib/errors/utils/normalize-api-error';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
+import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
 
 export class ControllerInitializer implements IControllerInitializer {

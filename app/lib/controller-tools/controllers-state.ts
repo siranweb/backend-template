@@ -8,7 +8,7 @@ import {
   OpenApiResponse,
 } from '@/lib/controller-tools/types/controllers-state.interface';
 import { ControllerPrototype } from '@/common/types/controller.types';
-import { IChainHandler } from '@/infrastructure/web-api/types/chain-handler.interface';
+import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { ZodType } from 'zod';
 
 export class ControllersState implements IControllersState {

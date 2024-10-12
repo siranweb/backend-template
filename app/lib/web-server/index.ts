@@ -4,7 +4,7 @@ import { uuidv4 } from 'uuidv7';
 import { IWebServer } from '@/lib/web-server/types/web-server.interface';
 import { IConfig } from '@/infrastructure/shared/types/config.interface';
 import { IRequestLogger } from '@/lib/web-server/types/request-logger.interface';
-import { IRequestStorage } from '@/infrastructure/request-storage/types/request-storage.interface';
+import { IRequestStorage } from '@/infrastructure/shared/types/request-storage.interface';
 import { ILogger } from '@/lib/logger/types/logger.interface';
 
 export class WebServer implements IWebServer {
