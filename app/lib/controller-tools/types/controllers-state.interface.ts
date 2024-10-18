@@ -2,40 +2,45 @@ import { ControllerPrototype, HandlerFunc } from '@/common/types/controller.type
 import { HTTPMethod } from 'h3';
 import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { ZodType } from 'zod';
-import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
 
 export interface IControllersState {
   getControllerDef(controller: ControllerPrototype): ControllerDef | null;
-  setControllerPrefix(controller: ControllerPrototype, prefix: string): void;
-  addControllerChain(controller: ControllerPrototype, chain: IChainHandler[]): void;
-  addControllerResponse(controller: ControllerPrototype, openApiResponse: OpenApiResponse): void;
-  setHandlerPath(controller: ControllerPrototype, handler: Handler, path: string): void;
-  addHandlerChain(controller: ControllerPrototype, handler: Handler, chain: IChainHandler[]): void;
-  setHandlerMethod(controller: ControllerPrototype, handler: Handler, method: HTTPMethod): void;
-  setHandlerRequestBody(
+  updateControllerState(controller: ControllerPrototype, def: UpdateControllerDef): void;
+  updateHandlerState(
     controller: ControllerPrototype,
     handler: Handler,
-    openApiBody: OpenApiBody,
-  ): void;
-  setHandlerParams(controller: ControllerPrototype, handler: Handler, openApiParams: ZodType): void;
-  setHandlerQuery(controller: ControllerPrototype, handler: Handler, openApiQuery: ZodType): void;
-  setHandlerCookie(controller: ControllerPrototype, handler: Handler, openApiCookie: ZodType): void;
-  setHandlerHeader(controller: ControllerPrototype, handler: Handler, openApiHeader: ZodType): void;
-  addHandlerResponse(
-    controller: ControllerPrototype,
-    handler: Handler,
-    openApiResponse: OpenApiResponse,
+    def: UpdateHandlerDef,
   ): void;
 }
 
 export type Handler = HandlerFunc;
 
+export type UpdateControllerDef = {
+  prefix?: string;
+  tags?: string[];
+  chain?: IChainHandler[];
+  responses?: ResponseDef[];
+};
+
+export type UpdateHandlerDef = {
+  path?: string;
+  method?: HTTPMethod;
+  chain?: IChainHandler[];
+  responses?: ResponseDef[];
+  bodies?: BodyDef[];
+  params?: ZodType[];
+  queries?: ZodType[];
+  cookies?: ZodType[];
+  headers?: ZodType[];
+};
+
 export type ControllerDef = {
   controller: ControllerPrototype;
   handlers: Map<Handler, HandlerDef>;
   prefix: string;
+  tags: string[];
   chain: IChainHandler[];
-  openApiResponses: OpenApiResponse[];
+  responses: ResponseDef[];
 };
 
 export type HandlerDef = {
@@ -43,21 +48,21 @@ export type HandlerDef = {
   path: string;
   chain: IChainHandler[];
   method: HTTPMethod;
-  openApiResponses: OpenApiResponse[];
-  openApiBody?: OpenApiBody;
-  openApiParams?: ZodType;
-  openApiQuery?: ZodType;
-  openApiCookie?: ZodType;
-  openApiHeader?: ZodType;
+  responses: ResponseDef[];
+  bodies: BodyDef[];
+  params: ZodType[];
+  queries: ZodType[];
+  cookies: ZodType[];
+  headers: ZodType[];
 };
 
-export type OpenApiResponse = {
+export type ResponseDef = {
   statusCode: number;
   contentType: string;
-  schema?: ZodType | oas31.SchemaObject;
+  schema?: ZodType;
 };
 
-export type OpenApiBody = {
+export type BodyDef = {
   contentType: string;
-  schema?: ZodType | oas31.SchemaObject;
+  schema?: ZodType;
 };

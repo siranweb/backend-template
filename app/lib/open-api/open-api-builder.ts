@@ -1,17 +1,15 @@
-import { createDocument } from 'zod-openapi';
+import { createDocument, ZodOpenApiResponseObject } from 'zod-openapi';
 import {
   IOpenApiBuilder,
   OpenApiMethod,
-  PathParams,
-  RequestBodySpec,
+  PathSpecs,
+  BodySpec,
   ResponseSpec,
+  BuildResult,
+  OpenApiStatusCode,
+  ParamType,
 } from '@/lib/open-api/types/open-api-builder.interface';
-import { InfoObject, OpenAPIObject } from 'zod-openapi/lib-types/openapi3-ts/dist/model/openapi31';
-import {
-  ZodOpenApiObject,
-  ZodOpenApiOperationObject,
-  ZodOpenApiPathItemObject,
-} from 'zod-openapi/lib-types/create/document';
+import { ZodOpenApiObject, ZodOpenApiOperationObject, ZodOpenApiPathItemObject } from 'zod-openapi';
 import { ZodType } from 'zod';
 
 export class OpenApiBuilder implements IOpenApiBuilder {
@@ -25,94 +23,104 @@ export class OpenApiBuilder implements IOpenApiBuilder {
     paths: {},
   };
 
-  public build(): OpenAPIObject {
+  public build(): BuildResult {
     return createDocument(this.spec);
   }
 
-  public setInfo(info: InfoObject): void {
+  public setInfo(info: ZodOpenApiObject['info']): void {
     this.spec.info = info;
   }
 
-  public addPath(method: OpenApiMethod, path: string, params: PathParams = {}): void {
+  public addPath(method: OpenApiMethod, path: string, specs: PathSpecs): void {
     const pathObj = this.getOrInitPathObj(path);
     const methodObj = this.initMethodObj(pathObj, method);
 
-    if (params.responses) {
-      params.responses.forEach((responseSpec) => this.addResponse(methodObj, responseSpec));
+    if (specs.responses) {
+      specs.responses.forEach((responseSpec) => this.addResponse(methodObj, responseSpec));
     }
 
-    if (params.requestBody) {
-      this.addRequestBody(methodObj, params.requestBody);
+    if (specs.bodies) {
+      specs.bodies.forEach((bodySpec) => this.addBody(methodObj, bodySpec));
     }
 
-    if (params.query) {
-      this.addQuery(methodObj, params.query);
+    if (specs.queries) {
+      specs.queries.forEach((schema) => this.addParam(methodObj, 'query', schema));
     }
 
-    if (params.params) {
-      this.addParams(methodObj, params.params);
+    if (specs.params) {
+      specs.params.forEach((schema) => this.addParam(methodObj, 'path', schema));
     }
 
-    if (params.cookie) {
-      this.addCookie(methodObj, params.cookie);
+    if (specs.cookies) {
+      specs.cookies.forEach((schema) => this.addParam(methodObj, 'cookie', schema));
     }
 
-    if (params.header) {
-      this.addHeader(methodObj, params.header);
+    if (specs.headers) {
+      specs.headers.forEach((schema) => this.addParam(methodObj, 'header', schema));
     }
   }
 
   private addResponse(methodObj: ZodOpenApiOperationObject, responseSpec: ResponseSpec): void {
-    methodObj.responses = {
-      [responseSpec.statusCode]: {
-        content: {
-          [responseSpec.contentType]: {
-            schema: responseSpec.schema,
-          },
-        },
-      },
-    };
+    const statusCode = responseSpec.statusCode.toString() as OpenApiStatusCode;
+
+    if (!methodObj.responses[statusCode]) {
+      methodObj.responses[statusCode] = {
+        description: '',
+      };
+    }
+    const statusResponseObj = methodObj.responses[statusCode]! as ZodOpenApiResponseObject;
+
+    if (!statusResponseObj.content) {
+      statusResponseObj.content = {};
+    }
+    const content = statusResponseObj.content;
+
+    if (!content[responseSpec.contentType]) {
+      content[responseSpec.contentType] = {};
+    }
+    const contentTypeObj = content[responseSpec.contentType]!;
+
+    if (!contentTypeObj.schema) {
+      contentTypeObj.schema = responseSpec.schema;
+    } else {
+      if (responseSpec.schema) {
+        (contentTypeObj.schema as ZodType).or(responseSpec.schema);
+      }
+    }
   }
 
-  private addRequestBody(
-    methodObj: ZodOpenApiOperationObject,
-    requestBodySpec: RequestBodySpec,
-  ): void {
-    methodObj.requestBody = {
-      content: {
-        [requestBodySpec.contentType]: {
-          schema: requestBodySpec.schema,
-        },
-      },
-    };
+  private addBody(methodObj: ZodOpenApiOperationObject, bodySpec: BodySpec): void {
+    if (!methodObj.requestBody) {
+      methodObj.requestBody = {
+        content: {},
+      };
+    }
+    const content = methodObj.requestBody.content;
+
+    if (!content[bodySpec.contentType]) {
+      content[bodySpec.contentType] = {};
+    }
+    const contentTypeObj = content[bodySpec.contentType]!;
+
+    if (!contentTypeObj.schema) {
+      contentTypeObj.schema = bodySpec.schema;
+    } else {
+      if (bodySpec.schema) {
+        (contentTypeObj.schema as ZodType).or(bodySpec.schema);
+      }
+    }
   }
 
-  private addQuery(methodObj: ZodOpenApiOperationObject, schema: ZodType): void {
+  private addParam(methodObj: ZodOpenApiOperationObject, type: ParamType, schema: ZodType): void {
     if (!methodObj.requestParams) {
       methodObj.requestParams = {};
     }
-    methodObj.requestParams.query = schema;
-  }
 
-  private addParams(methodObj: ZodOpenApiOperationObject, schema: ZodType): void {
-    if (!methodObj.requestParams) {
-      methodObj.requestParams = {};
+    if (!methodObj.requestParams[type]) {
+      methodObj.requestParams[type] = schema;
+    } else {
+      (methodObj.requestParams[type] as ZodType).or(schema);
     }
-    methodObj.requestParams.path = schema;
-  }
-
-  private addCookie(methodObj: ZodOpenApiOperationObject, schema: ZodType): void {
-    if (!methodObj.requestParams) {
-      methodObj.requestParams = {};
-    }
-    methodObj.requestParams.cookie = schema;
-  }
-
-  private addHeader(methodObj: ZodOpenApiOperationObject, schema: ZodType): void {
-    if (!methodObj.requestParams) {
-      methodObj.requestParams = {};
-    }
-    methodObj.requestParams.header = schema;
   }
 
   private getOrInitPathObj(path: string): ZodOpenApiPathItemObject {

@@ -1,11 +1,20 @@
 import { Controller } from '@/common/types/controller.types';
-import { IControllersState } from '@/lib/controller-tools/types/controllers-state.interface';
+import {
+  IControllersState,
+  UpdateControllerDef,
+} from '@/lib/controller-tools/types/controllers-state.interface';
 
 export function createController(controllersState: IControllersState) {
+  /* Describe controller */
   return function Controller(prefix?: string) {
     return (controller: Controller): void => {
+      const def: UpdateControllerDef = {};
       if (prefix) {
-        controllersState.setControllerPrefix(controller.prototype, prefix);
+        def.prefix = prefix;
+      }
+
+      if (prefix) {
+        controllersState.updateControllerState(controller.prototype, def);
       }
     };
   };

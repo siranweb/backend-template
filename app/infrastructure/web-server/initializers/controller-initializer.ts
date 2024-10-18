@@ -56,12 +56,13 @@ export class ControllerInitializer implements IControllerInitializer {
     const fullPath = this.getFullPath(controllerDef, handlerDef);
 
     openApiBuilder.addPath(method, fullPath, {
-      responses: [...controllerDef.openApiResponses, ...handlerDef.openApiResponses],
-      requestBody: handlerDef.openApiBody,
-      params: handlerDef.openApiParams,
-      query: handlerDef.openApiQuery,
-      cookie: handlerDef.openApiCookie,
-      header: handlerDef.openApiHeader,
+      responses: [...controllerDef.responses, ...handlerDef.responses],
+      tags: controllerDef.tags,
+      bodies: handlerDef.bodies,
+      params: handlerDef.params,
+      queries: handlerDef.queries,
+      cookies: handlerDef.cookies,
+      headers: handlerDef.headers,
     });
   }
 

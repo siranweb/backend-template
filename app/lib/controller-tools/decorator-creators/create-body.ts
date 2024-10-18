@@ -1,38 +1,50 @@
 import { ControllerPrototype, HandlerFunc } from '@/common/types/controller.types';
-import { IControllersState } from '@/lib/controller-tools/types/controllers-state.interface';
+import {
+  BodyDef,
+  IControllersState,
+} from '@/lib/controller-tools/types/controllers-state.interface';
 import { ZodType } from 'zod';
-import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
 
 export function createBody(controllersState: IControllersState) {
+  /* Describe body for handler */
   function Body(
     contentType?: string,
-    schema?: ZodType | oas31.SchemaObject,
+    ...schemas: ZodType[]
   ): (controller: ControllerPrototype, property: string) => void;
-  function Body(
-    schema?: ZodType | oas31.SchemaObject,
-  ): (controller: ControllerPrototype, property: string) => void;
-  function Body(
-    contentTypeOrSchema?: string | ZodType | oas31.SchemaObject,
-    schema?: ZodType | oas31.SchemaObject,
-  ) {
+  function Body(...schemas: ZodType[]): (controller: ControllerPrototype, property: string) => void;
+  function Body(contentTypeOrSchema?: string | ZodType, ...schemas: ZodType[]) {
     return (controller: ControllerPrototype, property: string): void => {
-      let responseSchema: ZodType | oas31.SchemaObject = {};
+      const allSchemas: ZodType[] = [];
       let contentType: string = 'application/json';
 
       if (contentTypeOrSchema !== undefined) {
-        if (typeof contentTypeOrSchema !== 'string') {
-          responseSchema = contentTypeOrSchema;
-        } else {
-          responseSchema = schema ?? {};
+        if (typeof contentTypeOrSchema === 'string') {
           contentType = contentTypeOrSchema;
+        } else {
+          allSchemas.push(contentTypeOrSchema);
         }
       }
 
+      if (schemas) {
+        allSchemas.push(...schemas);
+      }
+
+      let bodies: BodyDef[];
+      if (allSchemas.length === 0) {
+        bodies = [
+          {
+            contentType,
+          },
+        ];
+      } else {
+        bodies = allSchemas.map((schema) => ({
+          contentType,
+          schema,
+        }));
+      }
+
       const handler: HandlerFunc = controller[property];
-      controllersState.setHandlerRequestBody(controller, handler, {
-        schema: responseSchema,
-        contentType,
-      });
+      controllersState.updateHandlerState(controller, handler, { bodies });
     };
   }
 

@@ -1,31 +1,37 @@
-import { InfoObject, OpenAPIObject } from 'zod-openapi/lib-types/openapi3-ts/dist/model/openapi31';
-import type { ZodType } from 'zod';
-import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
+import { createDocument, ZodOpenApiObject } from 'zod-openapi';
+import { ZodType } from 'zod';
 
 export interface IOpenApiBuilder {
-  build(): OpenAPIObject;
-  setInfo(info: InfoObject): void;
-  addPath(method: OpenApiMethod, path: string, params?: PathParams): void;
+  build(): BuildResult;
+  setInfo(info: ZodOpenApiObject['info']): void;
+  addPath(method: OpenApiMethod, path: string, specs: PathSpecs): void;
 }
 
-export type PathParams = {
-  responses?: ResponseSpec[];
-  requestBody?: RequestBodySpec;
-  query?: ZodType;
-  params?: ZodType;
-  cookie?: ZodType;
-  header?: ZodType;
+export type BuildResult = ReturnType<typeof createDocument>;
+
+export type ParamType = 'query' | 'path' | 'cookie' | 'header';
+
+export type PathSpecs = {
+  responses: ResponseSpec[];
+  tags: string[];
+  bodies: BodySpec[];
+  queries: ZodType[];
+  params: ZodType[];
+  cookies: ZodType[];
+  headers: ZodType[];
 };
+
+export type OpenApiStatusCode = `${1 | 2 | 3 | 4 | 5}${string}`;
 
 export type ResponseSpec = {
   statusCode: number;
   contentType: string;
-  schema?: ZodType | oas31.SchemaObject;
+  schema?: ZodType;
 };
 
-export type RequestBodySpec = {
+export type BodySpec = {
   contentType: string;
-  schema?: ZodType | oas31.SchemaObject;
+  schema?: ZodType;
 };
 
 export type OpenApiMethod =

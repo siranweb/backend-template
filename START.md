@@ -3,7 +3,7 @@
 {description}
 
 ## Requirements
-* NodeJS >= v20.x.x
+* NodeJS >= v22.10.0
 * pnpm (package manager)
 * Docker with docker-compose
 

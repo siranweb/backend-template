@@ -9,6 +9,7 @@ import { createParams } from '@/lib/controller-tools/decorator-creators/create-p
 import { createQuery } from '@/lib/controller-tools/decorator-creators/create-query';
 import { createResponse } from '@/lib/controller-tools/decorator-creators/create-response';
 import { controllersStateModule } from '@/infrastructure/controllers-state/controllers-state.module';
+import { createTag } from '@/lib/controller-tools/decorator-creators/create-tag';
 
 controllersStateModule.init();
 
@@ -17,6 +18,7 @@ const controllersState = controllersStateModule.resolve<IControllersState>('cont
 export const Body = createBody(controllersState);
 export const Chain = createChain(controllersState);
 export const Controller = createController(controllersState);
+export const Tag = createTag(controllersState);
 export const Cookie = createCookie(controllersState);
 export const Handler = createHandler(controllersState);
 export const Header = createHeader(controllersState);

@@ -3,10 +3,11 @@ import { IControllersState } from '@/lib/controller-tools/types/controllers-stat
 import { ZodType } from 'zod';
 
 export function createHeader(controllersState: IControllersState) {
-  return function Header(schema: ZodType) {
+  /* Describe headers for handler */
+  return function Header(...schemas: ZodType[]) {
     return (controller: ControllerPrototype, property: string): void => {
       const handler: HandlerFunc = controller[property];
-      controllersState.setHandlerHeader(controller, handler, schema);
+      controllersState.updateHandlerState(controller, handler, { headers: schemas });
     };
   };
 }

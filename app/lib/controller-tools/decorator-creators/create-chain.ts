@@ -3,13 +3,14 @@ import { IControllersState } from '@/lib/controller-tools/types/controllers-stat
 import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 
 export function createChain(controllersState: IControllersState) {
+  /* Describe chain for handler or whole controller */
   return function Chain(...chain: IChainHandler[]) {
     return (controller: ControllerPrototype | Controller, property?: string): void => {
       if (property) {
         const handler: HandlerFunc = controller[property];
-        controllersState.addHandlerChain(controller, handler, chain);
+        controllersState.updateHandlerState(controller, handler, { chain });
       } else {
-        controllersState.addControllerChain(controller.prototype, chain);
+        controllersState.updateControllerState(controller.prototype, { chain });
       }
     };
   };

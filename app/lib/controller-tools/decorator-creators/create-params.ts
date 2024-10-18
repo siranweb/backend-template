@@ -3,10 +3,11 @@ import { IControllersState } from '@/lib/controller-tools/types/controllers-stat
 import { ZodType } from 'zod';
 
 export function createParams(controllersState: IControllersState) {
-  return function Params(schema: ZodType) {
+  /* Describe params for handler */
+  return function Params(...schemas: ZodType[]) {
     return (controller: ControllerPrototype, property: string): void => {
       const handler: HandlerFunc = controller[property];
-      controllersState.setHandlerParams(controller, handler, schema);
+      controllersState.updateHandlerState(controller, handler, { params: schemas });
     };
   };
 }

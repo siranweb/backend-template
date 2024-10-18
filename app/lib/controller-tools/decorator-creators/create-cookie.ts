@@ -3,10 +3,11 @@ import { IControllersState } from '@/lib/controller-tools/types/controllers-stat
 import { ZodType } from 'zod';
 
 export function createCookie(controllersState: IControllersState) {
-  return function Cookie(schema: ZodType) {
+  /* Describe cookies for handler */
+  return function Cookie(...schemas: ZodType[]) {
     return (controller: ControllerPrototype, property: string): void => {
       const handler: HandlerFunc = controller[property];
-      controllersState.setHandlerCookie(controller, handler, schema);
+      controllersState.updateHandlerState(controller, handler, { cookies: schemas });
     };
   };
 }

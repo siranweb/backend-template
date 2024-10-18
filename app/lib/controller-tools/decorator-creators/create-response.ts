@@ -1,49 +1,63 @@
 import { Controller, ControllerPrototype, HandlerFunc } from '@/common/types/controller.types';
-import { IControllersState } from '@/lib/controller-tools/types/controllers-state.interface';
+import {
+  IControllersState,
+  ResponseDef,
+} from '@/lib/controller-tools/types/controllers-state.interface';
 import { ZodType } from 'zod';
-import type { oas31 } from 'zod-openapi/lib-types/openapi3-ts/dist';
 
 export function createResponse(controllersState: IControllersState) {
+  /* Describe response for handler or whole controller */
   function Response(
     statusCode: number,
     contentType?: string,
-    schema?: ZodType | oas31.SchemaObject,
+    ...schemas: ZodType[]
   ): (controller: ControllerPrototype | Controller, property?: string) => void;
   function Response(
     statusCode: number,
-    schema?: ZodType | oas31.SchemaObject,
+    ...schemas: ZodType[]
   ): (controller: ControllerPrototype | Controller, property?: string) => void;
   function Response(
     statusCode: number,
-    contentTypeOrSchema?: string | ZodType | oas31.SchemaObject,
-    schema?: ZodType | oas31.SchemaObject,
+    contentTypeOrSchema?: string | ZodType,
+    ...schemas: ZodType[]
   ) {
     return (controller: ControllerPrototype | Controller, property?: string): void => {
-      let responseSchema: ZodType | oas31.SchemaObject = {};
+      const allSchemas: ZodType[] = [];
       let contentType: string = 'application/json';
 
       if (contentTypeOrSchema !== undefined) {
-        if (typeof contentTypeOrSchema !== 'string') {
-          responseSchema = contentTypeOrSchema;
-        } else {
-          responseSchema = schema ?? {};
+        if (typeof contentTypeOrSchema === 'string') {
           contentType = contentTypeOrSchema;
+        } else {
+          allSchemas.push(contentTypeOrSchema);
         }
+      }
+
+      if (schemas) {
+        allSchemas.push(...schemas);
+      }
+
+      let responses: ResponseDef[];
+      if (allSchemas.length === 0) {
+        responses = [
+          {
+            contentType,
+            statusCode,
+          },
+        ];
+      } else {
+        responses = allSchemas.map((schema) => ({
+          statusCode,
+          contentType,
+          schema,
+        }));
       }
 
       if (property) {
         const handler: HandlerFunc = controller[property];
-        controllersState.addHandlerResponse(controller, handler, {
-          statusCode,
-          schema: responseSchema,
-          contentType,
-        });
+        controllersState.updateHandlerState(controller, handler, { responses });
       } else {
-        controllersState.addControllerResponse(controller.prototype, {
-          statusCode,
-          schema: responseSchema,
-          contentType,
-        });
+        controllersState.updateControllerState(controller.prototype, { responses });
       }
     };
   }
