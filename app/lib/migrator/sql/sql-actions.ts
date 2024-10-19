@@ -1,7 +1,7 @@
 import { MigrationActions } from 'sql-migrations-core/dist/migrations-core/types/migrations-core.interface';
-import { IAppDatabase } from '@/infrastructure/database/types/database.types';
 import { sql } from 'kysely';
 import { Migration } from 'sql-migrations-core/dist/migrations-core/types/shared';
+import { IAppDatabase } from '@/infrastructure/database/types/database.types';
 
 export class SqlActions implements MigrationActions {
   constructor(private readonly db: IAppDatabase) {}
@@ -11,7 +11,7 @@ export class SqlActions implements MigrationActions {
       .createTable('__migration')
       .ifNotExists()
       .addColumn('name', 'varchar', (cb) => cb.notNull().unique())
-      .addColumn('migrated_at', 'timestamp', (cb) => cb.notNull().defaultTo(sql`now()`))
+      .addColumn('migrated_at', 'timestamp', (cb) => cb.notNull().defaultTo(sql`current_timestamp`))
       .execute();
   }
 
@@ -24,7 +24,7 @@ export class SqlActions implements MigrationActions {
     await this.db.transaction().execute(async (trx) => {
       for (const migration of migrations) {
         await trx.deleteFrom('__migration').where('name', '=', migration.name).execute();
-        await sql`${migration.sql}`.execute(trx);
+        await sql.raw(migration.sql).execute(trx);
       }
     });
   }
@@ -33,7 +33,7 @@ export class SqlActions implements MigrationActions {
     await this.db.transaction().execute(async (trx) => {
       for (const migration of migrations) {
         await trx.insertInto('__migration').values({ name: migration.name }).execute();
-        await sql`${migration.sql}`.execute(trx);
+        await sql.raw(migration.sql).execute(trx);
       }
     });
   }
