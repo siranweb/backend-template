@@ -1,9 +1,11 @@
 import { IAppDatabase } from '@/infrastructure/database/types/database.types';
 import { IUsersRepository } from '@/core/users/types/users-repository.interface';
 import { User } from '@/core/users/entities/user.entity';
+import { inject } from 'di-wise';
+import { databaseModuleTokens } from '@/infrastructure/database/database.module';
 
 export class UsersRepository implements IUsersRepository {
-  constructor(private readonly db: IAppDatabase) {}
+  constructor(private readonly db: IAppDatabase = inject(databaseModuleTokens.db)) {}
 
   async saveUser(user: User): Promise<User> {
     const result = await this.db

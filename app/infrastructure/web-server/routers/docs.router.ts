@@ -4,8 +4,12 @@ import swaggerUiDist from 'swagger-ui-dist';
 import path from 'node:path';
 import { html } from '@/lib/open-api/swagger-template';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
+import { inject } from 'di-wise';
+import { webServerModuleTokens } from '@/infrastructure/web-server/web-server.module';
 
-export function makeDocsRouter(openApiBuilder: IOpenApiBuilder): Router {
+export function makeDocsRouter(
+  openApiBuilder: IOpenApiBuilder = inject(webServerModuleTokens.openApiBuilder),
+): Router {
   const router = createRouter();
 
   router.use(

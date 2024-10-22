@@ -8,15 +8,23 @@ import { IInvalidateRefreshTokenCase } from '@/core/users/types/invalidate-refre
 import { TokenPair } from '@/core/users/types/shared';
 import { TokenInvalidError } from '@/core/users/errors/token-invalid.error';
 import { UserNotFoundError } from '@/core/users/errors/user-not-found.error';
+import { inject } from 'di-wise';
+import { usersModuleTokens } from '../users.module';
+import { jwtModuleTokens } from '@/core/jwt/jwt.module';
+import { injectLogger, sharedModuleTokens } from '@/infrastructure/shared/shared.module';
 
 export class RefreshTokensCase implements IRefreshTokensCase {
   constructor(
-    private readonly logger: ILogger,
-    private readonly usersRepository: IUsersRepository,
-    private readonly createTokensCase: ICreateTokensCase,
-    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase,
-    private readonly jwtService: IJWTService,
-    private readonly config: IConfig,
+    private readonly logger: ILogger = injectLogger(RefreshTokensCase.name),
+    private readonly usersRepository: IUsersRepository = inject(usersModuleTokens.usersRepository),
+    private readonly createTokensCase: ICreateTokensCase = inject(
+      usersModuleTokens.createTokensCase,
+    ),
+    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase = inject(
+      usersModuleTokens.invalidateRefreshTokenCase,
+    ),
+    private readonly jwtService: IJWTService = inject(jwtModuleTokens.jwtService),
+    private readonly config: IConfig = inject(sharedModuleTokens.config),
   ) {}
   async execute(oldRefreshToken: string): Promise<TokenPair> {
     this.logger.info('Starting tokens refreshing.');

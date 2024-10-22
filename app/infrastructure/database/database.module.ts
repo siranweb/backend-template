@@ -1,13 +1,18 @@
 import { Module } from '@/lib/module';
-import { asFunction } from 'awilix';
 import { makeDatabase } from '@/infrastructure/database/make-database';
 import { ISqlMigrator } from '@/lib/migrator/types/sql-migrator.interface';
-import { makeSqlMigrator } from '@/lib/migrator/sql/make-sql-migrator';
+import { makeSqlMigrator } from '@/infrastructure/database/make-sql-migrator';
 import { IAppDatabase } from '@/infrastructure/database/types/database.types';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
+import { Type } from 'di-wise';
 
 export const databaseModule = new Module('database');
-databaseModule.use(sharedModule);
+databaseModule.import(sharedModule);
 
-databaseModule.register<IAppDatabase>('db', asFunction(makeDatabase).singleton());
-databaseModule.register<ISqlMigrator>('dbMigrator', asFunction(makeSqlMigrator).singleton());
+export const databaseModuleTokens = {
+  db: Type<IAppDatabase>('db'),
+  dbMigrator: Type<ISqlMigrator>('dbMigrator'),
+};
+
+databaseModule.register(databaseModuleTokens.db, { useFactory: makeDatabase });
+databaseModule.register(databaseModuleTokens.dbMigrator, { useFactory: makeSqlMigrator });

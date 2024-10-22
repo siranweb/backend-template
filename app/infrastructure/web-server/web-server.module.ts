@@ -1,5 +1,4 @@
 import { Router } from 'h3';
-import { asClass, asFunction } from 'awilix';
 import { RequestLogger } from '@/lib/web-server/request-logger';
 import { ControllerInitializer } from '@/infrastructure/web-server/initializers/controller-initializer';
 import { makeApiRouter } from '@/infrastructure/web-server/routers/api.router';
@@ -12,16 +11,25 @@ import { OpenApiBuilder } from '@/lib/open-api/open-api-builder';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
 import { Module } from '@/lib/module';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
+import { Type } from 'di-wise';
 
 export const webServerModule = new Module('webApi');
-webServerModule.use(sharedModule);
+webServerModule.import(sharedModule);
 
-webServerModule.register<IWebServer>('webServer', asClass(WebServer).singleton());
-webServerModule.register<IRequestLogger>('requestLogger', asClass(RequestLogger).singleton());
-webServerModule.register<Router>('apiRouter', asFunction(makeApiRouter).singleton());
-webServerModule.register<Router>('docsRouter', asFunction(makeDocsRouter).singleton());
-webServerModule.register<IOpenApiBuilder>('openApiBuilder', asClass(OpenApiBuilder).singleton());
-webServerModule.register<IControllerInitializer>(
-  'apiControllerInitializer',
-  asClass(ControllerInitializer).singleton(),
-);
+export const webServerModuleTokens = {
+  webServer: Type<IWebServer>('webServer'),
+  requestLogger: Type<IRequestLogger>('requestLogger'),
+  apiRouter: Type<Router>('apiRouter'),
+  docsRouter: Type<Router>('docsRouter'),
+  openApiBuilder: Type<IOpenApiBuilder>('openApiBuilder'),
+  apiControllerInitializer: Type<IControllerInitializer>('apiControllerInitializer'),
+};
+
+webServerModule.register(webServerModuleTokens.webServer, { useClass: WebServer });
+webServerModule.register(webServerModuleTokens.requestLogger, { useClass: RequestLogger });
+webServerModule.register(webServerModuleTokens.apiRouter, { useFactory: makeApiRouter });
+webServerModule.register(webServerModuleTokens.docsRouter, { useFactory: makeDocsRouter });
+webServerModule.register(webServerModuleTokens.openApiBuilder, { useClass: OpenApiBuilder });
+webServerModule.register(webServerModuleTokens.apiControllerInitializer, {
+  useClass: ControllerInitializer,
+});

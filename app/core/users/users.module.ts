@@ -1,4 +1,3 @@
-import { asClass } from 'awilix';
 import { Module } from '@/lib/module';
 import { UsersRepository } from '@/core/users/repositories/users.repository';
 import { IUsersRepository } from '@/core/users/types/users-repository.interface';
@@ -15,27 +14,39 @@ import { ValidateTokenCase } from '@/core/users/cases/validate-token.case';
 import { RefreshTokensCase } from '@/core/users/cases/refresh-tokens.case';
 import { cryptographyModule } from '@/core/cryptography/cryptography.module';
 import { jwtModule } from '@/core/jwt/jwt.module';
+import { sharedModule } from '@/infrastructure/shared/shared.module';
+import { Type } from 'di-wise';
 
 export const usersModule = new Module('users');
-usersModule.use(cryptographyModule);
-usersModule.use(jwtModule);
+usersModule.import(sharedModule);
+usersModule.import(cryptographyModule);
+usersModule.import(jwtModule);
 
-usersModule.register<IUsersRepository>('usersRepository', asClass(UsersRepository).singleton());
-usersModule.register<ICreateTokensCase>('createTokensCase', asClass(CreateTokensCase).singleton());
-usersModule.register<ICreateUserCase>('createUserCase', asClass(CreateUserCase).singleton());
-usersModule.register<IRefreshTokensCase>(
-  'refreshTokensCase',
-  asClass(RefreshTokensCase).singleton(),
+export const usersModuleTokens = {
+  usersRepository: Type<IUsersRepository>('usersRepository'),
+  createTokensCase: Type<ICreateTokensCase>('createTokensCase'),
+  createUserCase: Type<ICreateUserCase>('createUserCase'),
+  refreshTokensCase: Type<IRefreshTokensCase>('refreshTokensCase'),
+  validateTokenCase: Type<IValidateTokenCase>('validateTokenCase'),
+  invalidateRefreshTokenCase: Type<InvalidateRefreshTokenCase>('invalidateRefreshTokenCase'),
+  createTokensByCredentialsCase: Type<ICreateTokensByCredentialsCase>(
+    'createTokensByCredentialsCase',
+  ),
+};
+
+usersModule.register(
+  usersModuleTokens.usersRepository,
+  { useClass: UsersRepository },
+  { private: true },
 );
-usersModule.register<IValidateTokenCase>(
-  'validateTokenCase',
-  asClass(ValidateTokenCase).singleton(),
-);
-usersModule.register<InvalidateRefreshTokenCase>(
-  'invalidateRefreshTokenCase',
-  asClass(InvalidateRefreshTokenCase).singleton(),
-);
-usersModule.register<ICreateTokensByCredentialsCase>(
-  'createTokensByCredentialsCase',
-  asClass(CreateTokensByCredentialsCase).singleton(),
-);
+
+usersModule.register(usersModuleTokens.createTokensCase, { useClass: CreateTokensCase });
+usersModule.register(usersModuleTokens.createUserCase, { useClass: CreateUserCase });
+usersModule.register(usersModuleTokens.refreshTokensCase, { useClass: RefreshTokensCase });
+usersModule.register(usersModuleTokens.validateTokenCase, { useClass: ValidateTokenCase });
+usersModule.register(usersModuleTokens.invalidateRefreshTokenCase, {
+  useClass: InvalidateRefreshTokenCase,
+});
+usersModule.register(usersModuleTokens.createTokensByCredentialsCase, {
+  useClass: CreateTokensByCredentialsCase,
+});

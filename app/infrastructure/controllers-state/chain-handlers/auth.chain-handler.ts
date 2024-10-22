@@ -3,9 +3,15 @@ import { ACCESS_TOKEN_NAME } from '@/common/constants/web';
 import { NextHandlerFunc } from '@/common/types/controller.types';
 import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { IValidateTokenCase } from '@/core/users/types/validate-token.interface';
+import { inject } from 'di-wise';
+import { usersModuleTokens } from '@/core/users/users.module';
 
 export class AuthChainHandler implements IChainHandler {
-  constructor(private readonly validateTokenCase: IValidateTokenCase) {}
+  constructor(
+    private readonly validateTokenCase: IValidateTokenCase = inject(
+      usersModuleTokens.validateTokenCase,
+    ),
+  ) {}
 
   async handle(event: H3Event, next: NextHandlerFunc): Promise<void> {
     const accessToken = getCookie(event, ACCESS_TOKEN_NAME);

@@ -1,10 +1,16 @@
-import { asFunction } from 'awilix';
 import { Module } from '@/lib/module';
-import { makeScheduler } from '@/infrastructure/scheduler/make-scheduler';
 import { IScheduler } from '@/lib/scheduler/types/scheduler.interface';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
+import { Type } from 'di-wise';
+import { makeScheduler } from '@/infrastructure/scheduler/make-scheduler';
 
 export const schedulerModule = new Module('scheduler');
-schedulerModule.use(sharedModule);
+schedulerModule.import(sharedModule);
 
-schedulerModule.register<IScheduler>('scheduler', asFunction(makeScheduler).singleton());
+export const schedulerModuleTokens = {
+  scheduler: Type<IScheduler>('scheduler'),
+};
+
+schedulerModule.register(schedulerModuleTokens.scheduler, {
+  useFactory: makeScheduler,
+});

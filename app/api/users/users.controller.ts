@@ -4,26 +4,35 @@ import { createUserSchema } from './schemas/create-user.schema';
 import { IConfig, NodeEnv } from '@/infrastructure/shared/types/config.interface';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/common/constants/web';
 import { Chain, Controller, Handler } from '@/infrastructure/controllers-state/decorators';
-import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { ICreateUserCase } from '@/core/users/types/create-user-case.interface';
 import { IRefreshTokensCase } from '@/core/users/types/refresh-tokens-case.interface';
 import { ICreateTokensByCredentialsCase } from '@/core/users/types/create-tokens-by-credentials-case.interface';
 import { IInvalidateRefreshTokenCase } from '@/core/users/types/invalidate-refresh-token-case.interface';
 import { TokenInvalidError } from '@/core/users/errors/token-invalid.error';
-import { controllersStateModule } from '@/infrastructure/controllers-state/controllers-state.module';
+import {
+  controllersStateModule,
+  controllersStateModuleTokens,
+} from '@/infrastructure/controllers-state/controllers-state.module';
+import { inject } from 'di-wise';
+import { sharedModuleTokens } from '@/infrastructure/shared/shared.module';
+import { usersModuleTokens } from '@/core/users/users.module';
 
-controllersStateModule.init();
-
-const auth = controllersStateModule.resolve<IChainHandler>('authChainHandler');
+const auth = controllersStateModule.resolve(controllersStateModuleTokens.authChainHandler);
 
 @Controller('/users')
 export class UsersController {
   constructor(
-    private readonly config: IConfig,
-    private readonly createUserCase: ICreateUserCase,
-    private readonly refreshTokensCase: IRefreshTokensCase,
-    private readonly createTokensByCredentialsCase: ICreateTokensByCredentialsCase,
-    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase,
+    private readonly config: IConfig = inject(sharedModuleTokens.config),
+    private readonly createUserCase: ICreateUserCase = inject(usersModuleTokens.createUserCase),
+    private readonly refreshTokensCase: IRefreshTokensCase = inject(
+      usersModuleTokens.refreshTokensCase,
+    ),
+    private readonly createTokensByCredentialsCase: ICreateTokensByCredentialsCase = inject(
+      usersModuleTokens.createTokensByCredentialsCase,
+    ),
+    private readonly invalidateRefreshTokenCase: IInvalidateRefreshTokenCase = inject(
+      usersModuleTokens.invalidateRefreshTokenCase,
+    ),
   ) {}
 
   @Handler('POST')

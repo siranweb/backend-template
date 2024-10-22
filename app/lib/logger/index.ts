@@ -38,7 +38,7 @@ export class Logger implements ILogger {
       };
     };
 
-    this.pinoLogger = pino(pinoConfig);
+    this.pinoLogger = options.pinoLogger ?? pino(pinoConfig);
   }
 
   public setContext(context: string): void {
@@ -46,7 +46,8 @@ export class Logger implements ILogger {
   }
 
   public child(context: string): ILogger {
-    return new Logger(this.requestStorage, this.config, { context });
+    const pinoChild = this.pinoLogger.child({});
+    return new Logger(this.requestStorage, this.config, { context, pinoLogger: pinoChild });
   }
 
   public trace(message: string, data: Record<string, any> = {}): void {

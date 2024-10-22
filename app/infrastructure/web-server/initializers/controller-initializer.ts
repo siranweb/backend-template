@@ -10,11 +10,16 @@ import { ILogger } from '@/lib/logger/types/logger.interface';
 import { normalizeApiError } from '@/lib/errors/utils/normalize-api-error';
 import { IChainHandler } from '@/infrastructure/controllers-state/types/chain-handler.interface';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
+import { injectLogger } from '@/infrastructure/shared/shared.module';
+import { inject } from 'di-wise';
+import { controllersStateModuleTokens } from '@/infrastructure/controllers-state/controllers-state.module';
 
 export class ControllerInitializer implements IControllerInitializer {
   constructor(
-    private readonly logger: ILogger,
-    private readonly controllersState: IControllersState,
+    private readonly logger: ILogger = injectLogger(ControllerInitializer.name),
+    private readonly controllersState: IControllersState = inject(
+      controllersStateModuleTokens.controllersState,
+    ),
   ) {}
 
   public init(controller: Controller, router: Router, openApiBuilder?: IOpenApiBuilder): void {

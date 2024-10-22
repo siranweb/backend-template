@@ -1,9 +1,10 @@
 import { ILogger } from '@/lib/logger/types/logger.interface';
 import { getQuery, getRouterParams, H3Error, H3Event, readBody } from 'h3';
 import { IRequestLogger } from '@/lib/web-server/types/request-logger.interface';
+import { injectLogger } from '@/infrastructure/shared/shared.module';
 
 export class RequestLogger implements IRequestLogger {
-  constructor(private readonly logger: ILogger) {}
+  constructor(private readonly logger: ILogger = injectLogger(RequestLogger.name)) {}
 
   public async request(event: H3Event): Promise<void> {
     let body;

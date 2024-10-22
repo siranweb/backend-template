@@ -3,31 +3,34 @@ import 'zod-openapi/extend';
 import './common/base-path';
 import { IAppDatabase } from '@/infrastructure/database/types/database.types';
 import { IWebServer } from '@/lib/web-server/types/web-server.interface';
-import { IScheduler } from '@/lib/scheduler/types/scheduler.interface';
 import { IControllerInitializer } from '@/infrastructure/web-server/types/controller-initializer.interface';
-import { rootModule } from '@/root.module';
-import { Router } from 'h3';
 import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface';
+import {
+  webServerModule,
+  webServerModuleTokens,
+} from '@/infrastructure/web-server/web-server.module';
+import { databaseModule, databaseModuleTokens } from '@/infrastructure/database/database.module';
+import { webApiModule, webApiModuleTokens } from '@/infrastructure/web-api/web-api.module';
+import { Controller } from '@/common/types/controller.types';
+import { Router } from 'h3';
 
-rootModule.init();
-
-const apiControllerInitializer = rootModule.resolve<IControllerInitializer>(
-  'apiControllerInitializer',
+const apiControllerInitializer: IControllerInitializer = webServerModule.resolve(
+  webServerModuleTokens.apiControllerInitializer,
 );
-const webServer = rootModule.resolve<IWebServer>('webServer');
-const db = rootModule.resolve<IAppDatabase>('db');
-const scheduler = rootModule.resolve<IScheduler>('scheduler');
-const openApiBuilder = rootModule.resolve<IOpenApiBuilder>('openApiBuilder');
-const apiRouter = rootModule.resolve<Router>('apiRouter');
+const webServer: IWebServer = webServerModule.resolve(webServerModuleTokens.webServer);
+const db: IAppDatabase = databaseModule.resolve(databaseModuleTokens.db);
+const openApiBuilder: IOpenApiBuilder = webServerModule.resolve(
+  webServerModuleTokens.openApiBuilder,
+);
+const apiRouter: Router = webServerModule.resolve(webServerModuleTokens.apiRouter);
 
-const usersController = rootModule.resolve('usersController');
-const exampleController = rootModule.resolve('exampleController');
+const usersController: Controller = webApiModule.resolve(webApiModuleTokens.usersController);
+const exampleController: Controller = webApiModule.resolve(webApiModuleTokens.exampleController);
 
 apiControllerInitializer.init(usersController, apiRouter, openApiBuilder);
 apiControllerInitializer.init(exampleController, apiRouter, openApiBuilder);
 
 webServer.start();
-scheduler.start();
 
 const shutdown = () => {
   Promise.allSettled([webServer.stop(), db.destroy()]).finally(() => process.exit(0));

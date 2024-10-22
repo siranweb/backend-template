@@ -1,3 +1,5 @@
+import { Logger as PinoLogger } from 'pino';
+
 export interface ILogger {
   /**
    * Setting logger context. Used in prefix
@@ -42,4 +44,5 @@ export interface ILogger {
 
 export type LoggerOptions = {
   context?: string;
+  pinoLogger?: PinoLogger;
 };

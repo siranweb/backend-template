@@ -6,13 +6,21 @@ import { IUsersRepository } from '@/core/users/types/users-repository.interface'
 import { ICreateTokensCase } from '@/core/users/types/create-tokens-case.interface';
 import { UserLoginTakenError } from '@/core/users/errors/user-login-taken.error';
 import { User } from '@/core/users/entities/user.entity';
+import { usersModuleTokens } from '../users.module';
+import { cryptographyModuleTokens } from '@/core/cryptography/cryptography.module';
+import { inject } from 'di-wise';
+import { injectLogger } from '@/infrastructure/shared/shared.module';
 
 export class CreateUserCase implements ICreateUserCase {
   constructor(
-    private readonly logger: ILogger,
-    private readonly usersRepository: IUsersRepository,
-    private readonly createTokensCase: ICreateTokensCase,
-    private readonly cryptographyService: ICryptographyService,
+    private readonly logger: ILogger = injectLogger(CreateUserCase.name),
+    private readonly usersRepository: IUsersRepository = inject(usersModuleTokens.usersRepository),
+    private readonly createTokensCase: ICreateTokensCase = inject(
+      usersModuleTokens.createTokensCase,
+    ),
+    private readonly cryptographyService: ICryptographyService = inject(
+      cryptographyModuleTokens.cryptographyService,
+    ),
   ) {}
   async execute(credentials: UserCredentials): Promise<TokenPair> {
     const { login, password } = credentials;

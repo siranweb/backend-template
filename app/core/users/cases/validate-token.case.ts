@@ -2,12 +2,15 @@ import { IJWTService } from '@/core/jwt/types/jwt-service.interface';
 import { IConfig } from '@/infrastructure/shared/types/config.interface';
 import { ILogger } from '@/lib/logger/types/logger.interface';
 import { IValidateTokenCase } from '@/core/users/types/validate-token.interface';
+import { inject } from 'di-wise';
+import { jwtModuleTokens } from '@/core/jwt/jwt.module';
+import { injectLogger, sharedModuleTokens } from '@/infrastructure/shared/shared.module';
 
 export class ValidateTokenCase implements IValidateTokenCase {
   constructor(
-    private readonly logger: ILogger,
-    private readonly jwtService: IJWTService,
-    private readonly config: IConfig,
+    private readonly logger: ILogger = injectLogger(ValidateTokenCase.name),
+    private readonly jwtService: IJWTService = inject(jwtModuleTokens.jwtService),
+    private readonly config: IConfig = inject(sharedModuleTokens.config),
   ) {}
 
   async execute(token: string): Promise<boolean> {

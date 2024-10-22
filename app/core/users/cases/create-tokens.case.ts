@@ -3,12 +3,15 @@ import { ILogger } from '@/lib/logger/types/logger.interface';
 import { IConfig } from '@/infrastructure/shared/types/config.interface';
 import { TokenPair } from '@/core/users/types/shared';
 import { ICreateTokensCase } from '@/core/users/types/create-tokens-case.interface';
+import { jwtModuleTokens } from '@/core/jwt/jwt.module';
+import { inject } from 'di-wise';
+import { injectLogger, sharedModuleTokens } from '@/infrastructure/shared/shared.module';
 
 export class CreateTokensCase implements ICreateTokensCase {
   constructor(
-    private readonly logger: ILogger,
-    private readonly config: IConfig,
-    private readonly jwtService: IJWTService,
+    private readonly logger: ILogger = injectLogger(CreateTokensCase.name),
+    private readonly config: IConfig = inject(sharedModuleTokens.config),
+    private readonly jwtService: IJWTService = inject(jwtModuleTokens.jwtService),
   ) {}
 
   async execute(userId: string): Promise<TokenPair> {

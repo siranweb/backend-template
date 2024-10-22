@@ -1,57 +1,51 @@
-import awilix, {
-  AwilixContainer,
-  createContainer,
-  Resolver,
-  BuildResolver,
-  RegistrationHash,
-} from 'awilix';
-import { IModule } from '@/lib/module/types/module.interface';
-import { ILogger } from '@/lib/logger/types/logger.interface';
+import { IModule, RegisterOptions } from '@/lib/module/types/module.interface';
+import { Container, ErrorMessage, Provider, Scope, Token } from 'di-wise';
 
 export class Module implements IModule {
-  private static readonly container: AwilixContainer = createContainer({
-    injectionMode: awilix.InjectionMode.CLASSIC,
-    strict: true,
+  private readonly container: Container = new Container({
+    defaultScope: Scope.Container,
   });
 
-  private registrationHash: RegistrationHash = {};
+  private readonly publicTokens: Set<Token<any>> = new Set();
+  private readonly privateTokens: Set<Token<any>> = new Set();
 
   constructor(public readonly name: string) {}
 
-  get registrations(): RegistrationHash {
-    return this.registrationHash;
+  public import(module: Module): void {
+    module.publicTokens.forEach((token) => {
+      const alreadyRegistered = !!this.container.registry.get(token);
+      if (alreadyRegistered) {
+        return;
+      }
+
+      const registration = module.container.registry.get(token);
+      if (!registration) {
+        return;
+      }
+
+      this.container.registry.set(token, registration);
+      this.publicTokens.add(token);
+    });
   }
 
-  public init(): void {
-    Module.container.register(this.registrationHash);
-  }
+  public register<Value>(
+    token: Token<Value>,
+    provider: Provider<Value>,
+    options?: RegisterOptions,
+  ): void {
+    this.container.register(token, provider, options);
 
-  public use(module: IModule) {
-    this.registrationHash = { ...this.registrationHash, ...module.registrations };
-  }
-
-  public register<T>(key: string | symbol, registration: Resolver<T>) {
-    this.registrationHash[key] = this.withNamedLogger(key, registration);
-  }
-
-  public resolve<T>(key: string | symbol): T {
-    return Module.container.resolve<T>(key);
-  }
-
-  private withNamedLogger<T>(key: string | symbol, resolver: Resolver<T>): Resolver<T> {
-    const buildResolver = resolver as BuildResolver<any>;
-    let logger = Module.container.resolve<ILogger>('logger', { allowUnregistered: true });
-    if (!logger) {
-      this.init();
+    if (options?.private) {
+      this.privateTokens.add(token);
+    } else {
+      this.publicTokens.add(token);
     }
-    logger = Module.container.resolve<ILogger>('logger', { allowUnregistered: true });
+  }
 
-    if (!logger || key === 'logger') {
-      return resolver;
+  public resolve<T>(token: Token<T>): T {
+    if (!this.publicTokens.has(token)) {
+      throw new Error(`${ErrorMessage.UnresolvableToken} (${token}).`);
     }
-
-    return buildResolver.inject(() => ({
-      logger: logger.child(key.toString()),
-    }));
+    return this.container.resolve(token);
   }
 }

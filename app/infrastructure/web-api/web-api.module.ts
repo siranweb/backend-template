@@ -1,14 +1,19 @@
 import { Module } from '@/lib/module';
-import { asClass } from 'awilix';
 import { Controller } from '@/common/types/controller.types';
 import { UsersController } from '@/api/users/users.controller';
 import { ExampleController } from '@/api/example/example.controller';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
 import { usersModule } from '@/core/users/users.module';
+import { Type } from 'di-wise';
 
 export const webApiModule = new Module('webApi');
-webApiModule.use(sharedModule);
-webApiModule.use(usersModule);
+webApiModule.import(sharedModule);
+webApiModule.import(usersModule);
 
-webApiModule.register<Controller>('usersController', asClass(UsersController).singleton());
-webApiModule.register<Controller>('exampleController', asClass(ExampleController).singleton());
+export const webApiModuleTokens = {
+  usersController: Type<Controller>('usersController'),
+  exampleController: Type<Controller>('exampleController'),
+};
+
+webApiModule.register(webApiModuleTokens.usersController, { useClass: UsersController });
+webApiModule.register(webApiModuleTokens.exampleController, { useClass: ExampleController });

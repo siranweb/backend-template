@@ -6,17 +6,20 @@ import { IConfig } from '@/infrastructure/shared/types/config.interface';
 import { IRequestLogger } from '@/lib/web-server/types/request-logger.interface';
 import { IRequestStorage } from '@/infrastructure/shared/types/request-storage.interface';
 import { ILogger } from '@/lib/logger/types/logger.interface';
+import { inject } from 'di-wise';
+import { injectLogger, sharedModuleTokens } from '@/infrastructure/shared/shared.module';
+import { webServerModuleTokens } from '@/infrastructure/web-server/web-server.module';
 
 export class WebServer implements IWebServer {
   private readonly httpServer: Server;
 
   constructor(
-    private readonly config: IConfig,
-    private readonly logger: ILogger,
-    requestLogger: IRequestLogger,
-    requestStorage: IRequestStorage,
-    apiRouter: Router,
-    docsRouter: Router,
+    private readonly config: IConfig = inject(sharedModuleTokens.config),
+    private readonly logger: ILogger = injectLogger(WebServer.name),
+    requestLogger: IRequestLogger = inject(webServerModuleTokens.requestLogger),
+    requestStorage: IRequestStorage = inject(sharedModuleTokens.requestStorage),
+    apiRouter: Router = inject(webServerModuleTokens.apiRouter),
+    docsRouter: Router = inject(webServerModuleTokens.docsRouter),
   ) {
     const app = createApp({
       onError: (error, event) => requestLogger.error(error, event),
