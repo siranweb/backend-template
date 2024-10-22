@@ -16,11 +16,13 @@ import { cryptographyModule } from '@/core/cryptography/cryptography.module';
 import { jwtModule } from '@/core/jwt/jwt.module';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
 import { Type } from 'di-wise';
+import { databaseModule } from '@/infrastructure/database/database.module';
 
 export const usersModule = new Module('users');
 usersModule.import(sharedModule);
 usersModule.import(cryptographyModule);
 usersModule.import(jwtModule);
+usersModule.import(databaseModule);
 
 export const usersModuleTokens = {
   usersRepository: Type<IUsersRepository>('usersRepository'),
@@ -34,12 +36,7 @@ export const usersModuleTokens = {
   ),
 };
 
-usersModule.register(
-  usersModuleTokens.usersRepository,
-  { useClass: UsersRepository },
-  { private: true },
-);
-
+usersModule.register(usersModuleTokens.usersRepository, { useClass: UsersRepository });
 usersModule.register(usersModuleTokens.createTokensCase, { useClass: CreateTokensCase });
 usersModule.register(usersModuleTokens.createUserCase, { useClass: CreateUserCase });
 usersModule.register(usersModuleTokens.refreshTokensCase, { useClass: RefreshTokensCase });

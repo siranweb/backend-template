@@ -41,7 +41,6 @@ export function createResponse(controllersState: IControllersState) {
       if (allSchemas.length === 0) {
         responses = [
           {
-            contentType,
             statusCode,
           },
         ];

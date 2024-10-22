@@ -35,6 +35,10 @@ export class OpenApiBuilder implements IOpenApiBuilder {
     const pathObj = this.getOrInitPathObj(path);
     const methodObj = this.initMethodObj(pathObj, method);
 
+    if (specs.tags) {
+      specs.tags.forEach((tag) => this.addTag(methodObj, tag));
+    }
+
     if (specs.responses) {
       specs.responses.forEach((responseSpec) => this.addResponse(methodObj, responseSpec));
     }
@@ -60,6 +64,14 @@ export class OpenApiBuilder implements IOpenApiBuilder {
     }
   }
 
+  private addTag(methodObj: ZodOpenApiOperationObject, tag: string): void {
+    if (!methodObj.tags) {
+      methodObj.tags = [];
+    }
+
+    methodObj.tags.push(tag);
+  }
+
   private addResponse(methodObj: ZodOpenApiOperationObject, responseSpec: ResponseSpec): void {
     const statusCode = responseSpec.statusCode.toString() as OpenApiStatusCode;
 
@@ -74,6 +86,10 @@ export class OpenApiBuilder implements IOpenApiBuilder {
       statusResponseObj.content = {};
     }
     const content = statusResponseObj.content;
+
+    if (!responseSpec.contentType) {
+      return;
+    }
 
     if (!content[responseSpec.contentType]) {
       content[responseSpec.contentType] = {};

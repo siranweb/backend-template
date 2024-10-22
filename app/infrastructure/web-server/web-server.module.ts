@@ -12,8 +12,10 @@ import { IOpenApiBuilder } from '@/lib/open-api/types/open-api-builder.interface
 import { Module } from '@/lib/module';
 import { sharedModule } from '@/infrastructure/shared/shared.module';
 import { Type } from 'di-wise';
+import { controllersStateModule } from '@/infrastructure/controllers-state/controllers-state.module';
 
 export const webServerModule = new Module('webApi');
+webServerModule.import(controllersStateModule);
 webServerModule.import(sharedModule);
 
 export const webServerModuleTokens = {

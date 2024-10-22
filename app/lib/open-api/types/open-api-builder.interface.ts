@@ -25,7 +25,7 @@ export type OpenApiStatusCode = `${1 | 2 | 3 | 4 | 5}${string}`;
 
 export type ResponseSpec = {
   statusCode: number;
-  contentType: string;
+  contentType?: string;
   schema?: ZodType;
 };
 

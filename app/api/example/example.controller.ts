@@ -6,16 +6,19 @@ import {
   Params,
   Query,
   Response,
+  Tag,
 } from '@/infrastructure/controllers-state/decorators';
 import { createExampleSchema } from '@/api/example/schemas/create-example.schema';
 import { getExampleQuerySchema } from '@/api/example/schemas/get-example-query.schema';
 import { exampleResponseSchema } from '@/api/example/schemas/example-response.schema';
 import { getExampleByIdParamsSchema } from '@/api/example/schemas/get-example-by-id-params.schema';
 
+@Tag('example')
 @Controller('/example')
 export class ExampleController {
   @Handler('POST')
   @Body(createExampleSchema)
+  @Response(204)
   public async postExample(_event: H3Event): Promise<Record<string, any>> {
     return { hello: 'world' };
   }

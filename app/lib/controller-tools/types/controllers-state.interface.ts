@@ -58,7 +58,7 @@ export type HandlerDef = {
 
 export type ResponseDef = {
   statusCode: number;
-  contentType: string;
+  contentType?: string;
   schema?: ZodType;
 };
 

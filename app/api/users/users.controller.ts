@@ -3,7 +3,7 @@ import { loginUserSchema } from './schemas/login-user.schema';
 import { createUserSchema } from './schemas/create-user.schema';
 import { IConfig, NodeEnv } from '@/infrastructure/shared/types/config.interface';
 import { ACCESS_TOKEN_NAME, REFRESH_TOKEN_NAME } from '@/common/constants/web';
-import { Chain, Controller, Handler } from '@/infrastructure/controllers-state/decorators';
+import { Chain, Controller, Handler, Tag } from '@/infrastructure/controllers-state/decorators';
 import { ICreateUserCase } from '@/core/users/types/create-user-case.interface';
 import { IRefreshTokensCase } from '@/core/users/types/refresh-tokens-case.interface';
 import { ICreateTokensByCredentialsCase } from '@/core/users/types/create-tokens-by-credentials-case.interface';
@@ -19,6 +19,7 @@ import { usersModuleTokens } from '@/core/users/users.module';
 
 const auth = controllersStateModule.resolve(controllersStateModuleTokens.authChainHandler);
 
+@Tag('users')
 @Controller('/users')
 export class UsersController {
   constructor(
